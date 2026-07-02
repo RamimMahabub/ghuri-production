@@ -51,8 +51,7 @@ class DashboardController extends Controller
         // Fetch recent pending properties for quick action
         $pendingPropertiesList = [];
         if (Schema::hasTable('properties')) {
-            $pendingPropertiesList = DB::table('properties')
-                ->where('status', 'pending_approval')
+            $pendingPropertiesList = \App\Models\Property::where('status', 'pending_approval')
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();

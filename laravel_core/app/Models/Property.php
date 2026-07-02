@@ -165,7 +165,7 @@ class Property extends Model
 
     public static function getTypes(): array
     {
-        return ['hotel', 'resort', 'villa', 'hostel', 'apartment', 'guesthouse'];
+        return ['hotel', 'resort', 'villa', 'hostel', 'apartment', 'guesthouse', 'house', 'bed_and_breakfast', 'houseboat'];
     }
 
     public function getAmenityGroups(): array

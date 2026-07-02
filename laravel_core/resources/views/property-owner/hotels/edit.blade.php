@@ -256,12 +256,12 @@ document.addEventListener('alpine:init', () => {
             const elAddress1 = document.querySelector('input[name="address_line_1"]');
             const elNeighborhood = document.querySelector('input[name="neighborhood"]');
             
-            if (elCity && city) elCity.value = city;
-            if (elState && state) elState.value = state;
-            if (elCountry && country) elCountry.value = country;
-            if (elPostal && postcode) elPostal.value = postcode;
-            if (elAddress1 && address1) elAddress1.value = address1;
-            if (elNeighborhood && neighborhood) elNeighborhood.value = neighborhood;
+            if (elCity) elCity.value = city;
+            if (elState) elState.value = state;
+            if (elCountry) elCountry.value = country;
+            if (elPostal) elPostal.value = postcode;
+            if (elAddress1) elAddress1.value = address1;
+            if (elNeighborhood) elNeighborhood.value = neighborhood;
         },
 
         initMap() {
@@ -335,6 +335,8 @@ document.addEventListener('alpine:init', () => {
             this.$watch('lat', value => {
                 if (this.marker && !isNaN(value) && value !== '') {
                     const pos = { lat: parseFloat(value), lng: parseFloat(this.lng) };
+                    const currentPos = this.marker.getPosition();
+                    if (currentPos && Math.abs(currentPos.lat() - pos.lat) < 0.0001 && Math.abs(currentPos.lng() - pos.lng) < 0.0001) return;
                     this.marker.setPosition(pos);
                     this.map.panTo(pos);
                 }
@@ -343,6 +345,8 @@ document.addEventListener('alpine:init', () => {
             this.$watch('lng', value => {
                 if (this.marker && !isNaN(value) && value !== '') {
                     const pos = { lat: parseFloat(this.lat), lng: parseFloat(value) };
+                    const currentPos = this.marker.getPosition();
+                    if (currentPos && Math.abs(currentPos.lat() - pos.lat) < 0.0001 && Math.abs(currentPos.lng() - pos.lng) < 0.0001) return;
                     this.marker.setPosition(pos);
                     this.map.panTo(pos);
                 }

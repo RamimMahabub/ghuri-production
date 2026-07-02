@@ -33,14 +33,28 @@
                     <input type="text" name="name" class="form-input-styled" placeholder="e.g., Grand Azure Hotel & Spa" required value="{{ old('name') }}">
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Property Type *</label>
-                    <select name="type" class="form-input-styled" required>
-                        <option value="">Select type...</option>
-                        @foreach(\App\Models\Property::getTypes() as $type)
-                            <option value="{{ $type }}">{{ ucfirst($type) }}</option>
+                <div class="form-group md:col-span-2">
+                    <label class="form-label mb-3 block">Property Type *</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        @php
+                            $propertyTypes = [
+                                'house' => ['icon' => 'fa-house', 'label' => 'House'],
+                                'apartment' => ['icon' => 'fa-building', 'label' => 'Apartment'],
+                                'bed_and_breakfast' => ['icon' => 'fa-mug-hot', 'label' => 'Bed & breakfast'],
+                                'houseboat' => ['icon' => 'fa-ship', 'label' => 'Houseboat'],
+                                'hotel' => ['icon' => 'fa-hotel', 'label' => 'Hotel'],
+                                'resort' => ['icon' => 'fa-umbrella-beach', 'label' => 'Resort'],
+                            ];
+                        @endphp
+                        @foreach($propertyTypes as $value => $data)
+                            <label class="cursor-pointer border rounded-xl p-4 flex flex-col items-start gap-3 transition-all duration-200" 
+                                   :class="propertyType === '{{ $value }}' ? 'border-brand-black bg-gray-50 border-2 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-900'">
+                                <input type="radio" name="type" value="{{ $value }}" class="hidden" x-model="propertyType" required>
+                                <i class="fas {{ $data['icon'] }} text-2xl" :class="propertyType === '{{ $value }}' ? 'text-brand-black' : 'text-gray-600'"></i>
+                                <span class="font-semibold text-sm leading-tight" :class="propertyType === '{{ $value }}' ? 'text-brand-black' : 'text-gray-800'">{{ $data['label'] }}</span>
+                            </label>
                         @endforeach
-                    </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -156,40 +170,84 @@
         <div x-show="currentStep === 2" x-transition:enter="animate-slide-right" class="card card-body space-y-5">
             <h2 class="section-heading"><i class="fas fa-camera text-brand-primary mr-2"></i>Photos</h2>
 
-            <div x-data="photoUploader()" class="space-y-4">
-                <div class="photo-upload-zone"
-                     @dragover.prevent="isDragging = true"
-                     @dragleave.prevent="isDragging = false"
-                     @drop.prevent="handleDrop($event)"
-                     :class="{ 'dragging': isDragging }"
+            <div x-data="photoUploader()" class="space-y-6">
+                <div class="photo-upload-zone border-2 border-dashed border-gray-300 rounded-xl p-8 text-center transition-colors cursor-pointer hover:bg-gray-50"
+                     @dragover.prevent="isDragging = true; $el.classList.add('border-brand-primary', 'bg-brand-light')"
+                     @dragleave.prevent="isDragging = false; $el.classList.remove('border-brand-primary', 'bg-brand-light')"
+                     @drop.prevent="handleDrop($event); $el.classList.remove('border-brand-primary', 'bg-brand-light')"
                      @click="$refs.fileInput.click()">
-                    <i class="fas fa-cloud-upload-alt text-4xl text-brand-muted mb-3"></i>
-                    <p class="text-sm font-medium text-brand-black">Drag & drop photos here</p>
-                    <p class="text-xs text-brand-muted mt-1">or click to browse · JPEG, PNG · Max 5MB each</p>
+                    
+                    <div class="mb-3">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-gray-900 mb-1">Drag & drop photos here</p>
+                    <p class="text-xs text-gray-500 mb-4">or click to browse · JPEG, PNG · Max 5MB each</p>
+                    
+                    <div class="bg-[#4267b2] text-white text-[13px] px-4 py-2.5 rounded-md inline-block text-center font-medium max-w-xl mx-auto shadow-sm" @click.stop>
+                        Needs to indicate which one will be cover photo, also suggest photo size (e.g. 1920x1080) which will be good for customers.
+                    </div>
+                    
                     <input type="file" name="photos[]" multiple accept="image/*" x-ref="fileInput" class="hidden" @change="handleFiles($event)">
                 </div>
 
-                {{-- Preview Grid --}}
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3" x-show="previews.length > 0">
-                    <template x-for="(preview, index) in previews" :key="index">
-                        <div class="photo-thumbnail">
-                            <img :src="preview.url" :alt="'Photo ' + (index + 1)">
-                            <div class="photo-overlay">
-                                <select :name="'photo_categories[' + index + ']'" class="text-[10px] bg-white rounded px-1 py-0.5">
-                                    <option value="exterior">Exterior</option>
-                                    <option value="lobby">Lobby</option>
-                                    <option value="room">Room</option>
-                                    <option value="bathroom">Bathroom</option>
-                                    <option value="pool">Pool</option>
-                                    <option value="restaurant">Restaurant</option>
-                                    <option value="view">View</option>
-                                </select>
-                                <button type="button" @click="removePhoto(index)" class="text-white hover:text-red-300">
-                                    <i class="fas fa-trash text-sm"></i>
-                                </button>
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-gray-900 text-sm">Choose at least 5 photos</h3>
+                        <span class="text-xs text-gray-500"><span x-text="previews.length"></span>/5+ photos</span>
+                    </div>
+
+                    {{-- Preview Grid --}}
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" x-show="previews.length > 0">
+                        <template x-for="(preview, index) in previews" :key="index">
+                            <div class="relative group rounded-xl overflow-hidden aspect-[4/3] border border-gray-200 shadow-sm bg-gray-100 cursor-move transition-opacity"
+                                 draggable="true"
+                                 @dragstart="dragStart(index, $event)"
+                                 @dragover.prevent
+                                 @drop="dropOn(index)"
+                                 :class="{'opacity-40 border-brand-primary border-2': draggedIndex === index}">
+                                <img :src="preview.url" :alt="'Photo ' + (index + 1)" class="w-full h-full object-cover pointer-events-none">
+                                
+                                <!-- Cover Photo Badge -->
+                                <div x-show="coverPhotoIndex === index" class="absolute top-3 left-3 bg-white px-2 py-1 rounded text-[11px] font-bold text-gray-900 shadow-md z-10">
+                                    Cover Photo
+                                </div>
+
+                                <!-- Actions Dropdown -->
+                                <div class="absolute top-3 right-3 z-20" x-data="{ open: false }" @click.away="open = false">
+                                    <button type="button" @click.stop="open = !open" class="w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center text-gray-700 shadow-md transition-colors">
+                                        <i class="fas fa-ellipsis-h text-sm"></i>
+                                    </button>
+                                    
+                                    <div x-show="open" x-transition style="display: none;" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden text-sm">
+                                        <button type="button" @click.stop="setCoverPhoto(index); open = false" class="w-full text-left px-4 py-2.5 hover:bg-gray-50 text-gray-700 font-medium">
+                                            Make Cover Photo
+                                        </button>
+                                        <button type="button" @click.stop="removePhoto(index); open = false" class="w-full text-left px-4 py-2.5 hover:bg-red-50 text-red-600 border-t border-gray-100 font-medium">
+                                            Delete Photo
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Category Select -->
+                                <div class="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                                    <select :name="'photo_categories[' + index + ']'" class="w-full text-xs bg-white/90 rounded border-none shadow-sm focus:ring-0 py-1.5 px-2 font-medium" @click.stop>
+                                        <option value="exterior">Exterior</option>
+                                        <option value="lobby">Lobby</option>
+                                        <option value="room">Room</option>
+                                        <option value="bathroom">Bathroom</option>
+                                        <option value="pool">Pool</option>
+                                        <option value="restaurant">Restaurant</option>
+                                        <option value="view">View</option>
+                                    </select>
+                                </div>
+
+                                <input type="hidden" :name="'is_cover[' + index + ']'" :value="coverPhotoIndex === index ? '1' : '0'">
+                                
+                                <!-- Overlay gradient for better contrast -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             </div>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
@@ -523,6 +581,7 @@ function propertyWizard() {
     return {
         currentStep: 0,
         isSubmitting: false,
+        propertyType: '{{ old('type') }}',
         steps: ['Basic Info', 'Location', 'Photos', 'Amenities', 'Rooms', 'Policies', 'Review'],
         nextStep() { if (this.currentStep < this.steps.length - 1) this.currentStep++ },
         prevStep() { if (this.currentStep > 0) this.currentStep-- },
@@ -533,6 +592,8 @@ function photoUploader() {
     return {
         previews: [],
         isDragging: false,
+        coverPhotoIndex: 0,
+        draggedIndex: null,
         handleFiles(event) {
             const files = event.target.files;
             for (let file of files) {
@@ -552,7 +613,38 @@ function photoUploader() {
         removePhoto(index) {
             URL.revokeObjectURL(this.previews[index].url);
             this.previews.splice(index, 1);
+            if (this.coverPhotoIndex === index) {
+                this.coverPhotoIndex = 0;
+            } else if (this.coverPhotoIndex > index) {
+                this.coverPhotoIndex--;
+            }
         },
+        setCoverPhoto(index) {
+            this.coverPhotoIndex = index;
+        },
+        dragStart(index, event) {
+            this.draggedIndex = index;
+            event.dataTransfer.effectAllowed = 'move';
+        },
+        dropOn(index) {
+            if (this.draggedIndex === null || this.draggedIndex === index) return;
+            
+            // Reorder previews array
+            const draggedItem = this.previews[this.draggedIndex];
+            this.previews.splice(this.draggedIndex, 1);
+            this.previews.splice(index, 0, draggedItem);
+            
+            // Update coverPhotoIndex if it was affected
+            if (this.coverPhotoIndex === this.draggedIndex) {
+                this.coverPhotoIndex = index;
+            } else if (this.draggedIndex < this.coverPhotoIndex && index >= this.coverPhotoIndex) {
+                this.coverPhotoIndex--;
+            } else if (this.draggedIndex > this.coverPhotoIndex && index <= this.coverPhotoIndex) {
+                this.coverPhotoIndex++;
+            }
+            
+            this.draggedIndex = null;
+        }
     }
 }
 
@@ -658,12 +750,12 @@ document.addEventListener('alpine:init', () => {
             const elAddress1 = document.querySelector('input[name="address_line_1"]');
             const elNeighborhood = document.querySelector('input[name="neighborhood"]');
             
-            if (elCity && city) elCity.value = city;
-            if (elState && state) elState.value = state;
-            if (elCountry && country) elCountry.value = country;
-            if (elPostal && postcode) elPostal.value = postcode;
-            if (elAddress1 && address1) elAddress1.value = address1;
-            if (elNeighborhood && neighborhood) elNeighborhood.value = neighborhood;
+            if (elCity) elCity.value = city;
+            if (elState) elState.value = state;
+            if (elCountry) elCountry.value = country;
+            if (elPostal) elPostal.value = postcode;
+            if (elAddress1) elAddress1.value = address1;
+            if (elNeighborhood) elNeighborhood.value = neighborhood;
         },
 
         initMap() {
@@ -737,6 +829,8 @@ document.addEventListener('alpine:init', () => {
             this.$watch('lat', value => {
                 if (this.marker && !isNaN(value) && value !== '') {
                     const pos = { lat: parseFloat(value), lng: parseFloat(this.lng) };
+                    const currentPos = this.marker.getPosition();
+                    if (currentPos && Math.abs(currentPos.lat() - pos.lat) < 0.0001 && Math.abs(currentPos.lng() - pos.lng) < 0.0001) return;
                     this.marker.setPosition(pos);
                     this.map.panTo(pos);
                 }
@@ -745,6 +839,8 @@ document.addEventListener('alpine:init', () => {
             this.$watch('lng', value => {
                 if (this.marker && !isNaN(value) && value !== '') {
                     const pos = { lat: parseFloat(this.lat), lng: parseFloat(value) };
+                    const currentPos = this.marker.getPosition();
+                    if (currentPos && Math.abs(currentPos.lat() - pos.lat) < 0.0001 && Math.abs(currentPos.lng() - pos.lng) < 0.0001) return;
                     this.marker.setPosition(pos);
                     this.map.panTo(pos);
                 }

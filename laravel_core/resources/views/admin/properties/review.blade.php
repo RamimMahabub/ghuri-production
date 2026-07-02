@@ -43,22 +43,22 @@
                 <span class="text-sm font-medium">No Cover Photo</span>
             </div>
         @endif
-        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-        <div class="absolute bottom-0 left-0 p-8 w-full text-white flex justify-between items-end">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-8 w-full flex justify-between items-end">
             <div>
                 <div class="flex items-center gap-3 mb-2">
-                    <span class="px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-md text-xs font-bold uppercase tracking-wider text-white border border-white/20">
+                    <span class="px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-md text-xs font-bold uppercase tracking-wider text-white border border-white/20 shadow-sm">
                         {{ ucfirst($property->type) }}
                     </span>
-                    <div class="flex items-center text-yellow-400">
+                    <div class="flex items-center text-yellow-400 drop-shadow">
                         @for($i = 1; $i <= 5; $i++)
-                            <i class="fas fa-star text-sm {{ $i <= $property->stars ? 'text-yellow-400' : 'text-white/30' }}"></i>
+                            <i class="fas fa-star text-sm {{ $i <= $property->stars ? 'text-yellow-400' : 'text-white/40' }}"></i>
                         @endfor
                     </div>
                 </div>
-                <h1 class="text-3xl font-bold font-heading mb-1 shadow-sm">{{ $property->name }}</h1>
-                <p class="text-white/90 text-sm flex items-center">
-                    <i class="fas fa-map-marker-alt text-red-400 mr-2"></i>
+                <h1 class="text-3xl font-bold font-heading text-white mb-1 drop-shadow-lg">{{ $property->name }}</h1>
+                <p class="text-white font-medium text-sm flex items-center drop-shadow-md">
+                    <i class="fas fa-map-marker-alt text-red-400 mr-2 drop-shadow-sm"></i>
                     {{ $property->full_address }}
                 </p>
             </div>
