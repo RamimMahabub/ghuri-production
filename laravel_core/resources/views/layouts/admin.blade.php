@@ -17,11 +17,18 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-body antialiased bg-[#F8F9FA] text-[#19100F] overflow-hidden">
-    <div class="flex h-screen w-full" x-data="{ sidebarOpen: true }">
+    <div class="flex h-screen w-full" x-data="{ sidebarOpen: window.innerWidth >= 1024 }">
         
+        {{-- Mobile Overlay --}}
+        <div x-show="sidebarOpen" 
+             style="display: none;"
+             class="fixed inset-0 bg-gray-900/50 z-40 lg:hidden backdrop-blur-sm"
+             x-transition.opacity
+             @click="sidebarOpen = false"></div>
+
         {{-- ── Sidebar ─────────────────────────────── --}}
         <aside 
-            :class="sidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full w-0 lg:w-20 lg:translate-x-0'"
+            :class="sidebarOpen ? 'translate-x-0 w-64' : '-translate-x-full w-64 lg:w-20 lg:translate-x-0'"
             class="fixed inset-y-0 left-0 z-50 bg-white text-gray-700 transition-all duration-300 ease-in-out flex flex-col shadow-xl border-r border-gray-100 lg:static lg:flex-shrink-0"
         >
             {{-- Logo (red header strip) --}}
