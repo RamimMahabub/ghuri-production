@@ -27,7 +27,10 @@
                     @forelse($promotions as $promo)
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="py-3 px-5">
-                                <span class="font-heading font-bold text-brand-black block">{{ $promo->code }}</span>
+                                <span class="font-heading font-bold text-brand-black block">{{ $promo->title ?: $promo->code }}</span>
+                                @if($promo->title)
+                                    <span class="text-xs text-brand-muted block">Code: {{ $promo->code }}</span>
+                                @endif
                                 <span class="text-xs text-brand-muted">{{ ucfirst(str_replace('_', ' ', $promo->type)) }}</span>
                             </td>
                             <td class="py-3 px-5 text-sm text-brand-text">
@@ -53,7 +56,10 @@
                                     <span class="badge-pending">Inactive</span>
                                 @endif
                             </td>
-                            <td class="py-3 px-5 text-right">
+                            <td class="py-3 px-5 text-right flex justify-end gap-2">
+                                <a href="{{ route('property-owner.promotions.edit', $promo) }}" class="text-brand-primary hover:text-brand-primary-dark p-2">
+                                    <i class="fas fa-edit"></i>
+                                </a>
                                 <form action="{{ route('property-owner.promotions.destroy', $promo) }}" method="POST" class="inline-block" onsubmit="return confirm('Delete this promotion?');">
                                     @csrf
                                     @method('DELETE')

@@ -228,6 +228,25 @@ class RoomController extends Controller
         return back()->with('success', 'Room type duplicated as "' . $newRoom->name . '".');
     }
 
+    public function destroyPhoto(Property $hotel, RoomType $room, RoomTypePhoto $photo)
+    {
+        $this->authorizeProperty($hotel);
+
+        // Ensure the photo belongs to the room
+        if ($photo->room_type_id !== $room->id) {
+            abort(403);
+        }
+
+        // Delete file from storage
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($photo->file_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($photo->file_path);
+        }
+
+        $photo->delete();
+
+        return back()->with('success', 'Photo deleted successfully.');
+    }
+
     private function authorizeProperty(Property $hotel): void
     {
         if ($hotel->owner_id !== Auth::id()) {

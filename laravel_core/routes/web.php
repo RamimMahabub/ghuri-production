@@ -4,7 +4,32 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $offers = \App\Models\Promotion::where('is_active', true)
+        ->where(function ($query) {
+            $query->whereNull('valid_to')
+                  ->orWhere('valid_to', '>=', now());
+        })
+        ->latest()
+        ->take(4)
+        ->get();
+
+    $recentSearches = collect(session()->get('recent_searches', []))->map(function ($search) {
+        // Try to find a property that matches the destination to get an image
+        $property = \App\Models\Property::approved()
+            ->where('name', 'like', "%{$search['destination']}%")
+            ->orWhere('city', 'like', "%{$search['destination']}%")
+            ->with('photos')
+            ->first();
+
+        $search['property_name'] = $property ? $property->name : $search['destination'];
+        $search['image_url'] = $property 
+            ? $property->cover_photo_url 
+            : 'https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=400&q=80'; // Default image
+        
+        return $search;
+    });
+
+    return view('welcome', compact('offers', 'recentSearches'));
 });
 
 Route::get('/list-your-property', function () {
@@ -256,7 +281,8 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/hotels/book/step2', [\App\Http\Controllers\HotelBookingController::class, 'step2'])->name('hotels.book.step2');
     Route::post('/hotels/book/step3', [\App\Http\Controllers\HotelBookingController::class, 'step3'])->name('hotels.book.step3');
     Route::post('/hotels/book/confirm', [\App\Http\Controllers\HotelBookingController::class, 'confirm'])->name('hotels.book.confirm');
-    Route::get('/hotels/booking/confirmation/{booking}', [\App\Http\Controllers\HotelBookingController::class, 'confirmation'])->name('hotels.book.confirmation');
+    Route::post('/hotels/apply-coupon', [\App\Http\Controllers\HotelBookingController::class, 'applyCoupon'])->name('hotels.apply-coupon');
+    Route::get('/hotels/booking/{booking}/confirmation', [\App\Http\Controllers\HotelBookingController::class, 'confirmation'])->name('hotels.book.confirmation');
 
     Route::get('/my-bookings', [\App\Http\Controllers\MyBookingsController::class, 'index'])->name('my-bookings.index');
     Route::get('/my-bookings/{booking}', [\App\Http\Controllers\MyBookingsController::class, 'show'])->name('my-bookings.show');
@@ -292,4 +318,7 @@ Route::middleware(['auth', 'role:admin,manager'])->prefix('admin')->name('admin.
 
     // User Management
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['create', 'store', 'show']);
+
+    // Promotions
+    Route::resource('promotions', \App\Http\Controllers\Admin\PromotionController::class);
 });

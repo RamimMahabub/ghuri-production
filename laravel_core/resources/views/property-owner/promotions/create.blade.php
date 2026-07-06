@@ -1,7 +1,7 @@
 <x-pms-layout pageTitle="New Promotion" pageSubtitle="Create a discount code or special offer">
 
     <div class="max-w-3xl">
-        <form action="{{ route('property-owner.promotions.store') }}" method="POST" class="card card-body space-y-6">
+        <form action="{{ route('property-owner.promotions.store') }}" method="POST" enctype="multipart/form-data" class="card card-body space-y-6">
             @csrf
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -17,6 +17,28 @@
                         @endforeach
                     </select>
                     @error('property_id') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Offer Title --}}
+                <div class="md:col-span-2">
+                    <label class="form-label">Offer Title *</label>
+                    <input type="text" name="title" value="{{ old('title') }}" class="form-input-styled w-full" required placeholder="e.g. Summer Special Getaway">
+                    @error('title') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Description --}}
+                <div class="md:col-span-2">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" rows="3" class="form-input-styled w-full" placeholder="Describe the offer...">{{ old('description') }}</textarea>
+                    @error('description') <p class="form-error">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Image --}}
+                <div class="md:col-span-2">
+                    <label class="form-label">Offer Image (Optional)</label>
+                    <input type="file" name="image" class="form-input-styled w-full" accept="image/*">
+                    <p class="text-xs text-brand-muted mt-1">Recommended size: 800x600. Max 2MB.</p>
+                    @error('image') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
 
                 {{-- Promo Code --}}

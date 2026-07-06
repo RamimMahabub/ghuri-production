@@ -40,9 +40,18 @@ class HotelBookingController extends Controller
         $roomType->load('photos');
         $property->load('photos');
 
+        // Load active promotions for this property
+        $promotions = $property->promotions()
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('valid_to')
+                      ->orWhere('valid_to', '>=', now());
+            })
+            ->get();
+
         return view('hotels.booking.step-1', compact(
             'property', 'roomType', 'pricing', 'ratePlan',
-            'checkIn', 'checkOut', 'adults', 'children'
+            'checkIn', 'checkOut', 'adults', 'children', 'promotions'
         ));
     }
 
@@ -178,5 +187,51 @@ class HotelBookingController extends Controller
         $booking->load(['property', 'roomType', 'ratePlan']);
 
         return view('hotels.booking.confirmation', compact('booking'));
+    }
+
+    /**
+     * Apply Promo Code (AJAX)
+     */
+    public function applyCoupon(Request $request)
+    {
+        $data = $request->validate([
+            'property_id' => 'required|exists:properties,id',
+            'room_type_id' => 'required|exists:room_types,id',
+            'check_in' => 'required|date',
+            'check_out' => 'required|date|after:check_in',
+            'rooms' => 'integer|min:1',
+            'rate_plan_id' => 'nullable|exists:rate_plans,id',
+            'promo_code' => 'required|string',
+        ]);
+
+        $checkIn = Carbon::parse($data['check_in']);
+        $checkOut = Carbon::parse($data['check_out']);
+        $rooms = $data['rooms'] ?? 1;
+
+        // Try to calculate pricing with the promo code
+        $pricing = $this->pricingService->calculateStayPrice(
+            $data['room_type_id'],
+            $checkIn,
+            $checkOut,
+            $rooms,
+            $data['rate_plan_id'] ?? null,
+            $data['promo_code'],
+            $data['property_id']
+        );
+
+        if ($pricing['discount'] > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Promo code applied successfully!',
+                'discount' => $pricing['discount'],
+                'total' => $pricing['total']
+            ]);
+        }
+
+        // If discount is 0, the code is invalid or doesn't apply
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid promo code or not applicable to this stay.',
+        ], 422);
     }
 }

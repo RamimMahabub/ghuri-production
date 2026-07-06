@@ -355,6 +355,29 @@
             margin-bottom: 16px;
         }
 
+        /* ── Offers & Promo ── */
+        .promo-box {
+            background: white;
+            border-radius: 10px;
+            border: 1px dashed #A90B16;
+            padding: 16px 20px;
+            margin-top: 14px;
+        }
+        .promo-title { font-weight: 700; font-size: 14px; color: #1a1a1a; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .promo-title i { color: #A90B16; }
+        .offer-card { background: #FFF5F5; border: 1px solid #ffd0d1; border-radius: 6px; padding: 10px; margin-bottom: 8px; font-size: 12px; }
+        .offer-code { font-weight: 700; color: #A90B16; background: rgba(169, 11, 22, 0.1); padding: 2px 6px; border-radius: 4px; letter-spacing: 0.5px; margin-right: 5px; cursor: pointer; }
+        .offer-code:hover { background: rgba(169, 11, 22, 0.2); }
+        .promo-input-group { display: flex; gap: 8px; margin-top: 14px; }
+        .promo-input-group input { flex: 1; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; }
+        .promo-input-group input:focus { outline: none; border-color: #d00e15; }
+        .promo-btn { background: #374151; color: white; border: none; border-radius: 6px; padding: 0 16px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .promo-btn:hover { background: #1f2937; }
+        .promo-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+        .promo-msg { font-size: 12px; margin-top: 8px; font-weight: 500; }
+        .promo-msg.success { color: #008009; }
+        .promo-msg.error { color: #c62828; }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             .checkout-grid { grid-template-columns: 1fr; }
@@ -509,6 +532,7 @@
                         <input type="hidden" name="adults" value="{{ $adults }}">
                         <input type="hidden" name="children" value="{{ $children }}">
                         <input type="hidden" name="rate_plan_id" value="{{ $ratePlan?->id }}">
+                        <input type="hidden" name="promo_code" id="hidden_promo_code" value="">
 
                         {{-- Who is staying? --}}
                         <div class="form-section">
@@ -666,15 +690,13 @@
                         <span style="color:#6b7280;">Service fee</span>
                         <span>${{ number_format($pricing['fees'], 2) }}</span>
                     </div>
-                    @if($pricing['discount'] > 0)
-                        <div class="price-row discount">
-                            <span>Discount</span>
-                            <span>-${{ number_format($pricing['discount'], 2) }}</span>
-                        </div>
-                    @endif
+                    <div class="price-row discount" id="discount-row" style="{{ $pricing['discount'] > 0 ? '' : 'display:none;' }}">
+                        <span>Discount</span>
+                        <span id="discount-amount">-${{ number_format($pricing['discount'], 2) }}</span>
+                    </div>
                     <div class="price-row total">
                         <span>Total</span>
-                        <span>${{ number_format($pricing['total'], 2) }}</span>
+                        <span id="total-amount">${{ number_format($pricing['total'], 2) }}</span>
                     </div>
 
                     <div style="margin-top:12px;font-size:12px;color:#6b7280;text-align:center;">
@@ -700,6 +722,29 @@
                 <div class="trust-row"><i class="fas fa-headset" style="color:#A90B16;"></i> 24/7 support</div>
                 <div class="trust-row"><i class="fas fa-file-invoice" style="color:#d00e15;"></i> Instant confirmation</div>
             </div>
+
+            {{-- Promo Code Section --}}
+            <div class="promo-box">
+                <div class="promo-title"><i class="fas fa-tags"></i> Have a promo code?</div>
+                
+                @if(isset($promotions) && $promotions->isNotEmpty())
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size:11px; color:#6b7280; margin-bottom: 6px; text-transform:uppercase; font-weight:600;">Available Offers</div>
+                        @foreach($promotions as $promo)
+                            <div class="offer-card">
+                                <span class="offer-code" onclick="document.getElementById('promo_input').value='{{ $promo->code }}'">{{ $promo->code }}</span>
+                                <span style="color:#374151;">{{ $promo->discount_type === 'percent' ? $promo->discount_value.'%' : '$'.$promo->discount_value }} off {{ strtolower($promo->title) }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <div class="promo-input-group">
+                    <input type="text" id="promo_input" placeholder="Enter code">
+                    <button type="button" class="promo-btn" id="apply_promo_btn" onclick="applyPromo()">Apply</button>
+                </div>
+                <div id="promo_msg" class="promo-msg"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -724,6 +769,73 @@
         confirmBtn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.6s linear infinite;"></span> Processing...';
         confirmBtn.disabled = true;
     });
+
+    // Apply Promo Code AJAX
+    async function applyPromo() {
+        const code = document.getElementById('promo_input').value.trim();
+        const msgEl = document.getElementById('promo_msg');
+        const btn = document.getElementById('apply_promo_btn');
+        
+        if (!code) {
+            msgEl.textContent = 'Please enter a promo code';
+            msgEl.className = 'promo-msg error';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = '...';
+        msgEl.textContent = '';
+
+        try {
+            const response = await fetch('{{ route('hotels.apply-coupon') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    property_id: {{ $property->id }},
+                    room_type_id: {{ $roomType->id }},
+                    check_in: '{{ $checkIn->format('Y-m-d') }}',
+                    check_out: '{{ $checkOut->format('Y-m-d') }}',
+                    rooms: 1, // Fixed for now as per UI
+                    rate_plan_id: {{ $ratePlan?->id ?? 'null' }},
+                    promo_code: code
+                })
+            });
+
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+                // Update UI with discount
+                msgEl.textContent = data.message;
+                msgEl.className = 'promo-msg success';
+                
+                // Set hidden input
+                document.getElementById('hidden_promo_code').value = code;
+                
+                // Show discount row
+                document.getElementById('discount-row').style.display = 'flex';
+                document.getElementById('discount-amount').textContent = '-$' + parseFloat(data.discount).toFixed(2);
+                document.getElementById('total-amount').textContent = '$' + parseFloat(data.total).toFixed(2);
+            } else {
+                msgEl.textContent = data.message || 'Invalid promo code';
+                msgEl.className = 'promo-msg error';
+                
+                // Clear hidden input and discount if previously applied
+                document.getElementById('hidden_promo_code').value = '';
+                document.getElementById('discount-row').style.display = 'none';
+                document.getElementById('total-amount').textContent = '${{ number_format($pricing["subtotal"] + $pricing["taxes"] + $pricing["fees"], 2) }}';
+            }
+        } catch (error) {
+            msgEl.textContent = 'An error occurred. Please try again.';
+            msgEl.className = 'promo-msg error';
+        }
+        
+        btn.disabled = false;
+        btn.textContent = 'Apply';
+    }
 </script>
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 </body>

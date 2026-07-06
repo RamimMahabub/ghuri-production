@@ -38,4 +38,11 @@ class Promotion extends Model
             ? "{$this->discount_value}% off"
             : "$" . number_format($this->discount_value, 2) . " off";
     }
+
+    public function getImageUrlAttribute(): string
+    {
+        return $this->image_path
+            ? asset('storage/' . $this->image_path)
+            : 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=400&q=80'; // Fallback image
+    }
 }

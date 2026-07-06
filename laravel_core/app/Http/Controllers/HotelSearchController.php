@@ -69,6 +69,26 @@ class HotelSearchController extends Controller
         $checkIn = $request->filled('check_in') ? Carbon::parse($request->check_in) : null;
         $checkOut = $request->filled('check_out') ? Carbon::parse($request->check_out) : null;
 
+        // Save recent search to session
+        if ($request->filled('destination') && $checkIn && $checkOut) {
+            $recentSearches = session()->get('recent_searches', []);
+            $newSearch = [
+                'destination' => $request->destination,
+                'check_in' => $checkIn->toDateString(),
+                'check_out' => $checkOut->toDateString(),
+                'guests' => $request->get('guests', 2),
+                'rooms' => $request->get('rooms', 1),
+                'timestamp' => now()->timestamp,
+            ];
+
+            // Remove if exists (by destination) and prepend
+            $recentSearches = collect($recentSearches)->reject(function ($search) use ($newSearch) {
+                return strtolower($search['destination']) === strtolower($newSearch['destination']);
+            })->prepend($newSearch)->take(4)->toArray();
+
+            session()->put('recent_searches', $recentSearches);
+        }
+
         return view('hotels.search', compact('properties', 'checkIn', 'checkOut'));
     }
 }

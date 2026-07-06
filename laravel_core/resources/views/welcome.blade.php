@@ -105,14 +105,14 @@
     </nav>
 
     <!-- Hero Section -->
-    <div class="relative isolate overflow-hidden w-full bg-[#fafafa]" style="aspect-ratio: 21/9; min-height: 450px; max-height: 750px;">
+    <div class="relative isolate overflow-hidden w-full bg-[#fafafa] h-[550px] md:h-auto md:aspect-[21/9] md:min-h-[550px] lg:max-h-[750px]">
         <picture class="absolute inset-0 w-full h-full">
             <source media="(max-width: 767px)" srcset="{{ asset('hero-mobile.webp') }}" type="image/webp">
             <source media="(min-width: 768px)" srcset="{{ asset('hero-pc.webp') }}" type="image/webp">
             <img
                 src="{{ asset('hero-pc.png') }}"
                 alt="Travel hero background"
-                class="w-full h-full object-cover object-center"
+                class="w-full h-full object-cover object-bottom md:object-center"
                 loading="eager"
                 fetchpriority="high"
                 decoding="async"

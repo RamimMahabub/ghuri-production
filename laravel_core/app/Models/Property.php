@@ -75,6 +75,9 @@ class Property extends Model
             if (str_starts_with($this->cover_photo, 'http')) {
                 return $this->cover_photo;
             }
+            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($this->cover_photo)) {
+                return 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80';
+            }
             return asset('storage/' . $this->cover_photo);
         }
 
