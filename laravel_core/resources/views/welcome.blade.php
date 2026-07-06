@@ -11,34 +11,35 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="preload" as="image" href="{{ asset('hero-pic-optimized.webp') }}" media="(min-width: 768px)">
-    <link rel="preload" as="image" href="{{ asset('hero-pic-mobile.webp') }}" media="(max-width: 767px)">
+    <link rel="preload" as="image" href="{{ asset('hero-pc.webp') }}" type="image/webp" media="(min-width: 768px)">
+    <link rel="preload" as="image" href="{{ asset('hero-mobile.webp') }}" type="image/webp" media="(max-width: 767px)">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-white text-dark selection:bg-[#d00e15] selection:text-white">
     <!-- Navigation -->
-    <nav x-data="{ scrolled: false }" 
-         @scroll.window="scrolled = (window.pageYOffset > 20)"
-         :class="scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100' : 'bg-transparent border-transparent'"
-         class="fixed top-0 inset-x-0 z-50 transition-colors duration-300">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative flex justify-between h-20 items-center">
-            <div class="flex items-center gap-2 cursor-pointer">
-                <div class="font-poppins font-extrabold text-3xl tracking-tighter text-[#d00e15]" data-text="GHURI">
-                    GHURI<span class="logo-dot text-[#d00e15]">.</span>
-                </div>
-            </div>
-            <div class="flex items-center space-x-4">
+    <nav class="booking-nav fixed top-0 inset-x-0 z-50">
+        <div class="booking-nav-inner">
+            <a href="{{ url('/') }}" class="booking-nav-logo" aria-label="GHURI home">
+                GHURI<span>.</span>
+            </a>
+            <div class="booking-nav-actions">
+                <button type="button" class="booking-nav-currency" aria-label="Select currency">BDT</button>
+                <button type="button" class="booking-nav-icon-button" aria-label="Select language" title="Language">
+                    <span class="booking-nav-flag" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="booking-nav-icon-button booking-nav-help" aria-label="Help and support" title="Help and support">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><path d="M9.7 9a2.45 2.45 0 1 1 3.15 2.35c-.7.25-.85.75-.85 1.65" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>
+                </button>
 
                 {{-- ✦ List your Property Link — shown when Hotel tab is active --}}
                 <a
                     href="{{ route('list-your-property') }}"
                     id="nav-list-property-link"
-                    class="hidden items-center gap-1.5 text-sm font-semibold text-[#d00e15] hover:text-[#A90B16] px-3 py-2 rounded-xl border border-[#d00e15]/30 hover:bg-[#d00e15]/5 transition"
+                    class="booking-nav-property hidden items-center"
                 >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    List your Property
+                    List your property
                 </a>
 
                 @if (Route::has('login'))
@@ -48,18 +49,18 @@
                             $isInternalUser = $user && $user->isInternalUser();
                         @endphp
                         @if ($isInternalUser)
-                            <a href="{{ route('admin.dashboard') }}" class="text-sm font-semibold text-[#d00e15] hover:text-[#A90B16] px-4 py-2 transition border border-[#d00e15]/30 rounded-md">Dashboard</a>
+                            <a href="{{ route('admin.dashboard') }}" class="booking-nav-auth-button">Dashboard</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <button type="submit" class="text-sm font-semibold text-[#d00e15] hover:text-[#A90B16] px-4 py-2 transition border border-[#d00e15]/30 rounded-md">Logout</button>
+                                <button type="submit" class="booking-nav-auth-button">Logout</button>
                             </form>
                         @else
                             <div x-data="{ open:false }" class="relative">
-                                <button @click="open = !open" type="button" class="flex items-center gap-2 rounded-full border border-[#d00e15]/30 bg-[#d00e15]/5 px-2 py-1.5 shadow-sm hover:border-[#d00e15]/60 transition">
-                                    <span class="w-8 h-8 rounded-full bg-[#d00e15] text-white font-bold text-sm flex items-center justify-center">
+                                <button @click="open = !open" type="button" class="booking-nav-account" aria-label="Open account menu">
+                                    <span class="booking-nav-avatar">
                                         {{ strtoupper(substr($user->name, 0, 1)) }}
                                     </span>
-                                    <svg class="w-4 h-4 text-[#d00e15] transition" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-4 h-4 transition" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
@@ -94,12 +95,9 @@
                         @endif
                     @else
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="text-sm font-bold text-[#d00e15] hover:bg-red-50 px-6 py-2 transition border border-[#d00e15] rounded-xl">Sign Up</a>
+                            <a href="{{ route('register') }}" class="booking-nav-auth-button">Register</a>
                         @endif
-                        <a href="{{ route('login') }}" class="bg-[#d00e15] hover:bg-[#A90B16] text-white text-sm font-bold py-2 px-6 rounded-xl transition shadow-sm flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-                            Login
-                        </a>
+                        <a href="{{ route('login') }}" class="booking-nav-auth-button">Sign in</a>
                     @endauth
                 @endif
             </div>
@@ -109,9 +107,10 @@
     <!-- Hero Section -->
     <div class="relative isolate overflow-hidden w-full bg-[#fafafa]" style="aspect-ratio: 21/9; min-height: 450px; max-height: 750px;">
         <picture class="absolute inset-0 w-full h-full">
-            <source srcset="{{ asset('hero-optimized.webp') }}" type="image/webp">
+            <source media="(max-width: 767px)" srcset="{{ asset('hero-mobile.webp') }}" type="image/webp">
+            <source media="(min-width: 768px)" srcset="{{ asset('hero-pc.webp') }}" type="image/webp">
             <img
-                src="{{ asset('hero.png') }}"
+                src="{{ asset('hero-pc.png') }}"
                 alt="Travel hero background"
                 class="w-full h-full object-cover object-center"
                 loading="eager"
@@ -122,138 +121,263 @@
     </div>
 
     <!-- Search Component Container -->
-    <div class="-mt-16 md:-mt-24 lg:-mt-32 mb-8 md:mb-12 lg:mb-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-40">
-        <div class="neon-search-container" x-data="{ tab: 'hotels', tripType: 'one_way' }" id="search-box">
-
-            <div class="neon-search-bg"></div>
-            <div class="neon-search-inner pt-12 pb-6 px-4 md:px-8">
-            
-            <!-- Tabs floating on top border -->
-            <div class="absolute left-1/2 -translate-x-1/2 -top-6">
-                <div class="flex bg-white rounded-full shadow-md border border-gray-100 text-sm font-bold p-1 gap-1">
-                    <button @click="tab = 'hotels'; $dispatch('tab-changed', { tab: 'hotels' })" :class="tab === 'hotels' ? 'text-[#d00e15] bg-red-50/50' : 'text-gray-500 hover:bg-gray-50'" class="px-6 py-2.5 rounded-full transition flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg> Hotel
-                    </button>
-                    <button @click="tab = 'flights'; $dispatch('tab-changed', { tab: 'flights' })" :class="tab === 'flights' ? 'text-[#d00e15] bg-red-50/50' : 'text-gray-500 hover:bg-gray-50'" class="px-6 py-2.5 rounded-full transition flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 104 0 2 2 0 012-2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Flight
-                    </button>
-                </div>
+    <div class="travel-search-wrap -mt-16 md:-mt-24 lg:-mt-28 mb-10 md:mb-14 relative z-40">
+        <div
+            class="travel-search-card"
+            x-data="{
+                tab: 'hotels',
+                checkIn: '{{ \Carbon\Carbon::tomorrow()->toDateString() }}',
+                checkOut: '{{ \Carbon\Carbon::tomorrow()->addDay()->toDateString() }}',
+                rooms: 1,
+                adults: 2,
+                children: 0,
+                guestOpen: false,
+                formatDate(value) {
+                    return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value + 'T00:00:00'));
+                },
+                weekday(value) {
+                    return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(new Date(value + 'T00:00:00'));
+                },
+                nights() {
+                    return Math.max(1, Math.round((new Date(this.checkOut + 'T00:00:00') - new Date(this.checkIn + 'T00:00:00')) / 86400000));
+                },
+                updateCheckIn() {
+                    const nextDay = new Date(this.checkIn + 'T00:00:00');
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    if (new Date(this.checkOut + 'T00:00:00') <= new Date(this.checkIn + 'T00:00:00')) {
+                        this.checkOut = nextDay.toISOString().slice(0, 10);
+                    }
+                }
+            }"
+            id="search-box"
+        >
+            <!-- Floating service tabs -->
+            <div class="travel-search-tabs" role="tablist" aria-label="Travel services">
+                <button type="button" @click="tab = 'flights'; $dispatch('tab-changed', { tab: 'flights' })" :class="tab === 'flights' ? 'is-active' : ''" class="travel-search-tab" role="tab" :aria-selected="tab === 'flights'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5L21 16Z" stroke-width="1.8" stroke-linejoin="round"/></svg>
+                    <span>Flight</span>
+                </button>
+                <button type="button" @click="tab = 'hotels'; $dispatch('tab-changed', { tab: 'hotels' })" :class="tab === 'hotels' ? 'is-active' : ''" class="travel-search-tab" role="tab" :aria-selected="tab === 'hotels'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 21V6h7v15M11 10h9v11M2 21h20M7 9h1m-1 4h1m-1 4h1m7-4h1m-1 4h1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Hotel</span>
+                </button>
+                <button type="button" @click="tab = 'tours'; $dispatch('tab-changed', { tab: 'tours' })" :class="tab === 'tours' ? 'is-active' : ''" class="travel-search-tab" role="tab" :aria-selected="tab === 'tours'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 20V9m16 11V9M2 20h20M3 9h18M6 9c0-3.3 2.7-6 6-6s6 2.7 6 6M8 20v-5h8v5M12 3v6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Tour</span>
+                </button>
+                <button type="button" @click="tab = 'visa'; $dispatch('tab-changed', { tab: 'visa' })" :class="tab === 'visa' ? 'is-active' : ''" class="travel-search-tab" role="tab" :aria-selected="tab === 'visa'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 3h14v18H5zM8 7h8M8 17h8M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span>Visa</span>
+                </button>
             </div>
 
-            <!-- Tab Contents -->
-            <div>
-                <!-- Flights Search Form -->
-                @include('partials.flights_coming_soon')
-                <!-- Hotel Search Form -->
-                <div x-show="tab === 'hotels'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-                    <form action="{{ route('hotels.search') }}" method="GET">
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 relative z-10">
-                            
-                            <!-- Destination -->
-                            <div class="col-span-1 lg:col-span-4 relative border border-[#d00e15]/40 rounded-2xl bg-white p-3 hover:border-[#d00e15] focus-within:border-[#d00e15] focus-within:ring-1 focus-within:ring-[#d00e15] transition-all group flex flex-col justify-center">
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Destination</label>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-gray-400 group-focus-within:text-[#d00e15] shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                    <input type="text" name="destination" placeholder="City, region, or specific hotel" class="w-full border-none p-0 focus:ring-0 font-bold text-[13px] text-[#19100F] bg-transparent truncate" required autocomplete="off">
-                                </div>
-                            </div>
+            <!-- Hotel Search Form -->
+            <div x-show="tab === 'hotels'" x-transition.opacity>
+                <form action="{{ route('hotels.search') }}" method="GET" class="travel-hotel-form">
+                    <div class="travel-search-main-row">
+                        <label class="travel-field travel-destination-field">
+                            <span class="travel-field-label">Destination/Property Name</span>
+                            <span class="travel-destination-input">
+                                <span class="travel-destination-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" stroke-width="1.8"/><circle cx="12" cy="10" r="2.7" stroke-width="1.8"/></svg>
+                                </span>
+                                <input type="text" name="destination" placeholder="Where would you like to stay?" required autocomplete="off">
+                                <span class="travel-destination-type">Hotels</span>
+                            </span>
+                        </label>
 
-                            <!-- Check-in Date -->
-                            <div class="col-span-1 lg:col-span-2 border border-[#d00e15]/40 rounded-2xl bg-white p-3 hover:border-[#d00e15] focus-within:border-[#d00e15] focus-within:ring-1 focus-within:ring-[#d00e15] transition-all group cursor-text" @click="$refs.inputCheckIn.showPicker ? $refs.inputCheckIn.showPicker() : $refs.inputCheckIn.focus()">
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Check-in</label>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-gray-400 group-hover:text-[#d00e15] group-focus-within:text-[#d00e15] shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    <input x-ref="inputCheckIn" type="date" name="check_in" class="w-full border-none p-0 focus:ring-0 font-bold text-[13px] text-[#19100F] bg-transparent leading-none [&::-webkit-calendar-picker-indicator]:hidden" required value="{{ \Carbon\Carbon::tomorrow()->toDateString() }}">
-                                </div>
-                            </div>
-
-                            <!-- Check-out Date -->
-                            <div class="col-span-1 lg:col-span-2 border border-[#d00e15]/40 rounded-2xl bg-white p-3 hover:border-[#d00e15] focus-within:border-[#d00e15] focus-within:ring-1 focus-within:ring-[#d00e15] transition-all group cursor-text" @click="$refs.inputCheckOut.showPicker ? $refs.inputCheckOut.showPicker() : $refs.inputCheckOut.focus()">
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Check-out</label>
-                                <div class="flex items-center gap-2">
-                                    <svg class="w-4 h-4 text-gray-400 group-hover:text-[#d00e15] group-focus-within:text-[#d00e15] shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    <input x-ref="inputCheckOut" type="date" name="check_out" class="w-full border-none p-0 focus:ring-0 font-bold text-[13px] text-[#19100F] bg-transparent leading-none [&::-webkit-calendar-picker-indicator]:hidden" required value="{{ \Carbon\Carbon::tomorrow()->addDays(2)->toDateString() }}">
-                                </div>
-                            </div>
-
-                            <!-- Guests -->
-                            <div class="col-span-1 lg:col-span-2 border border-[#d00e15]/40 rounded-2xl bg-white p-3 hover:border-[#d00e15] focus-within:border-[#d00e15] focus-within:ring-1 focus-within:ring-[#d00e15] transition-all group flex flex-col justify-center">
-                                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 hidden lg:block opacity-0">&nbsp;</label>
-                                <div class="flex items-center gap-2 h-full lg:mt-3">
-                                    <svg class="w-4 h-4 text-gray-400 group-focus-within:text-[#d00e15] shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                    <select name="guests" class="flex-1 border-none p-0 focus:ring-0 text-[13px] font-bold text-[#19100F] bg-transparent cursor-pointer bg-none">
-                                        <option value="1">1 Guest</option>
-                                        <option value="2" selected>2 Guests</option>
-                                        <option value="3">3 Guests</option>
-                                        <option value="4">4 Guests</option>
-                                        <option value="5">5 Guests</option>
-                                        <option value="6">6+ Guests</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <!-- Search Button -->
-                            <div class="col-span-1 lg:col-span-2 flex">
-                                <button type="submit" class="w-full bg-[#d00e15] hover:bg-[#A90B16] text-white font-bold text-[14px] rounded-2xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 p-3">
-                                    <span>SEARCH</span>
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        <div class="travel-field travel-date-field">
+                            <div class="travel-date-half">
+                                <button type="button" class="travel-date-trigger" @click="$refs.checkInPicker.showPicker ? $refs.checkInPicker.showPicker() : $refs.checkInPicker.click()" aria-label="Choose check-in date">
+                                    <span class="travel-field-label">Check-in</span>
+                                    <span class="travel-date-value">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v13m0 0-4-4m4 4 4-4M5 9V5h14v4M5 19v2h14v-2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <strong x-text="formatDate(checkIn)"></strong>
+                                    </span>
+                                    <span class="travel-weekday" x-text="weekday(checkIn)"></span>
                                 </button>
+                                <input x-ref="checkInPicker" type="date" name="check_in" x-model="checkIn" @change="updateCheckIn()" min="{{ now()->toDateString() }}" required aria-label="Check-in date" tabindex="-1">
+                            </div>
+
+                            <span class="travel-night-pill" x-text="nights() + (nights() === 1 ? ' Night' : ' Nights')"></span>
+
+                            <div class="travel-date-half">
+                                <button type="button" class="travel-date-trigger" @click="$refs.checkOutPicker.showPicker ? $refs.checkOutPicker.showPicker() : $refs.checkOutPicker.click()" aria-label="Choose check-out date">
+                                    <span class="travel-field-label">Check-out</span>
+                                    <span class="travel-date-value">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 17V4m0 0-4 4m4-4 4 4M5 15v4h14v-4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        <strong x-text="formatDate(checkOut)"></strong>
+                                    </span>
+                                    <span class="travel-weekday" x-text="weekday(checkOut)"></span>
+                                </button>
+                                <input x-ref="checkOutPicker" type="date" name="check_out" x-model="checkOut" :min="checkIn" required aria-label="Check-out date" tabindex="-1">
                             </div>
                         </div>
-                    </form>
+
+                        <div class="travel-field travel-guests-field" @click.away="guestOpen = false">
+                            <button type="button" @click="guestOpen = !guestOpen" :aria-expanded="guestOpen" aria-haspopup="dialog">
+                                <span class="travel-field-label">Rooms and Guests</span>
+                                <strong x-text="rooms + (rooms === 1 ? ' Room' : ' Rooms') + ', ' + adults + (adults === 1 ? ' Adult' : ' Adults') + ', ' + children + (children === 1 ? ' Child' : ' Children')"></strong>
+                            </button>
+                            <input type="hidden" name="rooms" :value="rooms">
+                            <input type="hidden" name="guests" :value="adults + children">
+                            <input type="hidden" name="children" :value="children">
+
+                            <div x-show="guestOpen" x-transition.origin.top.right class="travel-guests-popover" style="display:none;">
+                                <div class="travel-counter-row">
+                                    <div><strong>Rooms</strong><span>Number of rooms</span></div>
+                                    <div class="travel-counter"><button type="button" @click="rooms = Math.max(1, rooms - 1)" aria-label="Remove room">−</button><b x-text="rooms"></b><button type="button" @click="rooms = Math.min(8, rooms + 1)" aria-label="Add room">+</button></div>
+                                </div>
+                                <div class="travel-counter-row">
+                                    <div><strong>Adults</strong><span>Ages 13 or above</span></div>
+                                    <div class="travel-counter"><button type="button" @click="adults = Math.max(1, adults - 1)" aria-label="Remove adult">−</button><b x-text="adults"></b><button type="button" @click="adults = Math.min(16, adults + 1)" aria-label="Add adult">+</button></div>
+                                </div>
+                                <div class="travel-counter-row">
+                                    <div><strong>Children</strong><span>Ages 0–12</span></div>
+                                    <div class="travel-counter"><button type="button" @click="children = Math.max(0, children - 1)" aria-label="Remove child">−</button><b x-text="children"></b><button type="button" @click="children = Math.min(8, children + 1)" aria-label="Add child">+</button></div>
+                                </div>
+                                <button type="button" class="travel-guests-done" @click="guestOpen = false">Done</button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="travel-search-submit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7" stroke-width="2"/><path d="m16 16 5 5" stroke-width="2" stroke-linecap="round"/></svg>
+                            <span>Search</span>
+                        </button>
                     </div>
+
+                    <div class="travel-search-filter-row">
+                        <label class="travel-filter-check">
+                            <input type="checkbox" name="free_cancellation" value="1">
+                            <span>Free cancellation</span>
+                        </label>
+                        <label class="travel-star-filter">
+                            <select name="stars" aria-label="Hotel star rating">
+                                <option value="">Hotel Star Rating</option>
+                                <option value="5">5 Star</option>
+                                <option value="4">4 Star</option>
+                                <option value="3">3 Star</option>
+                                <option value="2">2 Star</option>
+                                <option value="1">1 Star</option>
+                            </select>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m7 10 5 5 5-5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <div x-show="tab !== 'hotels'" x-transition.opacity class="travel-service-placeholder" style="display:none;">
+                <div>
+                    <span x-text="tab.charAt(0).toUpperCase() + tab.slice(1)"></span> booking is coming soon.
                 </div>
+                <button type="button" @click="tab = 'hotels'; $dispatch('tab-changed', { tab: 'hotels' })">Search hotels instead</button>
             </div>
         </div>
     </div>
 
-    <!-- GHURI Service Banners -->
+    <!-- GHURI Service Banners (Hidden for now) -->
+    <!--
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 pt-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Promo 1 - Flight -->
-            <div class="rounded-2xl overflow-hidden shadow-md relative group cursor-pointer h-56 md:h-72 bg-[#0f172a]">
-                <img src="/flight-card.webp" alt="Airplane wing in the sky" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover object-[70%_50%] transition-transform duration-700 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-r from-[#0f172a]/20 via-transparent to-transparent"></div>
-                <div class="relative p-6 h-full flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-white text-xl md:text-3xl font-extrabold mb-1 drop-shadow-lg">Fly to Your Dream Destinations</h3>
-                        <p class="text-white/95 text-sm md:text-base font-bold drop-shadow-md">Explore hundreds of routes at the best prices.</p>
-                    </div>
-                    <div>
-                        <a href="#" class="inline-block bg-white text-[#19100F] px-5 py-2.5 rounded-full font-semibold shadow-sm">Book Flights</a>
-                    </div>
-                </div>
-            </div>
+            ... content hidden ...
+        </div>
+    </div>
+    -->
 
-            <!-- Promo 2 - Hotel -->
-            <div class="rounded-2xl overflow-hidden shadow-md relative group cursor-pointer h-56 md:h-72 bg-[#0f172a]">
-                <img src="/hotel-card.webp" alt="Comfortable hotel room" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-r from-[#0f172a]/25 via-transparent to-transparent"></div>
-                <div class="relative p-6 h-full flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-white text-xl md:text-3xl font-extrabold mb-1 drop-shadow-lg">Comfortable Stays, <span class="bg-[#d00e15] text-white px-2 py-1 rounded">Unforgettable</span> Memories</h3>
-                        <p class="text-white text-sm md:text-base font-bold drop-shadow-md">Find the perfect hotel for every trip.</p>
-                    </div>
-                    <div>
-                        <a href="#" class="inline-block bg-white text-[#19100F] px-5 py-2.5 rounded-full font-semibold shadow-sm">Book Hotels</a>
+    <!-- Recent Searches Section -->
+    @if(isset($recentSearches) && count($recentSearches) > 0)
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pt-4">
+        <div class="mb-4">
+            <h2 class="text-2xl font-poppins font-bold text-[#19100F]">Your recent searches</h2>
+        </div>
+        <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
+            @foreach($recentSearches as $search)
+            @php
+                $cin = \Carbon\Carbon::parse($search['check_in']);
+                $cout = \Carbon\Carbon::parse($search['check_out']);
+            @endphp
+            <a href="{{ route('hotels.search', ['destination' => $search['destination'], 'check_in' => $search['check_in'], 'check_out' => $search['check_out'], 'guests' => $search['guests'], 'rooms' => $search['rooms']]) }}" 
+               class="flex flex-row bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition duration-300 shrink-0 snap-start"
+               style="width: 360px; height: 120px; max-height: 120px;">
+                <div class="shrink-0 relative h-full" style="width: 140px;">
+                    <img src="{{ $search['image_url'] }}" alt="{{ $search['destination'] }}" class="w-full h-full object-cover">
+                    <div class="absolute top-2 left-2 bg-white px-1.5 py-1 rounded shadow-sm flex items-center justify-center">
+                        <svg class="w-4 h-4 text-[#006e5b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 14V7a2 2 0 012-2h4a2 2 0 012 2v7m4-7a2 2 0 012-2h4a2 2 0 012 2v7M4 14h16v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4z"></path>
+                        </svg>
                     </div>
                 </div>
-            </div>
+                <div class="p-3.5 flex flex-col justify-center flex-1 min-w-0 h-full overflow-hidden">
+                    <div class="text-xs text-gray-500 mb-0.5 truncate">{{ $search['destination'] }}</div>
+                    <h3 class="font-bold text-[#19100F] text-[15px] leading-tight mb-2 truncate" title="{{ $search['property_name'] ?: $search['destination'] }}">
+                        {{ $search['property_name'] ?: $search['destination'] }}
+                    </h3>
+                    
+                    <div class="text-xs text-gray-600 flex items-center gap-2 mb-1.5">
+                        <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="truncate">{{ $cin->format('D, M j') }} &ndash; {{ $cout->format('D, M j') }}</span>
+                    </div>
+                    <div class="text-xs text-gray-600 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <span class="truncate">{{ $search['guests'] }} {{ Str::plural('guest', $search['guests']) }}, {{ $search['rooms'] }} {{ Str::plural('room', $search['rooms']) }}</span>
+                    </div>
+                </div>
+            </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
-            <!-- Promo 3 - Discount -->
-            <div class="rounded-2xl overflow-hidden shadow-md relative group cursor-pointer h-56 md:h-72 bg-[#dbeafe]">
-                <img src="/discount-card.webp" alt="Discount ticket illustration" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-r from-white/30 via-white/10 to-transparent"></div>
-                <div class="relative p-6 h-full flex flex-col justify-between">
+    <style>
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+
+    <!-- Offers Section -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div class="mb-6">
+            <h2 class="text-2xl font-poppins font-bold text-[#19100F]">Offers</h2>
+            <p class="text-gray-500 text-sm mt-1">Promotions, deals, and special offers for you</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            @forelse(isset($offers) ? $offers : [] as $offer)
+            <div class="flex flex-col sm:flex-row bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition duration-300 p-4 gap-4 items-center">
+                <div class="flex-1 flex flex-col justify-center">
+                    <div class="text-xs text-gray-500 font-medium mb-1">{{ $offer->property ? $offer->property->name : 'Special Offer' }}</div>
+                    <h3 class="font-bold text-[#19100F] text-xl leading-tight mb-2">{{ $offer->title }}</h3>
+                    <p class="text-sm text-gray-600 line-clamp-2 mb-4">{{ $offer->description }}</p>
                     <div>
-                        <h3 class="text-[#19100F] text-xl md:text-3xl font-extrabold mb-1 drop-shadow-2xl">Best Prices Every Time</h3>
-                        <p class="text-[#19100F] text-sm md:text-base font-bold drop-shadow-lg">We bring you the best deals so you can travel more.</p>
+                        <span class="inline-block bg-[#006ce4] hover:bg-[#0057b8] text-white text-sm font-semibold px-4 py-2 rounded transition">
+                            Save with {{ $offer->code ?: 'a Deal' }}
+                        </span>
                     </div>
-                    <div>
-                        <span class="inline-block bg-white text-[#19100F] px-5 py-2.5 rounded-full font-semibold shadow-sm">Learn More</span>
+                </div>
+                <div class="w-full shrink-0 relative" style="max-width: 130px; height: 130px;">
+                    <img src="{{ $offer->image_url }}" alt="{{ $offer->title }}" class="w-full h-full object-cover rounded-lg">
+                </div>
+            </div>
+            @empty
+            <div class="col-span-1 md:col-span-2">
+                <div class="flex flex-col sm:flex-row bg-white rounded-xl border border-gray-200 hover:shadow-md transition duration-300 p-5 gap-6 items-center">
+                    <div class="flex-1">
+                        <div class="text-xs text-gray-500 font-medium mb-1">Escape for less with our Getaway Deals</div>
+                        <h3 class="font-bold text-[#19100F] text-xl leading-tight mb-2">No catch. Just getaways.</h3>
+                        <p class="text-sm text-gray-600 mb-4">At least 15% off select stays worldwide &ndash; just book and go.</p>
+                        <a href="#" class="inline-block bg-[#006ce4] hover:bg-[#0057b8] text-white text-sm font-semibold px-4 py-2 rounded transition">
+                            Save with a Getaway Deal
+                        </a>
+                    </div>
+                    <div class="w-full shrink-0" style="max-width: 140px; height: 140px;">
+                        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=400&q=80" alt="Getaway Deals" class="w-full h-full object-cover rounded-lg shadow-sm">
                     </div>
                 </div>
             </div>
+            @endforelse
         </div>
     </div>
 
