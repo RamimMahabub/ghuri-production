@@ -65,10 +65,10 @@
         </header>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
                 
                 {{-- Left Sidebar Filters --}}
-                <aside class="col-span-1">
+                <aside style="width: 100%; max-width: 280px; flex-shrink: 0;">
                     <form action="{{ route('hotels.search') }}" method="GET" class="sticky top-28 space-y-6">
                         <input type="hidden" name="destination" value="{{ request('destination') }}">
                         <input type="hidden" name="check_in" value="{{ request('check_in') }}">
@@ -137,7 +137,7 @@
                 </aside>
 
                 {{-- Main Results Area --}}
-                <div class="col-span-1 lg:col-span-3 w-full">
+                <div style="flex: 1; min-width: 300px;">
                     
                     {{-- Top Bar --}}
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 bg-white/60 backdrop-blur-md border border-white/70 p-4 rounded-2xl shadow-sm">
@@ -188,16 +188,16 @@
                             @endif
 
                             {{-- Horizontal Property Card --}}
-                            <div class="rounded-3xl border border-white/70 bg-white/80 shadow-xl backdrop-blur-xl overflow-hidden flex flex-col md:flex-row transition-transform hover:-translate-y-1 duration-300">
+                            <div class="rounded-3xl border border-white/70 bg-white/80 shadow-xl backdrop-blur-xl overflow-hidden transition-transform hover:-translate-y-1 duration-300" style="display: flex; flex-wrap: wrap; align-items: stretch;">
                                 
-                                {{-- Left: Image --}}
-                                <div class="w-full md:w-72 h-56 md:h-auto relative shrink-0">
+                                {{-- Image Section --}}
+                                <div style="flex-shrink: 0; width: 280px; position: relative;">
                                     @php
                                         $coverUrl = $property->cover_photo_url;
                                         $isPlaceholder = str_contains($coverUrl, 'placeholder-hotel.jpg');
                                     @endphp
                                     @if(!$isPlaceholder)
-                                        <img src="{{ $coverUrl }}" alt="{{ $property->name }}" class="w-full h-full object-cover">
+                                        <img src="{{ $coverUrl }}" alt="{{ $property->name }}" style="width: 100%; height: 100%; object-fit: cover;">
                                     @else
                                         <div class="w-full h-full bg-slate-100 flex items-center justify-center">
                                             <i class="fas fa-hotel text-4xl text-slate-300"></i>
@@ -219,8 +219,8 @@
                                     </button>
                                 </div>
 
-                                {{-- Middle: Content --}}
-                                <div class="flex-1 p-5 flex flex-col justify-between">
+                                {{-- Details Section --}}
+                                <div style="flex: 1; min-width: 250px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
                                     <div>
                                         <div class="flex justify-between items-start gap-4">
                                             <div>
@@ -299,8 +299,8 @@
                                     @endif
                                 </div>
 
-                                {{-- Right: Price & CTA --}}
-                                <div class="w-full md:w-[220px] bg-slate-50/50 p-5 flex flex-col justify-end border-t md:border-t-0 md:border-l border-slate-100 shrink-0">
+                                {{-- Pricing & Action Section --}}
+                                <div style="width: 220px; flex-shrink: 0; background-color: rgba(248, 250, 252, 0.5); padding: 1.25rem; display: flex; flex-direction: column; justify-content: flex-end; border-left: 1px solid #f1f5f9;">
                                     <div class="text-right mb-4">
                                         @if($property->lowest_price && $property->lowest_price > 0)
                                             @php
