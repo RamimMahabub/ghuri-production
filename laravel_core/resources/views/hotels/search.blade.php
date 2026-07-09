@@ -65,10 +65,10 @@
         </header>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div class="flex flex-col lg:flex-row gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 
                 {{-- Left Sidebar Filters --}}
-                <aside class="w-full lg:w-72 flex-shrink-0">
+                <aside class="col-span-1">
                     <form action="{{ route('hotels.search') }}" method="GET" class="sticky top-28 space-y-6">
                         <input type="hidden" name="destination" value="{{ request('destination') }}">
                         <input type="hidden" name="check_in" value="{{ request('check_in') }}">
@@ -137,7 +137,7 @@
                 </aside>
 
                 {{-- Main Results Area --}}
-                <div class="flex-1 w-full max-w-4xl">
+                <div class="col-span-1 lg:col-span-3 w-full">
                     
                     {{-- Top Bar --}}
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 bg-white/60 backdrop-blur-md border border-white/70 p-4 rounded-2xl shadow-sm">
