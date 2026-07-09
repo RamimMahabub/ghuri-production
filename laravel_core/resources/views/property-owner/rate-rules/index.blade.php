@@ -12,7 +12,7 @@
                 <div class="card">
                     <div class="card-header flex justify-between items-center">
                         <h3 class="font-heading font-bold text-brand-black text-sm">{{ $room->name }}</h3>
-                        <span class="text-xs text-brand-muted">Base: ${{ number_format($room->base_price_per_night, 2) }}</span>
+                        <span class="text-xs text-brand-muted">Base: {{ \App\Helpers\Currency::format($room->base_price_per_night) }}</span>
                     </div>
                     
                     <div class="p-0">

@@ -13,6 +13,9 @@
 
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -87,6 +90,12 @@
                     <i class="fas fa-users-cog w-5 text-center {{ request()->routeIs('admin.users.*') ? 'text-[#d00e15]' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
                     <span x-show="sidebarOpen" class="font-medium text-sm">User Management</span>
                 </a>
+
+                <a href="{{ route('admin.settings.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('admin.settings.*') ? 'bg-red-50 text-[#d00e15] font-semibold border-l-3 border-[#d00e15]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <i class="fas fa-cog w-5 text-center {{ request()->routeIs('admin.settings.*') ? 'text-[#d00e15]' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
+                    <span x-show="sidebarOpen" class="font-medium text-sm">Global Settings</span>
+                </a>
             </nav>
 
             {{-- User Profile --}}
@@ -132,6 +141,29 @@
                             {{ $headerActions }}
                         </div>
                     @endisset
+
+                    <div x-data="{ currencyOpen: false }" class="relative">
+                        <button type="button" @click="currencyOpen = !currencyOpen" class="flex items-center gap-1 text-sm font-semibold text-gray-700 hover:text-[#d00e15] transition-colors p-2 rounded-lg hover:bg-gray-50" aria-label="Select currency">
+                            {{ session('currency', 'BDT') }}
+                            <i class="fas fa-chevron-down text-[10px] ml-1 transition-transform" :class="currencyOpen ? 'rotate-180' : ''"></i>
+                        </button>
+                        <div x-show="currencyOpen" @click.away="currencyOpen = false" x-transition style="display:none;" class="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden z-50">
+                            <form action="{{ route('currency.set') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="currency" value="BDT">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm {{ session('currency', 'BDT') === 'BDT' ? 'font-bold text-[#d00e15] bg-red-50' : 'text-gray-700 hover:bg-gray-50' }}">
+                                    BDT (৳)
+                                </button>
+                            </form>
+                            <form action="{{ route('currency.set') }}" method="POST" class="border-t border-gray-50">
+                                @csrf
+                                <input type="hidden" name="currency" value="USD">
+                                <button type="submit" class="w-full text-left px-4 py-2 text-sm {{ session('currency') === 'USD' ? 'font-bold text-[#d00e15] bg-red-50' : 'text-gray-700 hover:bg-gray-50' }}">
+                                    USD ($)
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
                     <button class="relative p-2 text-gray-400 hover:text-[#d00e15] transition-colors rounded-full hover:bg-gray-50">
                         <i class="fas fa-bell text-lg"></i>

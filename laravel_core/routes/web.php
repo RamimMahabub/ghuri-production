@@ -29,7 +29,19 @@ Route::get('/', function () {
         return $search;
     });
 
-    return view('welcome', compact('offers', 'recentSearches'));
+    $topProperties = \App\Models\Property::approved()
+        ->with(['activeRoomTypes', 'photos'])
+        ->withCount(['reviews as reviews_count' => function ($query) {
+            $query->where('status', 'published');
+        }])
+        ->withAvg(['reviews as average_rating' => function ($query) {
+            $query->where('status', 'published');
+        }], 'overall_score')
+        ->orderByDesc('average_rating')
+        ->take(4)
+        ->get();
+
+    return view('welcome', compact('offers', 'recentSearches', 'topProperties'));
 });
 
 Route::get('/list-your-property', function () {
@@ -37,7 +49,33 @@ Route::get('/list-your-property', function () {
 })->name('list-your-property');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = auth()->user();
+    $chartLabels = [];
+    $spendingData = [];
+    $bookingsData = [];
+
+    // Last 6 months data for customer
+    for ($i = 5; $i >= 0; $i--) {
+        $month = \Carbon\Carbon::now()->subMonths($i);
+        $chartLabels[] = $month->format('M Y');
+        
+        $spend = \App\Models\HotelBooking::where('guest_id', $user->id)
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->whereYear('created_at', $month->year)
+            ->whereMonth('created_at', $month->month)
+            ->sum('total');
+            
+        $count = \App\Models\HotelBooking::where('guest_id', $user->id)
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->whereYear('created_at', $month->year)
+            ->whereMonth('created_at', $month->month)
+            ->count();
+            
+        $spendingData[] = round((float) $spend, 2);
+        $bookingsData[] = $count;
+    }
+
+    return view('dashboard', compact('chartLabels', 'spendingData', 'bookingsData'));
 })->middleware(['auth', 'role:customer'])->name('dashboard');
 
 Route::get('/admin', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
@@ -59,7 +97,10 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/booking/{id}', [\App\Http\Controllers\BookingController::class, 'show'])->name('booking.show');
 });
 
-Route::get('/flights/search', [\App\Http\Controllers\SearchController::class, 'flights'])->name('flights.search');
+Route::get('/flights/search', function () {
+    return view('flights.coming-soon');
+})->name('flights.search');
+Route::post('/currency', [\App\Http\Controllers\CurrencyController::class, 'setCurrency'])->name('currency.set');
 Route::get('/ajax/airports/search', [\App\Http\Controllers\AirportController::class, 'search'])->name('airports.search');
 
 Route::get('/integration-tester', function () {
@@ -287,11 +328,42 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/my-bookings', [\App\Http\Controllers\MyBookingsController::class, 'index'])->name('my-bookings.index');
     Route::get('/my-bookings/{booking}', [\App\Http\Controllers\MyBookingsController::class, 'show'])->name('my-bookings.show');
     Route::post('/my-bookings/{booking}/cancel', [\App\Http\Controllers\MyBookingsController::class, 'cancel'])->name('my-bookings.cancel');
+    Route::post('/my-bookings/{booking}/review', [\App\Http\Controllers\MyBookingsController::class, 'review'])->name('my-bookings.review');
     Route::get('/my-bookings/{booking}/voucher', [\App\Http\Controllers\MyBookingsController::class, 'voucher'])->name('my-bookings.voucher');
 });
 
 // SSLCommerz Callback (CSRF Exempted)
 Route::post('/payment/sslcommerz/callback', [\App\Http\Controllers\PaymentController::class, 'callback'])->name('payment.sslcommerz.callback');
+
+/* ================================================================
+   STATIC PAGES (FOOTER LINKS)
+   ================================================================ */
+$staticPages = [
+    'about' => 'About Us',
+    'careers' => 'Careers',
+    'press' => 'Press Center',
+    'sustainability' => 'Sustainability',
+    'investors' => 'Investor Relations',
+    'contact' => 'Contact Us',
+    'help' => 'Help Center & FAQ',
+    'cancellation' => 'Cancellation Policy',
+    'trust-safety' => 'Trust & Safety',
+    'complaint' => 'Submit a Complaint',
+    'affiliates' => 'Affiliate Network',
+    'travel-agencies' => 'Travel Agencies',
+    'corporate' => 'Corporate Travel',
+    'partner-portal' => 'Partner Portal',
+    'privacy' => 'Privacy Policy',
+    'terms' => 'Terms of Service',
+    'cookies' => 'Cookie Settings',
+    'sitemap' => 'Sitemap'
+];
+
+foreach ($staticPages as $slug => $title) {
+    Route::get("/page/{$slug}", function () use ($title) {
+        return view('pages.show', ['title' => $title]);
+    })->name("pages.{$slug}");
+}
 
 /* ================================================================
    HOTEL BOOKING MODULE — ADMIN ROUTES
@@ -321,4 +393,8 @@ Route::middleware(['auth', 'role:admin,manager'])->prefix('admin')->name('admin.
 
     // Promotions
     Route::resource('promotions', \App\Http\Controllers\Admin\PromotionController::class);
+
+    // Settings
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
 });

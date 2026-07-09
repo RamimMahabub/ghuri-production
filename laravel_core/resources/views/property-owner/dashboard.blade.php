@@ -32,9 +32,9 @@
                         <i class="fas fa-arrow-up text-[10px]"></i> 8%
                     </span>
                 </div>
-                <h3 class="text-3xl font-bold text-brand-black tracking-tight mb-1">${{ number_format($totalRevenue ?? 0, 0) }}</h3>
+                <h3 class="text-3xl font-bold text-brand-black tracking-tight mb-1">{{ \App\Helpers\Currency::format($totalRevenue ?? 0) }}</h3>
                 <p class="text-sm font-medium text-gray-500">Total Revenue</p>
-                <p class="text-xs text-gray-400 mt-2">${{ number_format($monthRevenue ?? 0, 0) }} MTD</p>
+                <p class="text-xs text-gray-400 mt-2">{{ \App\Helpers\Currency::format($monthRevenue ?? 0) }} MTD</p>
             </div>
         </div>
 
@@ -89,8 +89,21 @@
                         <option>Last Month</option>
                     </select>
                 </div>
-                <div class="relative h-72 w-full">
-                    <canvas id="revenueChart"></canvas>
+                <div class="relative w-full">
+                    <div id="revenueChart" style="min-height: 280px;"></div>
+                </div>
+            </div>
+
+            {{-- Bookings Chart --}}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-brand-black">Booking Volume</h3>
+                        <p class="text-xs text-gray-500">Total confirmed bookings</p>
+                    </div>
+                </div>
+                <div class="relative w-full">
+                    <div id="bookingsChart" style="min-height: 280px;"></div>
                 </div>
             </div>
 
@@ -181,7 +194,7 @@
                 <div class="relative z-10">
                     <p class="text-[#8993A4] text-xs font-medium mb-1 uppercase tracking-wider">Available balance</p>
                     <div class="flex items-end gap-1 text-white">
-                        <span class="text-4xl font-bold tracking-tight">${{ number_format($totalRevenue ?? 0, 0) }}</span>
+                        <span class="text-4xl font-bold tracking-tight">{{ \App\Helpers\Currency::format($totalRevenue ?? 0) }}</span>
                         <span class="text-xl font-bold text-gray-500 mb-1">.00</span>
                     </div>
                 </div>
@@ -249,67 +262,104 @@
     </div>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('revenueChart');
-            if(ctx) {
-                new Chart(ctx.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: @json($chartLabels ?? []),
-                        datasets: [{
-                            label: 'Revenue ($)',
-                            data: @json($chartData ?? []),
-                            borderColor: '#d00e15',
-                            backgroundColor: 'rgba(208, 14, 21, 0.05)',
-                            borderWidth: 3,
-                            pointBackgroundColor: '#FFFFFF',
-                            pointBorderColor: '#d00e15',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                backgroundColor: '#19100F',
-                                padding: 12,
-                                titleFont: { family: 'Inter', size: 13 },
-                                bodyFont: { family: 'Inter', size: 14, weight: 'bold' },
-                                displayColors: false,
-                                cornerRadius: 8,
-                            }
-                        },
-                        scales: {
-                            x: {
-                                grid: { display: false, drawBorder: false },
-                                ticks: { font: { family: 'Inter', size: 11 }, color: '#9CA3AF' }
-                            },
-                            y: {
-                                border: { display: false },
-                                grid: { color: '#F3F4F6', drawBorder: false },
-                                ticks: { 
-                                    font: { family: 'Inter', size: 11 }, 
-                                    color: '#9CA3AF',
-                                    callback: function(value) { return '$' + value; },
-                                    stepSize: 50 
-                                }
-                            }
-                        },
-                        interaction: {
-                            intersect: false,
-                            mode: 'index',
-                        },
+            const chartLabels = @json($chartLabels ?? []);
+            const chartData = @json($chartData ?? []);
+            const bookingsData = @json($bookingsData ?? []);
+
+            // Futuristic Revenue Line/Area Chart
+            const revOptions = {
+                series: [{
+                    name: 'Revenue',
+                    data: chartData
+                }],
+                chart: {
+                    type: 'area',
+                    height: 300,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif',
+                    dropShadow: {
+                        enabled: true,
+                        top: 4,
+                        left: 0,
+                        blur: 8,
+                        color: '#d00e15',
+                        opacity: 0.15
                     }
-                });
-            }
+                },
+                colors: ['#d00e15'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.05,
+                        stops: [0, 100]
+                    }
+                },
+                dataLabels: { enabled: false },
+                stroke: { curve: 'smooth', width: 3 },
+                xaxis: {
+                    categories: chartLabels,
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: { style: { colors: '#9CA3AF', fontSize: '11px' } }
+                },
+                yaxis: {
+                    labels: { 
+                        style: { colors: '#9CA3AF', fontSize: '11px' },
+                        formatter: function(val) { return '৳' + val; }
+                    }
+                },
+                grid: {
+                    borderColor: '#F3F4F6',
+                    strokeDashArray: 4,
+                    yaxis: { lines: { show: true } }
+                },
+                theme: { mode: 'light' },
+                tooltip: { theme: 'dark' }
+            };
+            new ApexCharts(document.querySelector("#revenueChart"), revOptions).render();
+
+            // Futuristic Bookings Bar Chart
+            const bookOptions = {
+                series: [{
+                    name: 'Bookings',
+                    data: bookingsData
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 300,
+                    toolbar: { show: false },
+                    fontFamily: 'Inter, sans-serif'
+                },
+                colors: ['#4f46e5'],
+                plotOptions: {
+                    bar: {
+                        borderRadius: 6,
+                        columnWidth: '30%',
+                    }
+                },
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: chartLabels,
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: { style: { colors: '#9CA3AF', fontSize: '11px' } }
+                },
+                yaxis: {
+                    labels: { style: { colors: '#9CA3AF', fontSize: '11px' } }
+                },
+                grid: {
+                    borderColor: '#F3F4F6',
+                    strokeDashArray: 4,
+                    yaxis: { lines: { show: true } }
+                },
+                theme: { mode: 'light' },
+                tooltip: { theme: 'dark' }
+            };
+            new ApexCharts(document.querySelector("#bookingsChart"), bookOptions).render();
         });
     </script>
     @endpush

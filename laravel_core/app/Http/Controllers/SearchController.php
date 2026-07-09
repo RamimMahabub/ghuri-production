@@ -107,14 +107,17 @@ class SearchController extends Controller
     }
 
     /**
-     * Add BDT conversion to all flight prices
+     * Add currency conversion to all flight prices
      */
     private function addBDTConversion(array $flights): array
     {
+        $userCurrency = session('currency', 'BDT');
+        $currencySymbol = $userCurrency === 'USD' ? '$' : '৳';
+
         foreach ($flights as &$flight) {
             $currency = $flight['currency'] ?? 'USD';
             
-            // Convert price to BDT
+            // Convert price to BDT for consistent sorting/filtering
             $conversion = $this->currencyConverter->convertToBDT($flight['price'] ?? 0, $currency);
             $flight['bdt_price'] = $conversion['bdt_amount'];
             $flight['exchange_rate'] = $conversion['exchange_rate'];
@@ -123,6 +126,25 @@ class SearchController extends Controller
             if (!empty($flight['crossed_price'])) {
                 $crossed = $this->currencyConverter->convertToBDT($flight['crossed_price'], $currency);
                 $flight['crossed_price_bdt'] = $crossed['bdt_amount'];
+            }
+
+            // Calculate display price
+            if ($userCurrency === 'USD') {
+                // If they want to see USD, and the original was USD, use original.
+                // Or convert BDT back to USD using the custom exchange rate.
+                $displayConversion = $this->currencyConverter->getExchangeRate('BDT', 'USD');
+                $flight['display_price'] = round($flight['bdt_price'] * $displayConversion, 2);
+                $flight['display_symbol'] = $currencySymbol;
+                
+                if (!empty($flight['crossed_price_bdt'])) {
+                    $flight['crossed_price_display'] = round($flight['crossed_price_bdt'] * $displayConversion, 2);
+                }
+            } else {
+                $flight['display_price'] = $flight['bdt_price'];
+                $flight['display_symbol'] = $currencySymbol;
+                if (!empty($flight['crossed_price_bdt'])) {
+                    $flight['crossed_price_display'] = $flight['crossed_price_bdt'];
+                }
             }
         }
         

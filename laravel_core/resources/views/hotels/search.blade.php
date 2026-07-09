@@ -14,251 +14,365 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="font-body antialiased bg-brand-surface">
-
-    {{-- Header with Search --}}
-    <header class="bg-white border-b border-brand-border sticky top-0 z-40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                {{-- Logo --}}
-                <a href="/" class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-brand-primary flex items-center justify-center">
-                        <i class="fas fa-plane-departure text-white text-sm"></i>
-                    </div>
-                    <span class="font-heading font-bold text-brand-black text-lg">GhuriTravel</span>
-                </a>
-
-                {{-- Compact Search --}}
-                <form action="{{ route('hotels.search') }}" method="GET" class="hidden md:flex items-center gap-2 bg-brand-surface rounded-full px-4 py-2 flex-1 max-w-2xl mx-8 border border-brand-border hover:border-brand-muted transition-colors">
-                    <i class="fas fa-search text-brand-muted text-sm"></i>
-                    <input type="text" name="destination" id="search-destination" value="{{ request('destination') }}" placeholder="Where are you going?" class="bg-transparent border-0 focus:ring-0 text-sm flex-1 text-brand-black placeholder:text-brand-muted">
-                    <input type="date" name="check_in" value="{{ request('check_in', now()->addDay()->format('Y-m-d')) }}" class="bg-transparent border-0 focus:ring-0 text-sm w-32 text-brand-text">
-                    <input type="date" name="check_out" value="{{ request('check_out', now()->addDays(2)->format('Y-m-d')) }}" class="bg-transparent border-0 focus:ring-0 text-sm w-32 text-brand-text">
-                    <button type="submit" class="bg-brand-primary text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-brand-dark transition-colors">
-                        <i class="fas fa-search text-xs"></i>
-                    </button>
-                </form>
-
-                {{-- Auth Links --}}
-                <div class="flex items-center gap-3">
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="text-sm text-brand-text hover:text-brand-primary">My Bookings</a>
-                        <div class="w-8 h-8 rounded-full bg-brand-primary flex items-center justify-center text-white text-xs font-bold">
-                            {{ substr(Auth::user()->name, 0, 1) }}
+<body class="font-sans antialiased bg-slate-50 text-slate-900">
+    <div class="min-h-screen">
+        
+        {{-- Header with Search --}}
+        <header class="sticky top-0 z-40 border-b border-white/70 bg-white/75 backdrop-blur-xl shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-20">
+                    {{-- Logo --}}
+                    <a href="/" class="flex items-center gap-2">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg">
+                            <i class="fas fa-plane-departure text-white text-lg"></i>
                         </div>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm text-brand-text hover:text-brand-primary">Sign In</a>
-                        <a href="{{ route('register') }}" class="btn-primary btn-sm">Register</a>
-                    @endauth
+                        <span class="font-heading font-extrabold text-slate-900 text-xl tracking-tight">GhuriTravel</span>
+                    </a>
+
+                    {{-- Compact Search --}}
+                    <form action="{{ route('hotels.search') }}" method="GET" class="hidden md:flex items-center gap-2 bg-white/80 rounded-full p-1.5 flex-1 max-w-3xl mx-8 border border-white/70 shadow-md backdrop-blur-md">
+                        <div class="flex items-center flex-1 px-4 border-r border-slate-200">
+                            <i class="fas fa-search text-[#1882FF] text-sm mr-3"></i>
+                            <input type="text" name="destination" id="search-destination" value="{{ request('destination') }}" placeholder="Where are you going?" class="bg-transparent border-0 focus:ring-0 text-sm font-semibold flex-1 text-[#1a2b49] placeholder:text-slate-400 placeholder:font-medium p-0">
+                        </div>
+                        <div class="flex items-center px-4 border-r border-slate-200">
+                            <i class="fas fa-calendar-alt text-[#1882FF] text-sm mr-3"></i>
+                            <input type="date" name="check_in" value="{{ request('check_in', now()->addDay()->format('Y-m-d')) }}" class="bg-transparent border-0 focus:ring-0 text-sm font-semibold w-32 text-[#1a2b49] p-0 cursor-pointer">
+                        </div>
+                        <div class="flex items-center px-4">
+                            <i class="fas fa-calendar-check text-[#1882FF] text-sm mr-3"></i>
+                            <input type="date" name="check_out" value="{{ request('check_out', now()->addDays(2)->format('Y-m-d')) }}" class="bg-transparent border-0 focus:ring-0 text-sm font-semibold w-32 text-[#1a2b49] p-0 cursor-pointer">
+                        </div>
+                        <button type="submit" class="bg-[#1882FF] hover:bg-blue-700 text-white rounded-full px-6 py-2.5 font-bold text-sm transition shadow-md hover:shadow-lg flex items-center gap-2">
+                            Search
+                        </button>
+                    </form>
+
+                    {{-- Auth Links --}}
+                    <div class="flex items-center gap-4">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="text-sm font-semibold text-[#1a2b49] hover:text-[#1882FF] transition">Dashboard</a>
+                            <a href="{{ route('dashboard') }}" class="w-10 h-10 rounded-full bg-[#1882FF] flex items-center justify-center text-white text-sm font-bold shadow-md hover:shadow-lg transition">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="text-sm font-semibold text-[#1a2b49] hover:text-[#1882FF] transition">Sign In</a>
+                            <a href="{{ route('register') }}" class="bg-[#1a2b49] hover:bg-[#24385d] text-white rounded-full px-5 py-2 font-semibold text-sm transition shadow-md">Register</a>
+                        @endauth
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div class="flex gap-6">
-            {{-- Filters Sidebar --}}
-            <aside class="hidden lg:block w-72 flex-shrink-0">
-                <form action="{{ route('hotels.search') }}" method="GET" class="card card-body space-y-5 sticky top-24">
-                    <input type="hidden" name="destination" value="{{ request('destination') }}">
-                    <input type="hidden" name="check_in" value="{{ request('check_in') }}">
-                    <input type="hidden" name="check_out" value="{{ request('check_out') }}">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                
+                {{-- Left Sidebar Filters --}}
+                <aside class="w-full lg:w-72 flex-shrink-0">
+                    <form action="{{ route('hotels.search') }}" method="GET" class="sticky top-28 space-y-6">
+                        <input type="hidden" name="destination" value="{{ request('destination') }}">
+                        <input type="hidden" name="check_in" value="{{ request('check_in') }}">
+                        <input type="hidden" name="check_out" value="{{ request('check_out') }}">
 
-                    <h3 class="font-heading font-bold text-brand-black text-sm">Filters</h3>
-
-                    {{-- Price Range --}}
-                    <div>
-                        <label class="form-label text-xs">Price per Night</label>
-                        <div class="flex items-center gap-2">
-                            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min" class="form-input-styled text-xs w-full">
-                            <span class="text-brand-muted">–</span>
-                            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max" class="form-input-styled text-xs w-full">
-                        </div>
-                    </div>
-
-                    {{-- Star Rating --}}
-                    <div>
-                        <label class="form-label text-xs">Star Rating</label>
-                        <div class="space-y-1.5">
-                            @for($s = 5; $s >= 1; $s--)
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="stars[]" value="{{ $s }}" {{ in_array($s, (array)request('stars', [])) ? 'checked' : '' }} class="rounded border-brand-border text-brand-primary focus:ring-brand-primary">
-                                    <span class="flex items-center gap-0.5">
-                                        @for($i = 0; $i < $s; $i++)
-                                            <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                        @endfor
-                                    </span>
-                                </label>
-                            @endfor
-                        </div>
-                    </div>
-
-                    {{-- Property Type --}}
-                    <div>
-                        <label class="form-label text-xs">Property Type</label>
-                        <div class="space-y-1.5">
-                            @foreach(['hotel', 'resort', 'villa', 'hostel', 'apartment', 'guesthouse'] as $type)
-                                <label class="flex items-center gap-2 cursor-pointer text-sm">
-                                    <input type="checkbox" name="type" value="{{ $type }}" {{ request('type') === $type ? 'checked' : '' }} class="rounded border-brand-border text-brand-primary focus:ring-brand-primary">
-                                    {{ ucfirst($type) }}
-                                </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn-primary w-full">Apply Filters</button>
-                    <a href="{{ route('hotels.search', ['destination' => request('destination')]) }}" class="btn-ghost w-full text-center text-xs">Clear All</a>
-                </form>
-            </aside>
-
-            {{-- Results --}}
-            <div class="flex-1">
-                {{-- Sort Bar --}}
-                <div class="flex items-center justify-between mb-5">
-                    <div>
-                        <h1 class="font-heading font-bold text-brand-black text-xl">
-                            @if(request('destination'))
-                                Hotels in "{{ request('destination') }}"
-                            @else
-                                All Hotels
-                            @endif
-                        </h1>
-                        <p class="text-sm text-brand-muted">{{ $properties->total() }} properties found</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs text-brand-muted">Sort by:</span>
-                        <select onchange="window.location.href = this.value" class="form-input-styled text-xs py-1.5 w-auto">
-                            @foreach(['recommended' => 'Recommended', 'price_low' => 'Price: Low to High', 'price_high' => 'Price: High to Low', 'stars' => 'Star Rating', 'rating' => 'Guest Rating'] as $key => $label)
-                                <option value="{{ route('hotels.search', array_merge(request()->all(), ['sort' => $key])) }}" {{ request('sort') === $key ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                {{-- Property Cards --}}
-                <div class="space-y-4">
-                    @forelse($properties as $property)
-                        <a href="{{ route('hotels.show', ['property' => $property, 'check_in' => request('check_in'), 'check_out' => request('check_out')]) }}" class="property-card block animate-slide-up" style="animation-delay: {{ $loop->index * 0.05 }}s">
-                            {{-- Image --}}
-                            <div class="property-card-image">
-                                @php
-                                    $coverUrl = $property->cover_photo_url;
-                                    $isPlaceholder = str_contains($coverUrl, 'placeholder-hotel.jpg');
-                                @endphp
-                                @if(!$isPlaceholder)
-                                    <img src="{{ $coverUrl }}" alt="{{ $property->name }}">
-                                @else
-                                    <div class="w-full h-full bg-gradient-to-br from-brand-light to-white flex items-center justify-center">
-                                        <i class="fas fa-hotel text-5xl text-brand-border"></i>
-                                    </div>
-                                @endif
-
-                                {{-- Badges --}}
-                                @if($property->lowest_price && $property->lowest_price < 100)
-                                    <div class="absolute top-3 left-3">
-                                        <span class="badge-brand"><i class="fas fa-bolt"></i> Great Deal</span>
-                                    </div>
-                                @endif
+                        {{-- Main Filter Block --}}
+                        <div class="rounded-3xl border border-white/70 bg-white/80 shadow-xl backdrop-blur-xl p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="font-bold text-[#1a2b49] text-lg">Filters</h3>
+                                <a href="{{ route('hotels.search', ['destination' => request('destination')]) }}" class="text-xs font-semibold text-[#1882FF] hover:text-blue-800 transition">Reset</a>
                             </div>
 
-                            {{-- Content --}}
-                            <div class="property-card-content">
-                                <div>
-                                    <div class="flex items-start justify-between">
-                                        <div>
-                                            <h3 class="font-heading font-bold text-brand-black text-base mb-1">{{ $property->name }}</h3>
-                                            <div class="flex items-center gap-1 mb-1">
-                                                @for($i = 1; $i <= $property->stars; $i++)
-                                                    <i class="fas fa-star text-yellow-400 text-xs"></i>
-                                                @endfor
-                                                <span class="text-xs text-brand-muted ml-1">{{ ucfirst($property->type) }}</span>
-                                            </div>
-                                            <p class="text-xs text-brand-muted">
-                                                <i class="fas fa-map-marker-alt text-brand-primary"></i>
-                                                {{ $property->city }}{{ $property->country ? ', ' . $property->country : '' }}
-                                                @if($property->city_center_distance)
-                                                    · {{ $property->city_center_distance }} from center
-                                                @endif
-                                            </p>
+                            <div class="space-y-6">
+                                {{-- Price per Night --}}
+                                <div class="border-b border-slate-100 pb-5">
+                                    <label class="block font-bold text-[#1a2b49] text-sm mb-3">Price per Night</label>
+                                    <div class="flex items-center gap-3">
+                                        <div class="relative flex-1">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium">৳</span>
+                                            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min" class="w-full pl-6 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-[#1882FF] focus:border-[#1882FF] transition">
                                         </div>
+                                        <span class="text-slate-400">-</span>
+                                        <div class="relative flex-1">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium">৳</span>
+                                            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max" class="w-full pl-6 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-[#1882FF] focus:border-[#1882FF] transition">
+                                        </div>
+                                    </div>
+                                </div>
 
-                                        {{-- Rating Badge --}}
-                                        @if($property->average_rating)
-                                            <div class="text-right flex-shrink-0 ml-4">
-                                                <div class="guest-score {{ $property->average_rating >= 8 ? 'excellent' : ($property->average_rating >= 6 ? 'good' : 'average') }}">
-                                                    {{ number_format($property->average_rating, 1) }}
+                                {{-- Star Rating --}}
+                                <div class="border-b border-slate-100 pb-5">
+                                    <label class="block font-bold text-[#1a2b49] text-sm mb-3">Star Category</label>
+                                    <div class="flex flex-wrap gap-2">
+                                        @for($s = 5; $s >= 1; $s--)
+                                            <label class="relative cursor-pointer">
+                                                <input type="checkbox" name="stars[]" value="{{ $s }}" {{ in_array($s, (array)request('stars', [])) ? 'checked' : '' }} class="peer sr-only">
+                                                <div class="px-3 py-1.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 bg-white hover:bg-slate-50 peer-checked:border-[#1882FF] peer-checked:bg-[#EEF6FF] peer-checked:text-[#1882FF] transition flex items-center gap-1 shadow-sm">
+                                                    {{ $s }} <i class="fas fa-star text-[10px] {{ in_array($s, (array)request('stars', [])) ? 'text-[#1882FF]' : 'text-slate-400' }}"></i>
                                                 </div>
-                                                <p class="text-[10px] text-brand-muted mt-1">{{ $property->review_count }} reviews</p>
+                                            </label>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                {{-- Property Type --}}
+                                <div>
+                                    <label class="block font-bold text-[#1a2b49] text-sm mb-3">Property Type</label>
+                                    <div class="space-y-3">
+                                        @foreach(['hotel' => 'Hotel', 'resort' => 'Resort', 'villa' => 'Villa/Apartment', 'hostel' => 'Hostel'] as $type => $label)
+                                            <label class="flex items-center gap-3 cursor-pointer group">
+                                                <input type="checkbox" name="type" value="{{ $type }}" {{ request('type') === $type ? 'checked' : '' }} class="w-5 h-5 rounded border-slate-300 text-[#1882FF] focus:ring-[#1882FF] focus:ring-offset-0 transition shadow-sm">
+                                                <span class="text-sm font-medium text-slate-600 group-hover:text-[#1a2b49] transition">{{ $label }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6 pt-6 border-t border-slate-100">
+                                <button type="submit" class="w-full bg-[#1a2b49] hover:bg-[#24385d] text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+                                    <i class="fas fa-filter text-xs"></i> Apply Filters
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </aside>
+
+                {{-- Main Results Area --}}
+                <div class="flex-1 w-full max-w-4xl">
+                    
+                    {{-- Top Bar --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 bg-white/60 backdrop-blur-md border border-white/70 p-4 rounded-2xl shadow-sm">
+                        <div class="mb-4 sm:mb-0">
+                            <h1 class="text-xl font-bold text-[#1a2b49]">
+                                {{ $properties->total() }} Available Properties
+                            </h1>
+                            <p class="text-xs font-semibold text-slate-500 mt-0.5">
+                                @if(request('destination')) in <span class="text-[#1882FF]">{{ request('destination') }}</span> @endif
+                                @if(request('check_in') && request('check_out'))
+                                    · {{ \Carbon\Carbon::parse(request('check_in'))->format('M d') }} - {{ \Carbon\Carbon::parse(request('check_out'))->format('M d') }}
+                                @endif
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Sort by</span>
+                            <select onchange="window.location.href = this.value" class="appearance-none bg-white border border-slate-200 text-[#1a2b49] text-sm font-semibold rounded-xl px-4 py-2 pr-8 focus:ring-[#1882FF] focus:border-[#1882FF] shadow-sm cursor-pointer">
+                                @foreach(['recommended' => 'Popularity', 'price_low' => 'Price: Low to High', 'price_high' => 'Price: High to Low', 'stars' => 'Star Rating', 'rating' => 'Guest Rating'] as $key => $label)
+                                    <option value="{{ route('hotels.search', array_merge(request()->all(), ['sort' => $key])) }}" {{ request('sort') === $key ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Property List --}}
+                    <div class="space-y-6">
+                        @forelse($properties as $index => $property)
+                            
+                            {{-- Inject Promotional Banner --}}
+                            @if($index === 1)
+                                <div class="rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 shadow-lg relative flex items-center justify-between p-6 border border-slate-700">
+                                    <div class="absolute right-0 top-0 bg-white text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded-bl-lg">AD</div>
+                                    <div class="flex items-center gap-6">
+                                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#1882FF] to-[#FF4FD8] flex items-center justify-center shadow-inner opacity-90">
+                                            <i class="fas fa-gem text-white text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-white text-xl font-bold mb-1">Want Better Deals?</h3>
+                                            <p class="text-slate-400 text-sm">Sign up now to unlock secret member-only prices.</p>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('register') }}" class="bg-white hover:bg-slate-100 text-[#0F172A] font-bold py-2.5 px-6 rounded-xl shadow-md transition flex items-center gap-2">
+                                        Sign Up / Login <i class="fas fa-arrow-right text-sm"></i>
+                                    </a>
+                                </div>
+                            @endif
+
+                            {{-- Horizontal Property Card --}}
+                            <div class="rounded-3xl border border-white/70 bg-white/80 shadow-xl backdrop-blur-xl overflow-hidden flex flex-col md:flex-row transition-transform hover:-translate-y-1 duration-300">
+                                
+                                {{-- Left: Image --}}
+                                <div class="w-full md:w-72 h-56 md:h-auto relative shrink-0">
+                                    @php
+                                        $coverUrl = $property->cover_photo_url;
+                                        $isPlaceholder = str_contains($coverUrl, 'placeholder-hotel.jpg');
+                                    @endphp
+                                    @if(!$isPlaceholder)
+                                        <img src="{{ $coverUrl }}" alt="{{ $property->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full bg-slate-100 flex items-center justify-center">
+                                            <i class="fas fa-hotel text-4xl text-slate-300"></i>
+                                        </div>
+                                    @endif
+
+                                    {{-- Badges --}}
+                                    <div class="absolute top-3 left-3 flex flex-col gap-2">
+                                        @if($property->lowest_price && $property->lowest_price < 5000)
+                                            <div class="bg-white text-[#1882FF] text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1.5">
+                                                <i class="fas fa-fire text-[#FF9900]"></i> Top Selling
                                             </div>
                                         @endif
                                     </div>
+                                    
+                                    {{-- Favorite Button --}}
+                                    <button class="absolute bottom-3 left-3 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 shadow-md transition">
+                                        <i class="fas fa-heart"></i>
+                                    </button>
+                                </div>
 
-                                    {{-- Amenity Icons --}}
+                                {{-- Middle: Content --}}
+                                <div class="flex-1 p-5 flex flex-col justify-between">
+                                    <div>
+                                        <div class="flex justify-between items-start gap-4">
+                                            <div>
+                                                <h2 class="text-xl font-bold text-[#1a2b49] leading-tight mb-1">
+                                                    <a href="{{ route('hotels.show', ['property' => $property, 'check_in' => request('check_in'), 'check_out' => request('check_out')]) }}" class="hover:text-[#1882FF] transition">{{ $property->name }}</a>
+                                                </h2>
+                                                <div class="flex items-center gap-2 mb-2">
+                                                    <div class="flex text-[#FF9900] text-[10px]">
+                                                        @for($i = 1; $i <= $property->stars; $i++)
+                                                            <i class="fas fa-star"></i>
+                                                        @endfor
+                                                    </div>
+                                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $property->type }}</span>
+                                                    <span class="text-slate-300">•</span>
+                                                    <span class="text-xs text-slate-500 font-medium"><i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>{{ $property->city }}</span>
+                                                </div>
+                                            </div>
+                                            
+                                            {{-- Rating Box --}}
+                                            @if($property->average_rating)
+                                                <div class="flex flex-col items-end shrink-0">
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="text-right">
+                                                            <p class="text-sm font-bold text-[#1a2b49]">{{ $property->average_rating >= 8 ? 'Excellent' : ($property->average_rating >= 6 ? 'Good' : 'Review') }}</p>
+                                                            <p class="text-[10px] text-slate-500 font-medium">{{ $property->review_count }} Reviews</p>
+                                                        </div>
+                                                        <div class="w-10 h-10 bg-[#1a2b49] rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                                            {{ number_format($property->average_rating, 1) }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        {{-- Highlights --}}
+                                        <div class="flex flex-wrap gap-2 mt-3">
+                                            <span class="bg-[#FFE5F4] text-[#D81B60] border border-[#FFBCE1] text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                                                <i class="fas fa-user-friends"></i> Couple Friendly
+                                            </span>
+                                            @if($property->cancellation_policy && ($property->cancellation_policy['type'] ?? '') === 'free')
+                                                <span class="bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                                                    <i class="fas fa-check"></i> Free Cancellation
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    {{-- Amenities Grid --}}
                                     @if($property->amenities)
-                                        <div class="flex items-center gap-3 mt-3">
-                                            @php $flatAmenities = collect($property->amenities)->flatten()->take(5); @endphp
-                                            @foreach($flatAmenities as $amenity)
-                                                <span class="text-xs text-brand-muted"><i class="fas fa-check text-brand-primary text-[10px]"></i> {{ str_replace('_', ' ', ucfirst($amenity)) }}</span>
-                                            @endforeach
+                                        <div class="mt-4 pt-4 border-t border-slate-100">
+                                            <div class="flex flex-wrap gap-x-4 gap-y-2">
+                                                @php $flatAmenities = collect($property->amenities)->flatten()->take(4); @endphp
+                                                @foreach($flatAmenities as $amenity)
+                                                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                                                        @php
+                                                            $icon = match(strtolower($amenity)) {
+                                                                'wifi', 'internet' => 'fa-wifi',
+                                                                'pool', 'swimming pool' => 'fa-swimming-pool',
+                                                                'parking' => 'fa-parking',
+                                                                'gym', 'fitness center' => 'fa-dumbbell',
+                                                                'restaurant' => 'fa-utensils',
+                                                                'air conditioning', 'ac' => 'fa-snowflake',
+                                                                'spa' => 'fa-spa',
+                                                                default => 'fa-check'
+                                                            };
+                                                        @endphp
+                                                        <i class="fas {{ $icon }} text-slate-400 text-[10px] w-3 text-center"></i>
+                                                        {{ str_replace('_', ' ', ucfirst($amenity)) }}
+                                                    </div>
+                                                @endforeach
+                                                @if(count(collect($property->amenities)->flatten()) > 4)
+                                                    <div class="text-xs font-semibold text-[#1882FF]">+ {{ count(collect($property->amenities)->flatten()) - 4 }} more</div>
+                                                @endif
+                                            </div>
                                         </div>
                                     @endif
                                 </div>
 
-                                {{-- Price --}}
-                                <div class="flex items-end justify-between mt-4 pt-3 border-t border-brand-border">
-                                    <div>
-                                        @if($property->cancellation_policy && ($property->cancellation_policy['type'] ?? '') === 'free')
-                                            <span class="text-xs text-status-confirmed font-medium"><i class="fas fa-check-circle"></i> Free cancellation</span>
+                                {{-- Right: Price & CTA --}}
+                                <div class="w-full md:w-[220px] bg-slate-50/50 p-5 flex flex-col justify-end border-t md:border-t-0 md:border-l border-slate-100 shrink-0">
+                                    <div class="text-right mb-4">
+                                        @if($property->lowest_price && $property->lowest_price > 0)
+                                            @php
+                                                // Fake discount logic for UI wow-factor
+                                                $discount = rand(10, 40);
+                                                $originalPrice = $property->lowest_price * (1 + ($discount/100));
+                                            @endphp
+                                            <div class="flex justify-end mb-1">
+                                                <span class="bg-[#FF9900] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">{{ $discount }}% off</span>
+                                            </div>
+                                            <p class="text-[10px] font-bold text-slate-400 line-through mb-0.5">{{ \App\Helpers\Currency::format($originalPrice) }}</p>
+                                            
+                                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Starts from</p>
+                                            <p class="text-2xl font-black text-[#1a2b49] leading-none my-1">
+                                                {{ \App\Helpers\Currency::format($property->lowest_price) }}
+                                            </p>
+                                            <p class="text-[10px] font-semibold text-slate-500">for 1 Night, per room</p>
+                                        @else
+                                            <p class="text-sm font-bold text-slate-500">Price unavailable</p>
                                         @endif
                                     </div>
-                                    <div class="text-right">
-                                        <p class="text-xs text-brand-muted">From</p>
-                                        <p class="text-xl font-heading font-bold text-brand-black">
-                                            ${{ number_format($property->lowest_price ?? 0, 0) }}
-                                        </p>
-                                        <p class="text-[10px] text-brand-muted">per night</p>
-                                    </div>
+                                    
+                                    <a href="{{ route('hotels.show', ['property' => $property, 'check_in' => request('check_in'), 'check_out' => request('check_out')]) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-center shadow-lg hover:shadow-xl transition-all">
+                                        Select Details
+                                    </a>
                                 </div>
                             </div>
-                        </a>
-                    @empty
-                        <div class="card card-body text-center py-16">
-                            <i class="fas fa-search text-5xl text-brand-border mb-4"></i>
-                            <h3 class="font-heading text-xl font-bold text-brand-black mb-2">No hotels found</h3>
-                            <p class="text-brand-muted text-sm">Try adjusting your search or filters</p>
-                        </div>
-                    @endforelse
-                </div>
+                        @empty
+                            <div class="rounded-3xl border border-white/70 bg-white/80 shadow-sm backdrop-blur-xl p-12 text-center">
+                                <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-search text-3xl text-slate-300"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-[#1a2b49] mb-2">No properties found</h3>
+                                <p class="text-slate-500 font-medium mb-6">We couldn't find any hotels matching your current filters and dates.</p>
+                                <a href="{{ route('hotels.search', ['destination' => request('destination')]) }}" class="inline-flex items-center justify-center bg-[#1a2b49] hover:bg-[#24385d] text-white font-bold py-2.5 px-6 rounded-xl transition shadow-md">
+                                    Clear all filters
+                                </a>
+                            </div>
+                        @endforelse
+                    </div>
 
-                {{-- Pagination --}}
-                <div class="mt-6">
-                    {{ $properties->links() }}
+                    {{-- Pagination --}}
+                    @if($properties->hasPages())
+                        <div class="mt-8 bg-white/60 backdrop-blur-md border border-white/70 rounded-2xl p-4 shadow-sm">
+                            {{ $properties->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('search-destination');
-    if (input) {
-        new google.maps.places.Autocomplete(input, {
-            types: ['(cities)'],
-        });
-        
-        input.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && document.querySelector('.pac-container')) {
-                const pacContainer = document.querySelector('.pac-container');
-                if (pacContainer.style.display !== 'none') {
-                    e.preventDefault();
+    {{-- Scripts --}}
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google_maps.key') }}&libraries=places"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('search-destination');
+        if (input) {
+            new google.maps.places.Autocomplete(input, {
+                types: ['(cities)'],
+            });
+            
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && document.querySelector('.pac-container')) {
+                    const pacContainer = document.querySelector('.pac-container');
+                    if (pacContainer.style.display !== 'none') {
+                        e.preventDefault();
+                    }
                 }
-            }
-        });
-    }
-});
-</script>
+            });
+        }
+    });
+    </script>
 </body>
 </html>

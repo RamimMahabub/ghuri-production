@@ -8,7 +8,7 @@
             <div class="bg-white rounded-xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 flex items-center justify-between">
                 <div>
                     <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Total Sales</p>
-                    <p class="text-2xl font-black text-[#19100F] mt-1">${{ number_format($stats['total_sales'], 2) }}</p>
+                    <p class="text-2xl font-black text-[#19100F] mt-1">{{ \App\Helpers\Currency::format($stats['total_sales']) }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-[#d00e15]">
                     <i class="fas fa-dollar-sign text-xl"></i>
@@ -18,7 +18,7 @@
             <div class="bg-white rounded-xl p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 flex items-center justify-between">
                 <div>
                     <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Est. Commission</p>
-                    <p class="text-2xl font-black text-[#19100F] mt-1">${{ number_format($stats['total_commission'], 2) }}</p>
+                    <p class="text-2xl font-black text-[#19100F] mt-1">{{ \App\Helpers\Currency::format($stats['total_commission']) }}</p>
                 </div>
                 <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center text-green-600">
                     <i class="fas fa-hand-holding-dollar text-xl"></i>
@@ -45,6 +45,135 @@
                 </div>
             </div>
         </div>
+
+        <!-- Futuristic Analytics Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="bg-white rounded-xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="font-bold text-[#19100F]">Revenue (Last 7 Days)</h3>
+                </div>
+                <div class="p-4 relative">
+                    <div id="revenueChart" style="min-height: 300px;"></div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] border border-gray-100 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                    <h3 class="font-bold text-[#19100F]">Bookings (Last 7 Days)</h3>
+                </div>
+                <div class="p-4 relative">
+                    <div id="bookingsChart" style="min-height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+
+        @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const chartLabels = @json($chartLabels ?? []);
+                const revenueData = @json($revenueData ?? []);
+                const bookingsData = @json($bookingsData ?? []);
+
+                // Revenue Area Chart (Futuristic Style)
+                const revOptions = {
+                    series: [{
+                        name: 'Revenue',
+                        data: revenueData
+                    }],
+                    chart: {
+                        type: 'area',
+                        height: 320,
+                        toolbar: { show: false },
+                        fontFamily: 'Inter, sans-serif',
+                        dropShadow: {
+                            enabled: true,
+                            top: 5,
+                            left: 0,
+                            blur: 10,
+                            color: '#d00e15',
+                            opacity: 0.2
+                        }
+                    },
+                    colors: ['#d00e15'],
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.45,
+                            opacityTo: 0.05,
+                            stops: [50, 100]
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    stroke: { curve: 'smooth', width: 3 },
+                    xaxis: {
+                        categories: chartLabels,
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                        labels: { style: { colors: '#9ca3af' } }
+                    },
+                    yaxis: {
+                        labels: { 
+                            style: { colors: '#9ca3af' },
+                            formatter: function(val) { return "৳" + val; }
+                        }
+                    },
+                    grid: {
+                        borderColor: '#f3f4f6',
+                        strokeDashArray: 4,
+                        yaxis: { lines: { show: true } }
+                    },
+                    theme: { mode: 'light' },
+                    tooltip: {
+                        theme: 'dark',
+                        y: { formatter: function (val) { return "৳" + val } }
+                    }
+                };
+                new ApexCharts(document.querySelector("#revenueChart"), revOptions).render();
+
+                // Bookings Bar Chart (Futuristic Style)
+                const bookOptions = {
+                    series: [{
+                        name: 'Bookings',
+                        data: bookingsData
+                    }],
+                    chart: {
+                        type: 'bar',
+                        height: 320,
+                        toolbar: { show: false },
+                        fontFamily: 'Inter, sans-serif',
+                    },
+                    colors: ['#4f46e5'],
+                    plotOptions: {
+                        bar: {
+                            borderRadius: 6,
+                            columnWidth: '40%',
+                        }
+                    },
+                    dataLabels: { enabled: false },
+                    xaxis: {
+                        categories: chartLabels,
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                        labels: { style: { colors: '#9ca3af' } }
+                    },
+                    yaxis: {
+                        labels: { style: { colors: '#9ca3af' } }
+                    },
+                    grid: {
+                        borderColor: '#f3f4f6',
+                        strokeDashArray: 4,
+                        yaxis: { lines: { show: true } }
+                    },
+                    theme: { mode: 'light' },
+                    tooltip: {
+                        theme: 'dark'
+                    }
+                };
+                new ApexCharts(document.querySelector("#bookingsChart"), bookOptions).render();
+            });
+        </script>
+        @endpush
 
         <!-- Two Column Layout -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

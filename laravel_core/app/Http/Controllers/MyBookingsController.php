@@ -57,4 +57,36 @@ class MyBookingsController extends Controller
 
         return view('hotels.my-bookings.voucher', compact('booking'));
     }
+
+    public function review(Request $request, HotelBooking $booking)
+    {
+        if ($booking->guest_id !== Auth::id()) abort(403);
+        if ($booking->status !== 'checked_out') abort(403, 'You can only review completed stays.');
+
+        $request->validate([
+            'overall_score' => 'required|numeric|min:1|max:10',
+            'public_review' => 'required|string|max:1000',
+        ]);
+
+        // Prevent multiple reviews for same booking
+        if (\App\Models\Review::where('hotel_booking_id', $booking->id)->exists()) {
+            return back()->with('error', 'You have already submitted a review for this booking.');
+        }
+
+        \App\Models\Review::create([
+            'property_id' => $booking->property_id,
+            'hotel_booking_id' => $booking->id,
+            'guest_id' => Auth::id(),
+            'overall_score' => $request->overall_score,
+            'public_review' => $request->public_review,
+            'status' => 'published',
+            'cleanliness_score' => $request->overall_score,
+            'location_score' => $request->overall_score,
+            'service_score' => $request->overall_score,
+            'value_score' => $request->overall_score,
+            'facilities_score' => $request->overall_score,
+        ]);
+
+        return back()->with('success', 'Thank you! Your review has been submitted.');
+    }
 }

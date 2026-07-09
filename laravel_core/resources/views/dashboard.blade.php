@@ -103,6 +103,15 @@
                 </div>
             </div>
 
+            {{-- Customer Analytics Chart (Spending) --}}
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 animate-slide-up" style="animation-delay: 0.15s;">
+                <h3 class="font-heading font-bold text-lg text-brand-black mb-2">Spending Trends</h3>
+                <p class="text-xs text-gray-500 mb-6">Your travel spend over the last 6 months</p>
+                <div class="relative w-full">
+                    <div id="customerSpendChart" style="min-height: 250px;"></div>
+                </div>
+            </div>
+
             {{-- Booking History Section --}}
             <div x-data="{ tab: 'flights' }" class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 animate-slide-up" style="animation-delay: 0.2s;">
                 <div class="flex items-center justify-between mb-6">
@@ -270,5 +279,79 @@
 
         </div>
     </div>
-</x-customer-layout>
 
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartLabels = @json($chartLabels ?? []);
+            const spendingData = @json($spendingData ?? []);
+            
+            if(document.querySelector("#customerSpendChart")) {
+                const options = {
+                    series: [{
+                        name: 'Total Spend',
+                        data: spendingData
+                    }],
+                    chart: {
+                        type: 'line',
+                        height: 280,
+                        toolbar: { show: false },
+                        fontFamily: 'Inter, sans-serif',
+                        dropShadow: {
+                            enabled: true,
+                            top: 4,
+                            left: 0,
+                            blur: 8,
+                            color: '#10b981',
+                            opacity: 0.2
+                        }
+                    },
+                    colors: ['#10b981'],
+                    stroke: { curve: 'smooth', width: 4 },
+                    markers: {
+                        size: 6,
+                        colors: ['#fff'],
+                        strokeColors: '#10b981',
+                        strokeWidth: 3,
+                        hover: { size: 8 }
+                    },
+                    dataLabels: { enabled: false },
+                    xaxis: {
+                        categories: chartLabels,
+                        axisBorder: { show: false },
+                        axisTicks: { show: false },
+                        labels: { style: { colors: '#9CA3AF', fontSize: '11px' } }
+                    },
+                    yaxis: {
+                        labels: { 
+                            style: { colors: '#9CA3AF', fontSize: '11px' },
+                            formatter: function(val) { return val > 0 ? val / 1000 + 'k BDT' : '0'; }
+                        }
+                    },
+                    grid: {
+                        borderColor: '#F3F4F6',
+                        strokeDashArray: 4,
+                        xaxis: { lines: { show: true } },
+                        yaxis: { lines: { show: true } }
+                    },
+                    theme: { mode: 'light' },
+                    tooltip: { theme: 'dark' },
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            shade: 'dark',
+                            gradientToColors: ['#34d399'],
+                            shadeIntensity: 1,
+                            type: 'horizontal',
+                            opacityFrom: 1,
+                            opacityTo: 1,
+                            stops: [0, 100]
+                        }
+                    }
+                };
+                new ApexCharts(document.querySelector("#customerSpendChart"), options).render();
+            }
+        });
+    </script>
+    @endpush
+</x-customer-layout>

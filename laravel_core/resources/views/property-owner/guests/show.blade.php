@@ -66,7 +66,7 @@
                         <div class="flex flex-row md:flex-col justify-between items-end border-t md:border-t-0 md:border-l border-brand-border pt-3 md:pt-0 md:pl-5 text-right w-full md:w-auto mt-3 md:mt-0">
                             <div class="text-left md:text-right">
                                 <p class="text-xs text-brand-muted">Total</p>
-                                <p class="font-bold text-brand-black text-lg">${{ number_format($booking->total, 2) }}</p>
+                                <p class="font-bold text-brand-black text-lg">{{ \App\Helpers\Currency::format($booking->total) }}</p>
                             </div>
                             <a href="{{ route('property-owner.bookings.show', $booking) }}" class="btn-secondary btn-sm whitespace-nowrap">View Details</a>
                         </div>

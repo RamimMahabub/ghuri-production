@@ -18,7 +18,7 @@
                     <select name="room_type_id" class="form-input-styled">
                         @foreach($properties as $prop)
                             @foreach($prop->activeRoomTypes as $rt)
-                                <option value="{{ $rt->id }}">{{ $prop->name }} — {{ $rt->name }} (${{ number_format($rt->base_price_per_night, 0) }})</option>
+                                <option value="{{ $rt->id }}">{{ $prop->name }} — {{ $rt->name }} ({{ \App\Helpers\Currency::format($rt->base_price_per_night) }})</option>
                             @endforeach
                         @endforeach
                     </select>

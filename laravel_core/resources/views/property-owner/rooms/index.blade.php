@@ -33,7 +33,7 @@
                         </div>
                         <div class="flex items-center justify-between mb-3">
                             <div>
-                                <p class="text-xl font-heading font-bold text-brand-primary">${{ number_format($room->base_price_per_night, 0) }}</p>
+                                <p class="text-xl font-heading font-bold text-brand-primary">{{ \App\Helpers\Currency::format($room->base_price_per_night) }}</p>
                                 <p class="text-[10px] text-brand-muted">per night</p>
                             </div>
                             <div class="text-right">

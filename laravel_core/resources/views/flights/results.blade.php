@@ -72,7 +72,7 @@
                             <svg class="w-4 h-4 text-[#1882FF]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                         </div>
                         <div class="p-4">
-                            <p class="text-xs text-slate-500 leading-relaxed mb-4">Starts from <b x-text="'৳ ' + formatNumber(minPrice * (exchangeRate ?? 1))"></b> - <b x-text="'৳ ' + formatNumber(maxPrice * (exchangeRate ?? 1))"></b> against your search. Price is subject to change.</p>
+                            <p class="text-xs text-slate-500 leading-relaxed mb-4">Starts from <b x-text="(flights[0]?.display_symbol || '৳') + ' ' + formatNumber(minPrice)"></b> - <b x-text="(flights[0]?.display_symbol || '৳') + ' ' + formatNumber(maxPrice)"></b> against your search. Price is subject to change.</p>
                             
                             <div class="relative w-full h-6 flex items-center mb-1 mt-2">
                                 <!-- Background Track -->
@@ -85,7 +85,7 @@
                                 <input type="range" :min="minPrice" :max="maxPrice" step="1" x-model.number="selectedMaxPrice" class="absolute w-full h-1.5 appearance-none bg-transparent cursor-pointer z-10 price-slider m-0 outline-none">
                             </div>
                             
-                            <div class="text-center text-xs font-bold text-slate-700 mt-3" x-text="'৳ ' + formatNumber(minPrice * (exchangeRate ?? 1)) + ' - ৳ ' + formatNumber(selectedMaxPrice * (exchangeRate ?? 1))"></div>
+                            <div class="text-center text-xs font-bold text-slate-700 mt-3" x-text="(flights[0]?.display_symbol || '৳') + ' ' + formatNumber(minPrice) + ' - ' + (flights[0]?.display_symbol || '৳') + ' ' + formatNumber(selectedMaxPrice)"></div>
                         </div>
                     </div>
 
@@ -142,7 +142,7 @@
                                         <input type="checkbox" :value="al.airline" x-model="selectedAirlines" class="w-4 h-4 rounded text-[#1882FF] border-gray-300 focus:ring-[#1882FF]">
                                         <span class="text-xs font-semibold text-slate-700" x-text="al.airline"></span>
                                     </div>
-                                    <span class="text-xs font-semibold text-slate-400 group-hover:text-[#1882FF]" x-text="'৳ ' + formatNumber(al.bdt_price)"></span>
+                                    <span class="text-xs font-semibold text-slate-400 group-hover:text-[#1882FF]" x-text="al.display_symbol + ' ' + formatNumber(al.display_price)"></span>
                                 </label>
                             </template>
                         </div>
@@ -189,7 +189,7 @@
                                          <div class="w-6 h-6 rounded bg-white flex items-center justify-center font-bold text-[8px] text-slate-600 shadow-sm" x-text="cal.airline_code"></div>
                                          <div class="text-left leading-tight">
                                              <span class="block text-[10px] font-bold" x-text="cal.airline_code"></span>
-                                             <span class="block text-xs font-bold" x-text="'৳ ' + formatNumber(cal.bdt_price)"></span>
+                                             <span class="block text-xs font-bold" x-text="cal.display_symbol + ' ' + formatNumber(cal.display_price)"></span>
                                          </div>
                                      </div>
                                 </template>
@@ -202,15 +202,15 @@
                     <div class="flex overflow-hidden rounded-[24px] border border-white/70 bg-white/80 shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl divide-x divide-slate-100">
                         <button @click="sortBy = 'cheapest'" :class="sortBy === 'cheapest' ? 'bg-[#1882FF] text-white shadow-inner' : 'bg-white text-slate-600 hover:bg-[#EEF6FF]'" class="flex-1 font-bold py-3 px-4 flex justify-between items-center transition">
                             <span class="text-sm">Cheapest</span>
-                            <span class="text-sm" x-text="'৳ ' + formatNumber(minPrice * (exchangeRate ?? 1))"></span>
+                            <span class="text-sm" x-text="(flights[0]?.display_symbol || '৳') + ' ' + formatNumber(minPrice)"></span>
                         </button>
                         <button @click="sortBy = 'earliest'" :class="sortBy === 'earliest' ? 'bg-[#1882FF] text-white shadow-inner' : 'bg-white text-slate-600 hover:bg-[#EEF6FF]'" class="flex-1 font-bold py-3 px-4 flex justify-between items-center transition">
                             <span class="text-sm">Earliest</span>
-                            <span class="text-sm" x-text="'৳ ' + formatNumber(earliestPrice * (exchangeRate ?? 1))"></span>
+                            <span class="text-sm" x-text="(flights[0]?.display_symbol || '৳') + ' ' + formatNumber(earliestPrice)"></span>
                         </button>
                         <button @click="sortBy = 'fastest'" :class="sortBy === 'fastest' ? 'bg-[#1882FF] text-white shadow-inner' : 'bg-white text-slate-600 hover:bg-[#EEF6FF]'" class="flex-1 font-bold py-3 px-4 flex justify-between items-center transition">
                             <span class="text-sm">Fastest</span>
-                            <span class="text-sm" x-text="'৳ ' + formatNumber(fastestPrice * (exchangeRate ?? 1))"></span>
+                            <span class="text-sm" x-text="(flights[0]?.display_symbol || '৳') + ' ' + formatNumber(fastestPrice)"></span>
                         </button>
                     </div>
 
@@ -313,11 +313,11 @@
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                                         GHURI
                                     </p>
-                                    <h3 class="text-2xl font-bold text-[#1a2b49]"><span x-text="'৳ ' + formatNumber(flight.bdt_price)"></span></h3>
-                                    <template x-if="flight.crossed_price_bdt">
-                                        <p class="text-xs text-slate-400 line-through mb-3"><span x-text="'৳ ' + formatNumber(flight.crossed_price_bdt)"></span></p>
+                                    <h3 class="text-2xl font-bold text-[#1a2b49]"><span x-text="flight.display_symbol + ' ' + formatNumber(flight.display_price)"></span></h3>
+                                    <template x-if="flight.crossed_price_display">
+                                        <p class="text-xs text-slate-400 line-through mb-3"><span x-text="flight.display_symbol + ' ' + formatNumber(flight.crossed_price_display)"></span></p>
                                     </template>
-                                    <template x-if="!flight.crossed_price_bdt">
+                                    <template x-if="!flight.crossed_price_display">
                                         <div class="h-5"></div>
                                     </template>
                                     <a :href="'/booking/checkout/' + flight.id + '?passengers={{ $search['passengers'] ?? 1 }}'" class="bg-[#1882FF] hover:bg-[#1882FF] text-white font-bold py-2 px-6 rounded shadow-md hover:shadow-lg transition flex items-center justify-between w-28">
@@ -726,35 +726,35 @@
                     this.flights.forEach(f => {
                         if (!map[f.airline]) {
                             map[f.airline] = f;
-                        } else if (this.toPriceValue(f.price) < this.toPriceValue(map[f.airline].price)) {
+                        } else if (this.toPriceValue(f.display_price) < this.toPriceValue(map[f.airline].display_price)) {
                             map[f.airline] = f;
                         }
                     });
-                    return Object.values(map).sort((a,b) => this.toPriceValue(a.price) - this.toPriceValue(b.price));
+                    return Object.values(map).sort((a,b) => this.toPriceValue(a.display_price) - this.toPriceValue(b.display_price));
                 },
 
                 get minPrice() {
                     if (this.flights.length === 0) return 0;
-                    return Math.min(...this.flights.map(f => this.toPriceValue(f.price)));
+                    return Math.min(...this.flights.map(f => this.toPriceValue(f.display_price)));
                 },
 
                 get maxPrice() {
                     if (this.flights.length === 0) return 1000;
-                    return Math.max(...this.flights.map(f => this.toPriceValue(f.price)));
+                    return Math.max(...this.flights.map(f => this.toPriceValue(f.display_price)));
                 },
 
                 get earliestPrice() {
                     if (this.flights.length === 0) return 0;
                     return this.flights.reduce((earliest, f) => {
                         return new Date(f.outbound.departure_time) < new Date(earliest.outbound.departure_time) ? f : earliest;
-                    }, this.flights[0]).price;
+                    }, this.flights[0]).display_price;
                 },
 
                 get fastestPrice() {
                     if (this.flights.length === 0) return 0;
                     return this.flights.reduce((fastest, f) => {
                         return this.getFlightDuration(f) < this.getFlightDuration(fastest) ? f : fastest;
-                    }, this.flights[0]).price;
+                    }, this.flights[0]).display_price;
                 },
 
                 getFlightDuration(flight) {
@@ -776,7 +776,7 @@
                     let result = [...this.flights];
 
                     if (this.selectedMaxPrice !== null) {
-                        result = result.filter(f => this.toPriceValue(f.price) <= this.selectedMaxPrice);
+                        result = result.filter(f => this.toPriceValue(f.display_price) <= this.selectedMaxPrice);
                     }
 
                     if (this.refundFilter.length > 0) {
@@ -817,7 +817,7 @@
                     }
 
                     if (this.sortBy === 'cheapest') {
-                        result = result.sort((a, b) => this.toPriceValue(a.price) - this.toPriceValue(b.price));
+                        result = result.sort((a, b) => this.toPriceValue(a.display_price) - this.toPriceValue(b.display_price));
                     } else if (this.sortBy === 'earliest') {
                         result = result.sort((a, b) => new Date(a.outbound.departure_time) - new Date(b.outbound.departure_time));
                     } else if (this.sortBy === 'fastest') {

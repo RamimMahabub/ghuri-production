@@ -78,7 +78,7 @@
                     </div>
                     <div class="flex justify-between text-sm mb-2">
                         <span class="text-gray-600">Total Amount</span>
-                        <span class="font-bold text-gray-900">${{ number_format($booking->total, 2) }}</span>
+                        <span class="font-bold text-gray-900">{{ \App\Helpers\Currency::format($booking->total) }}</span>
                     </div>
                     <p class="text-xs text-gray-500 mt-4 text-center">Please present this voucher upon arrival. Valid ID is required for check-in.</p>
                 </div>

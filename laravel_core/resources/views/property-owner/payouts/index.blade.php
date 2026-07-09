@@ -14,7 +14,7 @@
                 <div class="absolute -right-6 -top-6 w-32 h-32 bg-red-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-500"></div>
                 <div class="relative z-10">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Available for withdrawal</p>
-                    <h2 class="text-5xl font-bold text-gray-900 mb-2">৳{{ number_format($withdrawable) }}</h2>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-2">{{ \App\Helpers\Currency::format($withdrawable) }}</h2>
                     <p class="text-sm text-gray-500 mb-6">From checked-out bookings · After commission</p>
                     
                     <div class="flex gap-4">
@@ -36,7 +36,7 @@
                         <i class="fas fa-hourglass-half"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">৳{{ number_format($pending) }}</h3>
+                        <h3 class="text-xl font-bold text-gray-900">{{ \App\Helpers\Currency::format($pending) }}</h3>
                         <p class="text-xs text-gray-500 font-medium">Pending (ongoing stays)</p>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                         <i class="fas fa-calendar-alt"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">৳{{ number_format($upcoming) }}</h3>
+                        <h3 class="text-xl font-bold text-gray-900">{{ \App\Helpers\Currency::format($upcoming) }}</h3>
                         <p class="text-xs text-gray-500 font-medium">Upcoming (future)</p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         <i class="fas fa-check-circle"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">৳{{ number_format($totalPaidOut) }}</h3>
+                        <h3 class="text-xl font-bold text-gray-900">{{ \App\Helpers\Currency::format($totalPaidOut) }}</h3>
                         <p class="text-xs text-gray-500 font-medium">Total Paid Out</p>
                     </div>
                 </div>
@@ -111,9 +111,9 @@
                                     <div class="text-xs text-gray-500 font-medium">{{ $booking->booking_ref }}</div>
                                 </td>
                                 <td class="py-4 px-6 font-medium text-gray-600">{{ $booking->property->name }}</td>
-                                <td class="py-4 px-6 font-medium text-gray-600">৳{{ number_format($booking->total) }}</td>
-                                <td class="py-4 px-6 font-medium text-gray-500">৳{{ number_format($booking->commission_amount) }}</td>
-                                <td class="py-4 px-6 font-bold text-gray-900">৳{{ number_format($booking->total - $booking->commission_amount) }}</td>
+                                <td class="py-4 px-6 font-medium text-gray-600">{{ \App\Helpers\Currency::format($booking->total) }}</td>
+                                <td class="py-4 px-6 font-medium text-gray-500">{{ \App\Helpers\Currency::format($booking->commission_amount) }}</td>
+                                <td class="py-4 px-6 font-bold text-gray-900">{{ \App\Helpers\Currency::format($booking->total - $booking->commission_amount) }}</td>
                                 <td class="py-4 px-6">
                                     @if($booking->payout_status === 'Paid Out')
                                         <span class="inline-flex items-center gap-1.5 py-1 px-2.5 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-200">

@@ -38,6 +38,21 @@ class CurrencyConverterService
      */
     public function getExchangeRate(string $from, string $to): float
     {
+        // Use custom DB setting if available for USD <-> BDT and type is manual
+        if (($from === 'USD' && $to === 'BDT') || ($from === 'BDT' && $to === 'USD')) {
+            try {
+                $rateType = \App\Models\Setting::get('exchange_rate_type', 'live');
+                if ($rateType === 'manual') {
+                    $customRate = \App\Models\Setting::get('exchange_rate_usd_bdt');
+                    if ($customRate && is_numeric($customRate) && $customRate > 0) {
+                        return $from === 'USD' ? (float) $customRate : (1 / (float) $customRate);
+                    }
+                }
+            } catch (\Exception $e) {
+                \Log::warning('Could not fetch custom exchange rate: ' . $e->getMessage());
+            }
+        }
+
         $cacheKey = 'exchange_rate_' . $from . '_' . $to;
 
         // Cache rates for 30 minutes (not 1 hour - need fresher rates)

@@ -20,10 +20,40 @@
                     <a href="{{ route('hotels.search') }}" class="inline-flex items-center border-b-2 pt-1 text-sm font-semibold transition {{ request()->routeIs('hotels.*') ? 'border-[#1882FF] text-[#1882FF]' : 'border-transparent text-slate-500 hover:border-[#1882FF]/40 hover:text-[#1a2b49]' }}">
                         {{ __('Hotels') }}
                     </a>
+                    @auth
+                        @if (! $isInternalUser && !Auth::user()->isPropertyOwner())
+                        <a href="{{ route('my-bookings.index') }}" class="inline-flex items-center border-b-2 pt-1 text-sm font-semibold transition {{ request()->routeIs('my-bookings.*') ? 'border-[#1882FF] text-[#1882FF]' : 'border-transparent text-slate-500 hover:border-[#1882FF]/40 hover:text-[#1a2b49]' }}">
+                            {{ __('Booking History') }}
+                        </a>
+                        @endif
+                    @endauth
                 </div>
             </div>
 
             <div class="hidden sm:flex sm:items-center gap-4">
+                <div x-data="{ currencyOpen: false }" class="relative">
+                    <button type="button" @click="currencyOpen = !currencyOpen" class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-[#1a2b49] shadow-sm transition hover:border-[#1882FF]/30 hover:text-[#1882FF]" aria-label="Select currency">
+                        {{ session('currency', 'BDT') }}
+                        <svg class="w-3 h-3 transition-transform" :class="currencyOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <div x-show="currencyOpen" @click.away="currencyOpen = false" x-transition style="display:none;" class="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-lg overflow-hidden z-50">
+                        <form action="{{ route('currency.set') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="currency" value="BDT">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm {{ session('currency', 'BDT') === 'BDT' ? 'font-bold text-[#1882FF] bg-blue-50' : 'text-gray-700 hover:bg-gray-50' }}">
+                                BDT (৳)
+                            </button>
+                        </form>
+                        <form action="{{ route('currency.set') }}" method="POST" class="border-t border-gray-50">
+                            @csrf
+                            <input type="hidden" name="currency" value="USD">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm {{ session('currency') === 'USD' ? 'font-bold text-[#1882FF] bg-blue-50' : 'text-gray-700 hover:bg-gray-50' }}">
+                                USD ($)
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -39,6 +69,9 @@
                             @if (! $isInternalUser)
                                 <x-dropdown-link :href="route('profile.edit')">
                                     {{ __('Profile') }}
+                                </x-dropdown-link>
+                                <x-dropdown-link :href="route('my-bookings.index')">
+                                    {{ __('Booking History') }}
                                 </x-dropdown-link>
                             @endif
 
@@ -91,6 +124,9 @@
                     @if (! $isInternalUser)
                         <x-responsive-nav-link :href="route('profile.edit')" class="text-slate-700 hover:text-[#1882FF]">
                             {{ __('Profile') }}
+                        </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('my-bookings.index')" class="text-slate-700 hover:text-[#1882FF]">
+                            {{ __('Booking History') }}
                         </x-responsive-nav-link>
                     @endif
 

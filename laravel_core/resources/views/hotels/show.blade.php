@@ -457,7 +457,7 @@
         }
         .widget-date-row > div:first-child { border-right: 1px solid #ccc; }
         .widget-date-block {
-            padding: 10px 12px;
+            padding: 8px 10px;
             cursor: pointer;
             transition: background 0.15s;
         }
@@ -472,14 +472,24 @@
         .widget-date-input {
             border: none;
             background: transparent;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             color: #1a1a1a;
             width: 100%;
             padding: 0;
             cursor: pointer;
+            position: relative;
         }
         .widget-date-input:focus { outline: none; }
+        .widget-date-input::-webkit-calendar-picker-indicator {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
         .widget-guests-row {
             border: 1px solid #ccc;
             border-radius: 6px;
@@ -669,6 +679,14 @@
 <body>
 
 {{-- ── Header ─── --}}
+@php
+    $userCurrency = session('currency', 'BDT');
+    $currencySymbol = $userCurrency === 'USD' ? '$' : '৳';
+    $exchangeRate = 1;
+    if ($userCurrency === 'BDT') {
+        $exchangeRate = app(\App\Services\CurrencyConverterService::class)->getExchangeRate('USD', 'BDT');
+    }
+@endphp
 <header class="hotel-header">
     <div class="hotel-header-inner">
         <a href="{{ url()->previous() }}" class="back-link">
@@ -877,10 +895,10 @@
                                         @endif
                                     </td>
                                     <td class="price-cell">
-                                        <div class="price-nightly">${{ number_format($data['pricing']['nightly_rate'], 0) }}</div>
+                                        <div class="price-nightly">{{ $currencySymbol }}{{ number_format($data['pricing']['nightly_rate'] * $exchangeRate, 0) }}</div>
                                         <div class="price-per-night-label">per night</div>
                                         @if($data['pricing']['nights'] > 1)
-                                            <div class="price-total">${{ number_format($data['pricing']['total'], 0) }} total</div>
+                                            <div class="price-total">{{ $currencySymbol }}{{ number_format($data['pricing']['total'] * $exchangeRate, 0) }} total</div>
                                         @endif
                                         <div class="price-taxes-note" style="margin-top:3px;">Incl. taxes &amp; fees</div>
                                     </td>
@@ -966,10 +984,10 @@
                                             $planRate = ($data['pricing']['nightly_rate'] ?? 0) + $plan->price_supplement_per_adult;
                                             $planTotal = ($data['pricing']['total'] ?? 0) + ($plan->price_supplement_per_adult * ($data['pricing']['nights'] ?? 1));
                                         @endphp
-                                        <div class="price-nightly">${{ number_format($planRate, 0) }}</div>
+                                        <div class="price-nightly">{{ $currencySymbol }}{{ number_format($planRate * $exchangeRate, 0) }}</div>
                                         <div class="price-per-night-label">per night</div>
                                         @if(($data['pricing']['nights'] ?? 1) > 1)
-                                            <div class="price-total">${{ number_format($planTotal, 0) }} total</div>
+                                            <div class="price-total">{{ $currencySymbol }}{{ number_format($planTotal * $exchangeRate, 0) }} total</div>
                                         @endif
                                         <div class="price-taxes-note" style="margin-top:3px;">Incl. taxes &amp; fees</div>
                                     </td>
@@ -1192,7 +1210,7 @@
         <div>
             <div class="booking-widget">
                 <div class="widget-title">Starting from</div>
-                <div class="widget-price">${{ number_format($property->lowest_price ?? 0, 0) }} <span>/ night</span></div>
+                <div class="widget-price">{{ $currencySymbol }}{{ number_format(($property->lowest_price ?? 0) * $exchangeRate, 0) }} <span>/ night</span></div>
 
                 @if($property->average_rating)
                 <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
@@ -1209,14 +1227,14 @@
                 <form action="{{ route('hotels.show', $property) }}" method="GET" class="widget-form" id="availability-form">
                     <div style="font-size:12px;font-weight:600;color:#1a1a1a;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Your stay</div>
                     <div class="widget-date-row">
-                        <div class="widget-date-block">
+                        <div class="widget-date-block" onclick="document.getElementById('widget-checkin').showPicker()">
                             <div class="widget-date-label">Check-in</div>
                             <input type="date" name="check_in" class="widget-date-input"
                                 value="{{ $checkIn->format('Y-m-d') }}"
                                 min="{{ now()->format('Y-m-d') }}"
                                 id="widget-checkin">
                         </div>
-                        <div class="widget-date-block">
+                        <div class="widget-date-block" onclick="document.getElementById('widget-checkout').showPicker()">
                             <div class="widget-date-label">Check-out</div>
                             <input type="date" name="check_out" class="widget-date-input"
                                 value="{{ $checkOut->format('Y-m-d') }}"
@@ -1257,22 +1275,22 @@
                 @if($firstData)
                 <div style="font-size:13px;">
                     <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#374151;">
-                        <span>${{ number_format($firstData['pricing']['nightly_rate'], 0) }} × {{ $firstData['pricing']['nights'] }} nights</span>
-                        <span>${{ number_format($firstData['pricing']['subtotal'], 0) }}</span>
+                        <span>{{ $currencySymbol }}{{ number_format($firstData['pricing']['nightly_rate'] * $exchangeRate, 0) }} × {{ $firstData['pricing']['nights'] }} nights</span>
+                        <span>{{ $currencySymbol }}{{ number_format($firstData['pricing']['subtotal'] * $exchangeRate, 0) }}</span>
                     </div>
                     <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#374151;">
                         <span>Taxes &amp; fees</span>
-                        <span>${{ number_format(($firstData['pricing']['taxes'] ?? 0) + ($firstData['pricing']['fees'] ?? 0), 0) }}</span>
+                        <span>{{ $currencySymbol }}{{ number_format((($firstData['pricing']['taxes'] ?? 0) + ($firstData['pricing']['fees'] ?? 0)) * $exchangeRate, 0) }}</span>
                     </div>
                     @if(($firstData['pricing']['discount'] ?? 0) > 0)
                     <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#008009;">
                         <span>Discount</span>
-                        <span>-${{ number_format($firstData['pricing']['discount'], 0) }}</span>
+                        <span>-{{ $currencySymbol }}{{ number_format($firstData['pricing']['discount'] * $exchangeRate, 0) }}</span>
                     </div>
                     @endif
                     <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;color:#1a1a1a;padding-top:10px;border-top:2px solid #1a1a1a;margin-top:10px;">
                         <span>Total</span>
-                        <span>${{ number_format($firstData['pricing']['total'], 0) }}</span>
+                        <span>{{ $currencySymbol }}{{ number_format($firstData['pricing']['total'] * $exchangeRate, 0) }}</span>
                     </div>
                 </div>
                 @endif

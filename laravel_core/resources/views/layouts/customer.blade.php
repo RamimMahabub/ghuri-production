@@ -68,6 +68,12 @@
 
                 <div x-show="sidebarOpen" class="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2 mt-6">My Activity</div>
 
+                <a href="{{ route('my-bookings.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('my-bookings.*') ? 'bg-red-50 text-[#d00e15] font-semibold border-l-3 border-[#d00e15]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <i class="fas fa-history w-5 text-center {{ request()->routeIs('my-bookings.*') ? 'text-[#d00e15]' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
+                    <span x-show="sidebarOpen" class="font-medium text-sm">Booking History</span>
+                </a>
+
                 <a href="#"
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                     <i class="fas fa-heart w-5 text-center text-gray-400 group-hover:text-gray-600"></i>

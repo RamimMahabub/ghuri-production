@@ -80,7 +80,7 @@
                             <p class="text-xs text-brand-muted">{{ $booking->nights }} nights</p>
                         </td>
                         <td>
-                            <span class="text-sm font-semibold text-brand-black">${{ number_format($booking->total, 2) }}</span>
+                            <span class="text-sm font-semibold text-brand-black">{{ \App\Helpers\Currency::format($booking->total) }}</span>
                         </td>
                         <td>
                             <span class="badge-{{ $booking->status_color }}">{{ $booking->status_label }}</span>

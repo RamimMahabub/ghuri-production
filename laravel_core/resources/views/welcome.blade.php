@@ -25,12 +25,30 @@
                 GHURI<span>.</span>
             </a>
             <div class="booking-nav-actions">
-                <button type="button" class="booking-nav-currency" aria-label="Select currency">BDT</button>
+                <div x-data="{ currencyOpen: false }" class="relative">
+                    <button type="button" @click="currencyOpen = !currencyOpen" class="booking-nav-currency flex items-center gap-1" aria-label="Select currency">
+                        {{ session('currency', 'BDT') }}
+                        <svg class="w-3 h-3 transition-transform" :class="currencyOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </button>
+                    <div x-show="currencyOpen" @click.away="currencyOpen = false" x-transition style="display:none;" class="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden z-50">
+                        <form action="{{ route('currency.set') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="currency" value="BDT">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm {{ session('currency', 'BDT') === 'BDT' ? 'font-bold text-[#1882FF] bg-blue-50' : 'text-gray-700 hover:bg-gray-50' }}">
+                                BDT (৳)
+                            </button>
+                        </form>
+                        <form action="{{ route('currency.set') }}" method="POST" class="border-t border-gray-50">
+                            @csrf
+                            <input type="hidden" name="currency" value="USD">
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm {{ session('currency') === 'USD' ? 'font-bold text-[#1882FF] bg-blue-50' : 'text-gray-700 hover:bg-gray-50' }}">
+                                USD ($)
+                            </button>
+                        </form>
+                    </div>
+                </div>
                 <button type="button" class="booking-nav-icon-button" aria-label="Select language" title="Language">
                     <span class="booking-nav-flag" aria-hidden="true"></span>
-                </button>
-                <button type="button" class="booking-nav-icon-button booking-nav-help" aria-label="Help and support" title="Help and support">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-width="1.8"/><path d="M9.7 9a2.45 2.45 0 1 1 3.15 2.35c-.7.25-.85.75-.85 1.65" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16.8" r=".8" fill="currentColor" stroke="none"/></svg>
                 </button>
 
                 {{-- ✦ List your Property Link — shown when Hotel tab is active --}}
@@ -81,6 +99,7 @@
                                         <a href="{{ route('property-owner.dashboard') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">PMS Dashboard</a>
                                     @else
                                         <a href="{{ route('dashboard') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">Dashboard</a>
+                                        <a href="{{ route('my-bookings.index') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">Booking History</a>
                                     @endif
                                     <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">Account</a>
                                     <button type="button" class="w-full text-left px-4 py-2.5 text-sm text-gray-400 cursor-default">My Wishlist</button>
@@ -309,7 +328,7 @@
                 </div>
                 <div class="p-3.5 flex flex-col justify-center flex-1 min-w-0 h-full overflow-hidden">
                     <div class="text-xs text-gray-500 mb-0.5 truncate">{{ $search['destination'] }}</div>
-                    <h3 class="font-bold text-[#19100F] text-[15px] leading-tight mb-2 truncate" title="{{ $search['property_name'] ?: $search['destination'] }}">
+                    <h3 class="font-bold text-[#19100F] text-sm leading-tight mb-2 truncate" title="{{ $search['property_name'] ?: $search['destination'] }}">
                         {{ $search['property_name'] ?: $search['destination'] }}
                     </h3>
                     
@@ -381,6 +400,150 @@
         </div>
     </div>
 
+    <!-- Browse by property type -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-6">
+        <h2 class="text-2xl font-poppins font-bold text-[#19100F] mb-4">Browse by property type</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+            <a href="{{ route('hotels.search', ['type' => 'Resort']) }}" class="group block cursor-pointer">
+                <div class="rounded-xl overflow-hidden mb-3" style="aspect-ratio: 4/3;">
+                    <img src="{{ asset('resort-card.webp') }}" alt="Resort" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-6 h-6 text-[#006e5b]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 104 0 2 2 0 012-2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="font-bold text-[#19100F] text-lg">Resort</span>
+                </div>
+            </a>
+            <a href="{{ route('hotels.search', ['type' => 'Hotel']) }}" class="group block cursor-pointer">
+                <div class="rounded-xl overflow-hidden mb-3" style="aspect-ratio: 4/3;">
+                    <img src="{{ asset('hotel-card.webp') }}" alt="Hotel" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-6 h-6 text-[#006e5b]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    <span class="font-bold text-[#19100F] text-lg">Hotel</span>
+                </div>
+            </a>
+            <a href="{{ route('hotels.search', ['type' => 'Apartment']) }}" class="group block cursor-pointer">
+                <div class="rounded-xl overflow-hidden mb-3" style="aspect-ratio: 4/3;">
+                    <img src="{{ asset('apartment-card.webp') }}" alt="Apartment" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-6 h-6 text-[#006e5b]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span class="font-bold text-[#19100F] text-lg">Apartment</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Trending destinations -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div class="mb-5">
+            <h2 class="text-2xl font-poppins font-bold text-[#19100F]">Trending destinations</h2>
+            <p class="text-gray-500 text-sm mt-1">Most popular choices for travelers from Bangladesh</p>
+        </div>
+        
+        <div class="flex flex-col gap-4">
+            <!-- Top row: 2 items -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="{{ route('hotels.search', ['destination' => 'Cox\'s Bazar']) }}" class="group relative rounded-[2rem] overflow-hidden cursor-pointer block" style="aspect-ratio: 2/1;">
+                    <img src="{{ asset('coxsbazar-card.webp') }}" alt="Cox's Bazar" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-1000 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="absolute bottom-6 left-6 right-6 flex items-center gap-4">
+                        <div class="h-[2px] w-0 bg-white group-hover:w-12 transition-all duration-500 ease-out"></div>
+                        <h3 class="text-white font-['Space_Grotesk'] font-bold text-2xl md:text-4xl tracking-wide group-hover:tracking-widest transition-all duration-500 ease-out">COX'S BAZAR</h3>
+                    </div>
+                </a>
+                <a href="{{ route('hotels.search', ['destination' => 'Chittagong']) }}" class="group relative rounded-[2rem] overflow-hidden cursor-pointer block" style="aspect-ratio: 2/1;">
+                    <img src="{{ asset('chittagong-card.webp') }}" alt="Chittagong" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-1000 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="absolute bottom-6 left-6 right-6 flex items-center gap-4">
+                        <div class="h-[2px] w-0 bg-white group-hover:w-12 transition-all duration-500 ease-out"></div>
+                        <h3 class="text-white font-['Space_Grotesk'] font-bold text-2xl md:text-4xl tracking-wide group-hover:tracking-widest transition-all duration-500 ease-out">CHITTAGONG</h3>
+                    </div>
+                </a>
+            </div>
+            <!-- Bottom row: 3 items -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{{ route('hotels.search', ['destination' => 'Sreemangal']) }}" class="group relative rounded-[2rem] overflow-hidden cursor-pointer block" style="aspect-ratio: 3/2;">
+                    <img src="{{ asset('sreemangal-card.webp') }}" alt="Sreemangal" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-1000 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="absolute bottom-6 left-6 right-6 flex items-center gap-3">
+                        <div class="h-[2px] w-0 bg-white group-hover:w-8 transition-all duration-500 ease-out"></div>
+                        <h3 class="text-white font-['Space_Grotesk'] font-bold text-xl md:text-3xl tracking-wide group-hover:tracking-widest transition-all duration-500 ease-out">SREEMANGAL</h3>
+                    </div>
+                </a>
+                <a href="{{ route('hotels.search', ['destination' => 'Dhaka']) }}" class="group relative rounded-[2rem] overflow-hidden cursor-pointer block" style="aspect-ratio: 3/2;">
+                    <img src="{{ asset('dhaka-card.webp') }}" alt="Dhaka" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-1000 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="absolute bottom-6 left-6 right-6 flex items-center gap-3">
+                        <div class="h-[2px] w-0 bg-white group-hover:w-8 transition-all duration-500 ease-out"></div>
+                        <h3 class="text-white font-['Space_Grotesk'] font-bold text-xl md:text-3xl tracking-wide group-hover:tracking-widest transition-all duration-500 ease-out">DHAKA</h3>
+                    </div>
+                </a>
+                <a href="{{ route('hotels.search', ['destination' => 'Rangamati']) }}" class="group relative rounded-[2rem] overflow-hidden cursor-pointer block" style="aspect-ratio: 3/2;">
+                    <img src="{{ asset('rangamati-card.webp') }}" alt="Rangamati" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition duration-1000 ease-in-out">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="absolute bottom-6 left-6 right-6 flex items-center gap-3">
+                        <div class="h-[2px] w-0 bg-white group-hover:w-8 transition-all duration-500 ease-out"></div>
+                        <h3 class="text-white font-['Space_Grotesk'] font-bold text-xl md:text-3xl tracking-wide group-hover:tracking-widest transition-all duration-500 ease-out">RANGAMATI</h3>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Homes guests love -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div class="flex justify-between items-end mb-5">
+            <div>
+                <h2 class="text-2xl font-poppins font-bold text-[#19100F]">Homes guests love</h2>
+                <p class="text-gray-500 text-sm mt-1">Top rated properties from real guests</p>
+            </div>
+            <a href="{{ route('hotels.search') }}" class="text-[#006ce4] hover:text-[#0057b8] text-sm font-semibold hidden sm:block">Discover homes</a>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            @forelse($topProperties as $property)
+            <a href="{{ route('hotels.show', $property) }}" class="group block border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition duration-300 relative bg-white flex flex-col h-full">
+                <div class="aspect-[4/3] w-full overflow-hidden relative shrink-0">
+                    <img src="{{ $property->cover_photo_url }}" alt="{{ $property->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    <div class="absolute top-3 right-3 bg-white rounded-full p-1.5 text-gray-400 hover:text-[#d00e15] shadow-sm cursor-pointer transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="p-4 flex flex-col flex-1">
+                    <h3 class="font-bold text-[#19100F] text-base mb-1 truncate">{{ $property->name }}</h3>
+                    <p class="text-xs text-gray-500 mb-2 truncate">{{ $property->city }}{{ $property->country ? ', ' . $property->country : '' }}</p>
+                    
+                    @if($property->average_rating)
+                    <div class="flex items-center gap-2 mb-3 mt-auto">
+                        <div class="bg-[#003b95] text-white text-xs font-bold px-1.5 py-0.5 rounded flex items-center justify-center min-w-[1.75rem] h-6">{{ number_format($property->average_rating, 1) }}</div>
+                        <div class="text-xs text-[#19100F] font-medium">{{ $property->average_rating >= 9 ? 'Exceptional' : ($property->average_rating >= 8 ? 'Excellent' : ($property->average_rating >= 7 ? 'Very Good' : 'Good')) }}</div>
+                        <div class="text-xs text-gray-500">{{ $property->reviews_count }} {{ Str::plural('review', $property->reviews_count) }}</div>
+                    </div>
+                    @else
+                    <div class="flex items-center gap-2 mb-3 mt-auto">
+                        <div class="text-xs text-gray-500 italic">No reviews yet</div>
+                    </div>
+                    @endif
+                    
+                    <div class="text-right mt-2 border-t border-gray-50 pt-2">
+                        <span class="text-xs text-gray-500">Starting from</span>
+                        <span class="font-bold text-[#19100F] text-base ml-1">{{ \App\Helpers\Currency::format($property->lowest_price ?? 0) }}</span>
+                    </div>
+                </div>
+            </a>
+            @empty
+            <div class="col-span-full text-center py-8 text-gray-500">No properties available yet.</div>
+            @endforelse
+        </div>
+        <a href="{{ route('hotels.search') }}" class="text-[#006ce4] hover:text-[#0057b8] text-sm font-semibold block sm:hidden mt-4 text-center">Discover homes</a>
+    </div>
+
     <!-- Top Airlines Showcase Section -->
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div class="bg-white rounded-[28px] shadow-[0_4px_30px_rgba(15,23,42,0.04)] border border-gray-50 p-8 md:p-12">
@@ -439,75 +602,154 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Feature 1 -->
+                <!-- Hotel Feature 1 -->
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 group text-center">
-                    <div class="w-12 h-12 mx-auto text-[#d00e15] mb-4 transform group-hover:scale-110 transition duration-300">
+                    <div class="w-12 h-12 mx-auto text-[#006ce4] mb-4 transform group-hover:scale-110 transition duration-300">
+                        <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold mb-2 text-[#19100F]">Extensive Selection</h3>
+                    <p class="text-gray-500 text-xs leading-relaxed">Choose from over a million properties worldwide, from luxury resorts to cozy local stays.</p>
+                </div>
+                <!-- Hotel Feature 2 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 group text-center">
+                    <div class="w-12 h-12 mx-auto text-[#006ce4] mb-4 transform group-hover:scale-110 transition duration-300">
+                        <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold mb-2 text-[#19100F]">Verified Reviews</h3>
+                    <p class="text-gray-500 text-xs leading-relaxed">Make informed decisions with authentic reviews and detailed ratings from real travelers.</p>
+                </div>
+                <!-- Hotel Feature 3 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 group text-center">
+                    <div class="w-12 h-12 mx-auto text-[#006ce4] mb-4 transform group-hover:scale-110 transition duration-300">
+                        <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h3 class="text-base font-bold mb-2 text-[#19100F]">Best Price Guarantee</h3>
+                    <p class="text-gray-500 text-xs leading-relaxed">Enjoy exclusive deals and our promise to always match the lowest hotel rates available online.</p>
+                </div>
+                <!-- Flight Feature -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 group text-center">
+                    <div class="w-12 h-12 mx-auto text-[#006ce4] mb-4 transform group-hover:scale-110 transition duration-300">
                         <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 104 0 2 2 0 012-2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <h3 class="text-base font-bold mb-2 text-[#19100F]">Global Flight Content</h3>
-                    <p class="text-gray-500 text-xs leading-relaxed">Access worldwide airline inventory through GHURI's GDS-connected availability search.</p>
-                </div>
-                <!-- Feature 2 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 group text-center">
-                    <div class="w-12 h-12 mx-auto text-[#d00e15] mb-4 transform group-hover:scale-110 transition duration-300">
-                        <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <h3 class="text-base font-bold mb-2 text-[#19100F]">Real-Time Revalidation</h3>
-                    <p class="text-gray-500 text-xs leading-relaxed">GHURI revalidates fares before payment, ensuring price accuracy and reducing failed bookings.</p>
-                </div>
-                <!-- Feature 3 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 group text-center">
-                    <div class="w-12 h-12 mx-auto text-[#d00e15] mb-4 transform group-hover:scale-110 transition duration-300">
-                        <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
-                    </div>
-                    <h3 class="text-base font-bold mb-2 text-[#19100F]">Instant E-Ticketing</h3>
-                    <p class="text-gray-500 text-xs leading-relaxed">Book and receive PNR/UniqueID confirmation via GHURI's booking endpoint instantly.</p>
-                </div>
-                <!-- Feature 4 -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-300 group text-center">
-                    <div class="w-12 h-12 mx-auto text-[#d00e15] mb-4 transform group-hover:scale-110 transition duration-300">
-                        <svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    </div>
-                    <h3 class="text-base font-bold mb-2 text-[#19100F]">Sandbox + Production</h3>
-                    <p class="text-gray-500 text-xs leading-relaxed">GHURI supports both sandbox testing and live production environments for safer deployments.</p>
+                    <p class="text-gray-500 text-xs leading-relaxed">Access worldwide airline inventory and seamlessly compare the best fares for your destination instantly.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-[#d00e15] text-white py-12">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex flex-col items-center md:items-start gap-1">
-                <div class="flex items-center gap-2">
-                    <div class="font-poppins font-extrabold text-2xl tracking-tight text-white">GHURI<span class="text-white">.</span></div>
-                </div>
-                <p class="text-xs text-white/60 max-w-xs text-center md:text-left mt-2 leading-relaxed">
-                    Smart bookings, competitive deals, and reliable support - all in one platform.
-                </p>
-                <p class="text-[10px] text-white/40 mt-4">
-                    &copy; {{ date('Y') }} GHURI OTA. All rights reserved.
-                </p>
+    <!-- Trust & Payment Section -->
+    <div class="border-t border-gray-100 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+            <!-- Payment Methods -->
+            <div class="mb-10 pb-8 border-b border-gray-100/60 flex justify-center">
+                <img src="{{ asset('SSLCommerz-Pay-With-logo-All-Size-01.png') }}" 
+                     onerror="this.onerror=null; this.src='/SSLCommerz-Pay-With-logo-All-Size-01.png';"
+                     alt="Payment Methods" 
+                     class="w-full h-auto object-contain px-4">
             </div>
-            
-            <div class="flex flex-wrap justify-center md:justify-end items-center gap-8">
-                <div class="flex flex-col items-center gap-2">
-                    <span class="text-[9px] text-white/50 uppercase tracking-widest font-bold">Verified By</span>
-                    <div class="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-full border border-white/5">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        <span class="font-bold text-xs">DigiCert</span>
+
+            <!-- Trust Badges Removed -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-[#0B1120] text-gray-300 py-16 border-t border-gray-800 font-sans" style="background-color: #0B1120;">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Main Footer Links Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                <!-- Brand & Slogan -->
+                <div class="lg:col-span-2">
+                    <div class="font-poppins font-extrabold text-3xl tracking-tight text-white mb-6">GHURI<span class="text-[#006ce4]">.</span></div>
+                    <p class="text-sm text-gray-400 max-w-sm leading-relaxed mb-8">
+                        Your trusted global travel platform. Smart bookings, competitive deals, and reliable support - all in one place. Experience seamless travel with GHURI.
+                    </p>
+                    <div class="flex items-center gap-4">
+                        <!-- Social Icons -->
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#006ce4] hover:text-white transition-colors duration-300">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#006ce4] hover:text-white transition-colors duration-300">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#006ce4] hover:text-white transition-colors duration-300">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
                     </div>
                 </div>
-                <div class="flex flex-col items-center gap-2">
-                    <span class="text-[9px] text-white/50 uppercase tracking-widest font-bold">Authorized By</span>
-                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/5">
-                        <span class="font-black text-xs italic tracking-wider">IATA</span>
-                    </div>
+
+                <!-- Column 1 -->
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-6 uppercase tracking-wider">Company</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('pages.about') }}" class="text-sm hover:text-white transition-colors">About Us</a></li>
+                        <li><a href="{{ route('pages.careers') }}" class="text-sm hover:text-white transition-colors">Careers</a></li>
+                        <li><a href="{{ route('pages.press') }}" class="text-sm hover:text-white transition-colors">Press Center</a></li>
+                        <li><a href="{{ route('pages.sustainability') }}" class="text-sm hover:text-white transition-colors">Sustainability</a></li>
+                        <li><a href="{{ route('pages.investors') }}" class="text-sm hover:text-white transition-colors">Investor Relations</a></li>
+                    </ul>
                 </div>
-                <div class="flex flex-col items-center gap-2">
-                    <span class="text-[9px] text-white/50 uppercase tracking-widest font-bold">Member of</span>
-                    <div class="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full border border-white/5">
-                        <span class="font-black text-xs tracking-wider">BASIS</span>
+
+                <!-- Column 2 -->
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-6 uppercase tracking-wider">Support</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('pages.contact') }}" class="text-sm hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="{{ route('pages.help') }}" class="text-sm hover:text-white transition-colors">Help Center & FAQ</a></li>
+                        <li><a href="{{ route('pages.cancellation') }}" class="text-sm hover:text-white transition-colors">Cancellation Policy</a></li>
+                        <li><a href="{{ route('pages.trust-safety') }}" class="text-sm hover:text-white transition-colors">Trust & Safety</a></li>
+                        <li><a href="{{ route('pages.complaint') }}" class="text-sm hover:text-white transition-colors">Submit a Complaint</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3 -->
+                <div>
+                    <h4 class="text-white font-bold text-sm mb-6 uppercase tracking-wider">Partners</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('list-your-property') }}" class="text-sm hover:text-white transition-colors text-[#006ce4] font-medium">List your Property</a></li>
+                        <li><a href="{{ route('pages.affiliates') }}" class="text-sm hover:text-white transition-colors">Affiliate Network</a></li>
+                        <li><a href="{{ route('pages.travel-agencies') }}" class="text-sm hover:text-white transition-colors">Travel Agencies</a></li>
+                        <li><a href="{{ route('pages.corporate') }}" class="text-sm hover:text-white transition-colors">Corporate Travel</a></li>
+                        <li><a href="{{ route('pages.partner-portal') }}" class="text-sm hover:text-white transition-colors">Partner Portal</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Bottom Footer Area -->
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-6">
+                <!-- Legal Links & Copyright -->
+                <div class="flex flex-col gap-4 text-center md:text-left">
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 text-xs text-gray-400">
+                        <a href="{{ route('pages.privacy') }}" class="hover:text-white transition-colors">Privacy Policy</a>
+                        <a href="{{ route('pages.terms') }}" class="hover:text-white transition-colors">Terms of Service</a>
+                        <a href="{{ route('pages.cookies') }}" class="hover:text-white transition-colors">Cookie Settings</a>
+                        <a href="{{ route('pages.sitemap') }}" class="hover:text-white transition-colors">Sitemap</a>
+                    </div>
+                    <p class="text-[11px] text-gray-500">
+                        &copy; {{ date('Y') }} GHURI OTA. All rights reserved. Registered travel agency.
+                    </p>
+                </div>
+
+                <!-- Badges -->
+                <div class="flex flex-wrap justify-center items-center gap-6">
+                    <div class="flex flex-col items-center gap-1.5 opacity-80 hover:opacity-100 transition-opacity">
+                        <span class="text-[8px] text-gray-500 uppercase tracking-widest font-bold">Verified By</span>
+                        <div class="flex items-center gap-1.5 text-gray-300">
+                            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            <span class="font-bold text-[10px] tracking-wider uppercase">DigiCert</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1.5 opacity-80 hover:opacity-100 transition-opacity">
+                        <span class="text-[8px] text-gray-500 uppercase tracking-widest font-bold">Authorized By</span>
+                        <div class="flex items-center gap-1 text-gray-300">
+                            <span class="font-black text-sm italic tracking-wider">IATA</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center gap-1.5 opacity-80 hover:opacity-100 transition-opacity">
+                        <span class="text-[8px] text-gray-500 uppercase tracking-widest font-bold">Member of</span>
+                        <div class="flex items-center gap-1 text-gray-300">
+                            <span class="font-black text-xs tracking-wider">BASIS</span>
+                        </div>
                     </div>
                 </div>
             </div>

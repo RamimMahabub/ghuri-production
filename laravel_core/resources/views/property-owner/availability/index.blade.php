@@ -35,7 +35,7 @@
                             <tr>
                                 <td class="sticky left-0 bg-white px-3 py-2 border-b border-r border-brand-border z-10">
                                     <p class="font-medium text-brand-black">{{ $roomType->name }}</p>
-                                    <p class="text-[10px] text-brand-muted">{{ $roomType->inventory_count }} rooms · ${{ number_format($roomType->base_price_per_night, 0) }}/night</p>
+                                    <p class="text-[10px] text-brand-muted">{{ $roomType->inventory_count }} rooms · {{ \App\Helpers\Currency::format($roomType->base_price_per_night) }}/night</p>
                                 </td>
                                 @foreach($dates as $date)
                                     @php
@@ -51,7 +51,7 @@
                                         title="{{ $dateStr }}" data-date="{{ $dateStr }}">
                                         @if(!$isClosed)
                                             <div class="avail-count">{{ $available }}/{{ $total }}</div>
-                                            <div class="avail-price">${{ number_format($price, 0) }}</div>
+                                            <div class="avail-price">{{ \App\Helpers\Currency::format($price) }}</div>
                                         @else
                                             <div class="text-[10px]">Closed</div>
                                         @endif

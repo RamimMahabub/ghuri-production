@@ -121,7 +121,7 @@
                             <p class="text-xs text-brand-muted">{{ $room->inventory_count }} rooms · {{ $room->max_adults }} adults</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-sm font-bold text-brand-primary">${{ number_format($room->base_price_per_night, 0) }}</p>
+                            <p class="text-sm font-bold text-brand-primary">{{ \App\Helpers\Currency::format($room->base_price_per_night) }}</p>
                             <span class="badge-{{ $room->status === 'active' ? 'confirmed' : 'cancelled' }} text-[10px]">{{ ucfirst($room->status) }}</span>
                         </div>
                     </div>

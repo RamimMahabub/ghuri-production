@@ -57,9 +57,37 @@ class DashboardController extends Controller
                 ->get();
         }
 
+        // Chart Data: Last 7 days revenue and bookings
+        $chartLabels = [];
+        $revenueData = [];
+        $bookingsData = [];
+        
+        if (Schema::hasTable('hotel_bookings')) {
+            for ($i = 6; $i >= 0; $i--) {
+                $d = \Carbon\Carbon::today()->subDays($i);
+                $chartLabels[] = $d->format('M d');
+                
+                $dayRev = DB::table('hotel_bookings')
+                    ->whereIn('status', ['confirmed', 'completed'])
+                    ->whereDate('created_at', $d)
+                    ->sum('total');
+                    
+                $dayBookings = DB::table('hotel_bookings')
+                    ->whereIn('status', ['confirmed', 'completed'])
+                    ->whereDate('created_at', $d)
+                    ->count();
+                    
+                $revenueData[] = round((float) $dayRev, 2);
+                $bookingsData[] = $dayBookings;
+            }
+        }
+
         return view('admin.dashboard', [
             'stats' => $stats,
             'pendingPropertiesList' => $pendingPropertiesList,
+            'chartLabels' => $chartLabels,
+            'revenueData' => $revenueData,
+            'bookingsData' => $bookingsData,
             'pageTitle' => 'OTA Dashboard',
             'pageSubtitle' => 'Platform Overview & Operations',
         ]);

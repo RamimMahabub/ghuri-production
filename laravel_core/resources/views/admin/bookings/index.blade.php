@@ -46,7 +46,7 @@
                                 <p class="text-xs text-gray-500">to {{ \Carbon\Carbon::parse($booking->check_out)->format('M d, Y') }}</p>
                             </td>
                             <td class="px-6 py-4 font-medium text-slate-800">
-                                ${{ number_format($booking->total, 2) }}
+                                {{ \App\Helpers\Currency::format($booking->total) }}
                             </td>
                             <td class="px-6 py-4">
                                 @if($booking->status === 'confirmed')

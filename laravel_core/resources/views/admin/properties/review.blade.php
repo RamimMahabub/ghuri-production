@@ -243,7 +243,7 @@
                                 </div>
                                 <div class="text-left sm:text-right">
                                     <div class="text-xs text-slate-500 uppercase font-semibold">Base Price</div>
-                                    <div class="text-2xl font-bold text-blue-600">${{ number_format($room->base_price_per_night, 2) }}</div>
+                                    <div class="text-2xl font-bold text-blue-600">{{ \App\Helpers\Currency::format($room->base_price_per_night) }}</div>
                                     <div class="text-xs text-slate-500 mt-1">Inventory: <strong class="text-slate-800">{{ $room->inventory_count }}</strong> Rooms</div>
                                 </div>
                             </div>
@@ -270,7 +270,7 @@
                                             @foreach($room->ratePlans as $plan)
                                                 <div class="flex justify-between items-center text-sm border-b border-slate-50 last:border-0 pb-1">
                                                     <span class="text-slate-700">{{ $plan->plan_name }}</span>
-                                                    <span class="font-medium text-slate-900">+${{ number_format($plan->price_supplement_per_adult, 2) }}</span>
+                                                    <span class="font-medium text-slate-900">+{{ \App\Helpers\Currency::format($plan->price_supplement_per_adult) }}</span>
                                                 </div>
                                             @endforeach
                                         </div>

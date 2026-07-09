@@ -104,23 +104,23 @@
                 <div class="space-y-3 text-sm pb-4 border-b border-brand-border">
                     <div class="flex justify-between">
                         <span class="text-brand-text">Room rate</span>
-                        <span class="text-brand-black">${{ number_format($booking->subtotal, 2) }}</span>
+                        <span class="text-brand-black">{{ \App\Helpers\Currency::format($booking->subtotal) }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-brand-text">Taxes & fees</span>
-                        <span class="text-brand-black">${{ number_format($booking->taxes + $booking->fees, 2) }}</span>
+                        <span class="text-brand-black">{{ \App\Helpers\Currency::format($booking->taxes + $booking->fees) }}</span>
                     </div>
                     @if($booking->discount_amount > 0)
                         <div class="flex justify-between text-status-confirmed font-medium">
                             <span>Discount</span>
-                            <span>-${{ number_format($booking->discount_amount, 2) }}</span>
+                            <span>-{{ \App\Helpers\Currency::format($booking->discount_amount) }}</span>
                         </div>
                     @endif
                 </div>
 
                 <div class="flex justify-between mt-4">
                     <span class="font-heading font-bold text-lg text-brand-black">Total</span>
-                    <span class="font-heading font-bold text-xl text-brand-black">${{ number_format($booking->total, 2) }}</span>
+                    <span class="font-heading font-bold text-xl text-brand-black">{{ \App\Helpers\Currency::format($booking->total) }}</span>
                 </div>
                 
                 <div class="mt-4 pt-4 border-t border-brand-border">

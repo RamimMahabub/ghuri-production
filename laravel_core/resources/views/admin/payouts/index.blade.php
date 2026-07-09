@@ -31,11 +31,11 @@
                                             <div class="text-xs text-gray-500">Owner: {{ $data->property->owner->name ?? 'N/A' }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <div class="text-sm font-bold text-gray-900">${{ number_format($data->pending_amount, 2) }}</div>
+                                            <div class="text-sm font-bold text-gray-900">{{ \App\Helpers\Currency::format($data->pending_amount) }}</div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             @if($data->last_payout)
-                                                <div class="text-sm text-gray-900">${{ number_format($data->last_payout->amount, 2) }}</div>
+                                                <div class="text-sm text-gray-900">{{ \App\Helpers\Currency::format($data->last_payout->amount) }}</div>
                                                 <div class="text-xs text-gray-500">{{ $data->last_payout->processed_at->format('M d, Y') }}</div>
                                             @else
                                                 <span class="text-sm text-gray-500">No previous payouts</span>
@@ -43,7 +43,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             @if($data->pending_amount > 0)
-                                                <form action="{{ route('admin.payouts.process', $data->property) }}" method="POST" onsubmit="return confirm('Process payout of ${{ number_format($data->pending_amount, 2) }}?');">
+                                                <form action="{{ route('admin.payouts.process', $data->property) }}" method="POST" onsubmit="return confirm('Process payout of {{ \App\Helpers\Currency::format($data->pending_amount) }}?');">
                                                     @csrf
                                                     <input type="hidden" name="amount" value="{{ $data->pending_amount }}">
                                                     <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">

@@ -65,9 +65,10 @@ class DashboardController extends Controller
             ->withCount('hotelBookings')
             ->get();
 
-        // Chart Data: Last 7 days revenue
+        // Chart Data: Last 7 days revenue and bookings
         $chartLabels = [];
         $chartData = [];
+        $bookingsData = [];
         for ($i = 6; $i >= 0; $i--) {
             $d = Carbon::today()->subDays($i);
             $chartLabels[] = $d->format('M d');
@@ -77,12 +78,18 @@ class DashboardController extends Controller
                 ->whereDate('created_at', $d)
                 ->sum('total');
             $chartData[] = round($dayRev, 2);
+
+            $dayBookings = HotelBooking::whereIn('property_id', $propertyIds)
+                ->whereIn('status', ['confirmed', 'checked_in', 'checked_out'])
+                ->whereDate('created_at', $d)
+                ->count();
+            $bookingsData[] = $dayBookings;
         }
 
         return view('property-owner.dashboard', compact(
             'totalBookings', 'monthBookings', 'totalRevenue', 'monthRevenue',
             'pendingCount', 'upcomingCheckins', 'upcomingCheckouts',
-            'recentReviews', 'properties', 'chartLabels', 'chartData'
+            'recentReviews', 'properties', 'chartLabels', 'chartData', 'bookingsData'
         ));
     }
 }

@@ -74,14 +74,14 @@
         <div class="card card-body">
             <h3 class="font-heading font-bold text-brand-black text-sm mb-4"><i class="fas fa-receipt text-brand-primary mr-2"></i>Price Breakdown</h3>
             <div class="space-y-2 text-sm">
-                <div class="flex justify-between"><span class="text-brand-muted">Nightly rate × {{ $booking->nights }} nights</span><span>${{ number_format($booking->subtotal, 2) }}</span></div>
-                <div class="flex justify-between"><span class="text-brand-muted">Taxes</span><span>${{ number_format($booking->taxes, 2) }}</span></div>
-                <div class="flex justify-between"><span class="text-brand-muted">Fees</span><span>${{ number_format($booking->fees, 2) }}</span></div>
+                <div class="flex justify-between"><span class="text-brand-muted">Nightly rate × {{ $booking->nights }} nights</span><span>{{ \App\Helpers\Currency::format($booking->subtotal) }}</span></div>
+                <div class="flex justify-between"><span class="text-brand-muted">Taxes</span><span>{{ \App\Helpers\Currency::format($booking->taxes) }}</span></div>
+                <div class="flex justify-between"><span class="text-brand-muted">Fees</span><span>{{ \App\Helpers\Currency::format($booking->fees) }}</span></div>
                 @if($booking->discount_amount > 0)
-                    <div class="flex justify-between text-status-confirmed"><span>Discount</span><span>-${{ number_format($booking->discount_amount, 2) }}</span></div>
+                    <div class="flex justify-between text-status-confirmed"><span>Discount</span><span>-{{ \App\Helpers\Currency::format($booking->discount_amount) }}</span></div>
                 @endif
                 <div class="flex justify-between pt-3 border-t-2 border-brand-black font-heading font-bold text-lg">
-                    <span>Total</span><span>${{ number_format($booking->total, 2) }}</span>
+                    <span>Total</span><span>{{ \App\Helpers\Currency::format($booking->total) }}</span>
                 </div>
             </div>
         </div>
