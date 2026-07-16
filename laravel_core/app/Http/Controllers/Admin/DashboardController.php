@@ -26,7 +26,7 @@ class DashboardController extends Controller
             
             // Total sales from hotel bookings
             $stats['total_sales'] = (float) DB::table('hotel_bookings')
-                ->whereIn('status', ['confirmed', 'completed'])
+                ->whereIn('status', ['confirmed', 'checked_in', 'checked_out'])
                 ->sum('total');
                 
             // Estimate commission (assuming average 15% if no commission table check)
@@ -39,7 +39,7 @@ class DashboardController extends Controller
         }
 
         if (Schema::hasTable('properties')) {
-            $stats['active_properties'] = DB::table('properties')->where('status', 'active')->count();
+            $stats['active_properties'] = DB::table('properties')->where('status', 'approved')->count();
             $stats['pending_properties'] = DB::table('properties')->where('status', 'pending_approval')->count();
         }
 
@@ -68,12 +68,12 @@ class DashboardController extends Controller
                 $chartLabels[] = $d->format('M d');
                 
                 $dayRev = DB::table('hotel_bookings')
-                    ->whereIn('status', ['confirmed', 'completed'])
+                    ->whereIn('status', ['confirmed', 'checked_in', 'checked_out'])
                     ->whereDate('created_at', $d)
                     ->sum('total');
                     
                 $dayBookings = DB::table('hotel_bookings')
-                    ->whereIn('status', ['confirmed', 'completed'])
+                    ->whereIn('status', ['confirmed', 'checked_in', 'checked_out'])
                     ->whereDate('created_at', $d)
                     ->count();
                     

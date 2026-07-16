@@ -311,7 +311,7 @@
                                 <div class="w-full md:w-1/4 px-6 flex flex-col justify-center items-end py-4 md:py-0">
                                     <p class="text-[10px] font-bold text-[#1882FF] tracking-wider mb-1 uppercase flex items-center gap-1">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                        GHURI
+                                        Bookdei
                                     </p>
                                     <h3 class="text-2xl font-bold text-[#1a2b49]"><span x-text="flight.display_symbol + ' ' + formatNumber(flight.display_price)"></span></h3>
                                     <template x-if="flight.crossed_price_display">

@@ -26,6 +26,9 @@ class User extends Authenticatable
         'role',
         'google_id',
         'avatar',
+        'bank_details',
+        'card_details',
+        'mfs_details',
     ];
 
     /**
@@ -48,6 +51,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'bank_details' => 'array',
+            'card_details' => 'array',
+            'mfs_details' => 'array',
         ];
     }
 
@@ -64,6 +70,16 @@ class User extends Authenticatable
     public function hotelBookings()
     {
         return $this->hasMany(HotelBooking::class, 'guest_id');
+    }
+
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class, 'requester_id');
+    }
+
+    public function assignedSupportTickets()
+    {
+        return $this->hasMany(SupportTicket::class, 'assigned_to');
     }
 
     public function isCustomer(): bool

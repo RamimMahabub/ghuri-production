@@ -19,7 +19,7 @@ class HotelSearchController extends Controller
     public function index(Request $request)
     {
         $query = Property::approved()
-            ->with(['photos', 'reviews'])
+            ->with(['photos', 'reviews', 'promotions'])
             ->withCount('reviews');
 
         // Destination search

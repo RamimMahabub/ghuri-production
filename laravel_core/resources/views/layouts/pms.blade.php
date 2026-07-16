@@ -3,8 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Property Management' }} — {{ config('app.name', 'GhuriTravel') }}</title>
+    <title>{{ $title ?? 'Property Management' }} — {{ config('app.name', 'Bookdei') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,7 +41,7 @@
                     <i class="fas fa-building text-white text-lg"></i>
                 </div>
                 <div x-show="sidebarOpen" x-transition.opacity.duration.300ms class="truncate">
-                    <span class="font-heading font-bold text-lg tracking-tight text-white block leading-tight">GhuriTravel</span>
+                    <span class="font-heading font-bold text-lg tracking-tight text-white block leading-tight">Bookdei</span>
                     <span class="text-[10px] text-white/80 uppercase tracking-widest font-bold">Partner Hub</span>
                 </div>
             </div>
@@ -118,6 +119,22 @@
                     <i class="fas fa-cog w-5 text-center {{ request()->routeIs('property-owner.settings*') ? 'text-[#d00e15]' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
                     <span x-show="sidebarOpen" class="font-medium text-sm">Settings</span>
                 </a>
+
+                <a href="{{ route('property-owner.support.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('property-owner.support.*') ? 'bg-red-50 text-[#d00e15] font-semibold border-l-3 border-[#d00e15]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <i class="fas fa-headset w-5 text-center {{ request()->routeIs('property-owner.support.*') ? 'text-[#d00e15]' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
+                    <span x-show="sidebarOpen" class="font-medium text-sm flex-1">Partner Support</span>
+                    @php($ownerSupportUnread = \App\Models\SupportTicket::where('requester_id', Auth::id())->where(fn($q) => $q->whereNull('requester_last_read_at')->orWhereColumn('last_message_at', '>', 'requester_last_read_at'))->count())
+                    @if($ownerSupportUnread)<span x-show="sidebarOpen" class="bg-[#d00e15] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $ownerSupportUnread }}</span>@endif
+                </a>
+
+                <div x-show="sidebarOpen" class="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2 mt-6">Quick Links</div>
+
+                <a href="{{ url('/') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                    <i class="fas fa-home w-5 text-center text-gray-400 group-hover:text-gray-600"></i>
+                    <span x-show="sidebarOpen" class="font-medium text-sm">Back to Home</span>
+                </a>
             </nav>
 
             {{-- User Profile --}}
@@ -163,6 +180,10 @@
                             {{ $headerActions }}
                         </div>
                     @endisset
+
+                    <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-600 hover:text-brand-primary transition-colors px-3">
+                        Back to Home
+                    </a>
 
                     <button class="relative p-2 text-gray-400 hover:text-brand-primary transition-colors rounded-full hover:bg-gray-50">
                         <i class="fas fa-bell text-lg"></i>

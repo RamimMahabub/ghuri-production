@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Complete your booking — {{ $property->name }}</title>
+    <meta name="robots" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -398,7 +399,7 @@
     <div class="checkout-header-inner">
         <a href="{{ route('hotels.show', $property) }}" class="logo-link">
             <i class="fas fa-plane-departure"></i>
-            GhuriTravel
+            Bookdei
         </a>
         <div class="steps-bar">
             <div class="step-item active">
@@ -672,31 +673,31 @@
                         @foreach($pricing['nightly_rates'] as $date => $rate)
                             <div class="nightly-breakdown-row">
                                 <span>{{ \Carbon\Carbon::parse($date)->format('D, M d') }}</span>
-                                <span>${{ number_format($rate, 2) }}</span>
+                                <span>{{ \App\Helpers\Currency::format($rate) }}</span>
                             </div>
                         @endforeach
                     </div>
                     @endif
 
                     <div class="price-row">
-                        <span style="color:#6b7280;">${{ number_format($pricing['nightly_rate'], 2) }} × {{ $pricing['nights'] }} nights</span>
-                        <span>${{ number_format($pricing['subtotal'], 2) }}</span>
+                        <span style="color:#6b7280;">{{ \App\Helpers\Currency::format($pricing['nightly_rate']) }} × {{ $pricing['nights'] }} nights</span>
+                        <span>{{ \App\Helpers\Currency::format($pricing['subtotal']) }}</span>
                     </div>
                     <div class="price-row">
                         <span style="color:#6b7280;">Tax (10%)</span>
-                        <span>${{ number_format($pricing['taxes'], 2) }}</span>
+                        <span>{{ \App\Helpers\Currency::format($pricing['taxes']) }}</span>
                     </div>
                     <div class="price-row">
                         <span style="color:#6b7280;">Service fee</span>
-                        <span>${{ number_format($pricing['fees'], 2) }}</span>
+                        <span>{{ \App\Helpers\Currency::format($pricing['fees']) }}</span>
                     </div>
                     <div class="price-row discount" id="discount-row" style="{{ $pricing['discount'] > 0 ? '' : 'display:none;' }}">
                         <span>Discount</span>
-                        <span id="discount-amount">-${{ number_format($pricing['discount'], 2) }}</span>
+                        <span id="discount-amount">-{{ \App\Helpers\Currency::format($pricing['discount']) }}</span>
                     </div>
                     <div class="price-row total">
                         <span>Total</span>
-                        <span id="total-amount">${{ number_format($pricing['total'], 2) }}</span>
+                        <span id="total-amount">{{ \App\Helpers\Currency::format($pricing['total']) }}</span>
                     </div>
 
                     <div style="margin-top:12px;font-size:12px;color:#6b7280;text-align:center;">
@@ -733,7 +734,7 @@
                         @foreach($promotions as $promo)
                             <div class="offer-card">
                                 <span class="offer-code" onclick="document.getElementById('promo_input').value='{{ $promo->code }}'">{{ $promo->code }}</span>
-                                <span style="color:#374151;">{{ $promo->discount_type === 'percent' ? $promo->discount_value.'%' : '$'.$promo->discount_value }} off {{ strtolower($promo->title) }}</span>
+                                <span style="color:#374151;">{{ $promo->discount_type === 'percent' ? $promo->discount_value.'%' : \App\Helpers\Currency::format($promo->discount_value) }} off {{ strtolower($promo->title) }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -817,8 +818,8 @@
                 
                 // Show discount row
                 document.getElementById('discount-row').style.display = 'flex';
-                document.getElementById('discount-amount').textContent = '-$' + parseFloat(data.discount).toFixed(2);
-                document.getElementById('total-amount').textContent = '$' + parseFloat(data.total).toFixed(2);
+                document.getElementById('discount-amount').textContent = '-' + data.discount_formatted;
+                document.getElementById('total-amount').textContent = data.total_formatted;
             } else {
                 msgEl.textContent = data.message || 'Invalid promo code';
                 msgEl.className = 'promo-msg error';
@@ -826,7 +827,7 @@
                 // Clear hidden input and discount if previously applied
                 document.getElementById('hidden_promo_code').value = '';
                 document.getElementById('discount-row').style.display = 'none';
-                document.getElementById('total-amount').textContent = '${{ number_format($pricing["subtotal"] + $pricing["taxes"] + $pricing["fees"], 2) }}';
+                document.getElementById('total-amount').textContent = '{{ \App\Helpers\Currency::format($pricing["subtotal"] + $pricing["taxes"] + $pricing["fees"]) }}';
             }
         } catch (error) {
             msgEl.textContent = 'An error occurred. Please try again.';
@@ -840,5 +841,4 @@
 <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 </body>
 </html>
-
 

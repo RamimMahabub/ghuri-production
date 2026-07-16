@@ -261,6 +261,62 @@
         </div>
     </div>
 
+    {{-- Property Performance --}}
+    <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 mt-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h3 class="font-heading font-bold text-lg text-brand-black">Property Performance</h3>
+                <p class="text-xs text-gray-500">Revenue and booking breakdown by property</p>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[11px] uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                        <th class="pb-3 font-semibold pl-2">Property</th>
+                        <th class="pb-3 font-semibold text-right">Total Revenue</th>
+                        <th class="pb-3 font-semibold text-center">Active Bookings</th>
+                        <th class="pb-3 font-semibold text-right pr-2">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    @forelse($properties as $property)
+                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                            <td class="py-4 pl-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-brand-primary/5 text-brand-primary flex items-center justify-center font-bold text-lg shadow-inner border border-brand-primary/10">
+                                        <i class="fas fa-hotel"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-gray-900">{{ $property->name }}</p>
+                                        <p class="text-[11px] text-gray-500"><i class="fas fa-map-marker-alt text-brand-primary/60"></i> {{ $property->city }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4 text-right">
+                                <span class="font-bold text-gray-900 text-sm">{{ \App\Helpers\Currency::format($property->total_revenue ?? 0) }}</span>
+                            </td>
+                            <td class="py-4 text-center">
+                                <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-lg text-xs font-bold border border-gray-200 shadow-sm">
+                                    {{ $property->active_bookings_count ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="py-4 text-right pr-2">
+                                <a href="{{ route('property-owner.hotels.edit', $property->id) }}" class="text-brand-primary hover:text-brand-primary/80 text-[11px] font-bold uppercase tracking-wider bg-brand-primary/5 px-3 py-1.5 rounded-lg border border-brand-primary/20 transition-all hover:bg-brand-primary hover:text-white">
+                                    Manage
+                                </a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-gray-500 text-sm">No properties found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -309,7 +365,7 @@
                 yaxis: {
                     labels: { 
                         style: { colors: '#9CA3AF', fontSize: '11px' },
-                        formatter: function(val) { return '৳' + val; }
+                        formatter: function(val) { return '৳ ' + val; }
                     }
                 },
                 grid: {

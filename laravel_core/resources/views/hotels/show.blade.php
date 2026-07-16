@@ -1,9 +1,50 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en-BD">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $property->name }} — {{ config('app.name') }}</title>
+    @php
+        $seoDescription = \Illuminate\Support\Str::limit(strip_tags($property->short_description ?: $property->full_description ?: "Book {$property->name} in {$property->city}, Bangladesh with Bookdei."), 155);
+        $hotelSchema = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => in_array($property->type, ['hotel', 'resort']) ? 'Hotel' : 'LodgingBusiness',
+            'name' => $property->name,
+            'description' => $seoDescription,
+            'url' => route('hotels.show', $property),
+            'image' => [$property->cover_photo_url],
+            'address' => array_filter([
+                '@type' => 'PostalAddress',
+                'streetAddress' => $property->address_line_1,
+                'addressLocality' => $property->city,
+                'addressRegion' => $property->state,
+                'postalCode' => $property->postal_code,
+                'addressCountry' => 'BD',
+            ]),
+            'geo' => ($property->latitude && $property->longitude) ? [
+                '@type' => 'GeoCoordinates',
+                'latitude' => (float) $property->latitude,
+                'longitude' => (float) $property->longitude,
+            ] : null,
+            'priceRange' => $property->lowest_price ? 'From BDT '.number_format($property->lowest_price) : null,
+            'aggregateRating' => ($property->average_rating && $property->review_count) ? [
+                '@type' => 'AggregateRating',
+                'ratingValue' => $property->average_rating,
+                'reviewCount' => $property->review_count,
+                'bestRating' => 5,
+            ] : null,
+        ]);
+    @endphp
+    <title>{{ $property->name }} in {{ $property->city }} | Bookdei</title>
+    <meta name="description" content="{{ $seoDescription }}">
+    <meta name="robots" content="{{ $property->isApproved() ? 'index, follow, max-image-preview:large' : 'noindex, nofollow' }}">
+    <link rel="canonical" href="{{ route('hotels.show', $property) }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Bookdei">
+    <meta property="og:title" content="{{ $property->name }} in {{ $property->city }} | Bookdei">
+    <meta property="og:description" content="{{ $seoDescription }}">
+    <meta property="og:url" content="{{ route('hotels.show', $property) }}">
+    <meta property="og:image" content="{{ $property->cover_photo_url }}">
+    <script type="application/ld+json">{!! json_encode($hotelSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     <meta name="description" content="{{ $property->short_description ?? $property->name . ' in ' . $property->city }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -682,10 +723,6 @@
 @php
     $userCurrency = session('currency', 'BDT');
     $currencySymbol = $userCurrency === 'USD' ? '$' : '৳';
-    $exchangeRate = 1;
-    if ($userCurrency === 'BDT') {
-        $exchangeRate = app(\App\Services\CurrencyConverterService::class)->getExchangeRate('USD', 'BDT');
-    }
 @endphp
 <header class="hotel-header">
     <div class="hotel-header-inner">
@@ -847,7 +884,7 @@
                                 @php
                                     $data = $roomsData[$roomType->id] ?? ['available' => 0, 'pricing' => ['total' => 0, 'nightly_rate' => 0, 'nights' => 1]];
                                     $isAvailable = $data['available'] > 0;
-                                    $plans = $roomType->activeRatePlans;
+                                    $plans = $roomType->activeRatePlans->sortBy('price_supplement_per_adult')->take(1);
                                     $planCount = max($plans->count(), 1);
                                 @endphp
                                 @if($plans->isEmpty())
@@ -895,10 +932,10 @@
                                         @endif
                                     </td>
                                     <td class="price-cell">
-                                        <div class="price-nightly">{{ $currencySymbol }}{{ number_format($data['pricing']['nightly_rate'] * $exchangeRate, 0) }}</div>
+                                        <div class="price-nightly">{{ \App\Helpers\Currency::format($data['pricing']['nightly_rate']) }}</div>
                                         <div class="price-per-night-label">per night</div>
                                         @if($data['pricing']['nights'] > 1)
-                                            <div class="price-total">{{ $currencySymbol }}{{ number_format($data['pricing']['total'] * $exchangeRate, 0) }} total</div>
+                                            <div class="price-total">{{ \App\Helpers\Currency::format($data['pricing']['total']) }} total</div>
                                         @endif
                                         <div class="price-taxes-note" style="margin-top:3px;">Incl. taxes &amp; fees</div>
                                     </td>
@@ -984,10 +1021,10 @@
                                             $planRate = ($data['pricing']['nightly_rate'] ?? 0) + $plan->price_supplement_per_adult;
                                             $planTotal = ($data['pricing']['total'] ?? 0) + ($plan->price_supplement_per_adult * ($data['pricing']['nights'] ?? 1));
                                         @endphp
-                                        <div class="price-nightly">{{ $currencySymbol }}{{ number_format($planRate * $exchangeRate, 0) }}</div>
+                                        <div class="price-nightly">{{ \App\Helpers\Currency::format($planRate) }}</div>
                                         <div class="price-per-night-label">per night</div>
                                         @if(($data['pricing']['nights'] ?? 1) > 1)
-                                            <div class="price-total">{{ $currencySymbol }}{{ number_format($planTotal * $exchangeRate, 0) }} total</div>
+                                            <div class="price-total">{{ \App\Helpers\Currency::format($planTotal) }} total</div>
                                         @endif
                                         <div class="price-taxes-note" style="margin-top:3px;">Incl. taxes &amp; fees</div>
                                     </td>
@@ -1210,7 +1247,7 @@
         <div>
             <div class="booking-widget">
                 <div class="widget-title">Starting from</div>
-                <div class="widget-price">{{ $currencySymbol }}{{ number_format(($property->lowest_price ?? 0) * $exchangeRate, 0) }} <span>/ night</span></div>
+                <div class="widget-price">{{ \App\Helpers\Currency::format($property->lowest_price ?? 0) }} <span>/ night</span></div>
 
                 @if($property->average_rating)
                 <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
@@ -1275,22 +1312,22 @@
                 @if($firstData)
                 <div style="font-size:13px;">
                     <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#374151;">
-                        <span>{{ $currencySymbol }}{{ number_format($firstData['pricing']['nightly_rate'] * $exchangeRate, 0) }} × {{ $firstData['pricing']['nights'] }} nights</span>
-                        <span>{{ $currencySymbol }}{{ number_format($firstData['pricing']['subtotal'] * $exchangeRate, 0) }}</span>
+                        <span>{{ \App\Helpers\Currency::format($firstData['pricing']['nightly_rate']) }} × {{ $firstData['pricing']['nights'] }} nights</span>
+                        <span>{{ \App\Helpers\Currency::format($firstData['pricing']['subtotal']) }}</span>
                     </div>
                     <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#374151;">
                         <span>Taxes &amp; fees</span>
-                        <span>{{ $currencySymbol }}{{ number_format((($firstData['pricing']['taxes'] ?? 0) + ($firstData['pricing']['fees'] ?? 0)) * $exchangeRate, 0) }}</span>
+                        <span>{{ \App\Helpers\Currency::format(($firstData['pricing']['taxes'] ?? 0) + ($firstData['pricing']['fees'] ?? 0)) }}</span>
                     </div>
                     @if(($firstData['pricing']['discount'] ?? 0) > 0)
                     <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:#008009;">
                         <span>Discount</span>
-                        <span>-{{ $currencySymbol }}{{ number_format($firstData['pricing']['discount'] * $exchangeRate, 0) }}</span>
+                        <span>-{{ \App\Helpers\Currency::format($firstData['pricing']['discount']) }}</span>
                     </div>
                     @endif
                     <div style="display:flex;justify-content:space-between;font-weight:700;font-size:16px;color:#1a1a1a;padding-top:10px;border-top:2px solid #1a1a1a;margin-top:10px;">
                         <span>Total</span>
-                        <span>{{ $currencySymbol }}{{ number_format($firstData['pricing']['total'] * $exchangeRate, 0) }}</span>
+                        <span>{{ \App\Helpers\Currency::format($firstData['pricing']['total']) }}</span>
                     </div>
                 </div>
                 @endif

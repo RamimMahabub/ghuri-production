@@ -81,15 +81,15 @@
                 <div class="p-6 space-y-4">
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-500">Base Price</span>
-                        <span class="font-medium text-slate-800">{{ \App\Helpers\Currency::format($booking->total_price) }}</span>
+                        <span class="font-medium text-slate-800">{{ \App\Helpers\Currency::format($booking->total) }}</span>
                     </div>
                     <div class="flex justify-between text-sm">
                         <span class="text-gray-500">Platform Commission (Est. 15%)</span>
-                        <span class="font-medium text-green-600">{{ \App\Helpers\Currency::format($booking->total_price * 0.15) }}</span>
+                        <span class="font-medium text-green-600">{{ \App\Helpers\Currency::format($booking->total * 0.15) }}</span>
                     </div>
                     <div class="pt-4 border-t border-gray-100 flex justify-between">
                         <span class="font-bold text-slate-800">Total Paid</span>
-                        <span class="font-bold text-blue-600 text-lg">{{ \App\Helpers\Currency::format($booking->total_price) }}</span>
+                        <span class="font-bold text-blue-600 text-lg">{{ \App\Helpers\Currency::format($booking->total) }}</span>
                     </div>
                 </div>
             </div>

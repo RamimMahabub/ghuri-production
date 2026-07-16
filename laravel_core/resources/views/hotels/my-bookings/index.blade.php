@@ -1,7 +1,8 @@
-<x-app-layout>
-<div class="max-w-5xl mx-auto py-8 px-4">
-    <h1 class="page-title mb-6">My Bookings</h1>
+<x-customer-layout>
+    <x-slot name="pageTitle">My Bookings</x-slot>
+    <x-slot name="pageSubtitle">Manage your upcoming and past bookings</x-slot>
 
+<div class="max-w-5xl mx-auto py-2">
     {{-- Main Type Tabs --}}
     <div class="flex items-center gap-4 mb-6">
         <a href="#" class="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all bg-[#d00e15] text-white shadow-md">
@@ -16,7 +17,7 @@
     <div class="flex items-center gap-1 mb-6 border-b border-brand-border">
         @foreach(['upcoming' => 'Upcoming', 'past' => 'Past', 'cancelled' => 'Cancelled'] as $key => $label)
             <a href="{{ route('my-bookings.index', ['tab' => $key]) }}"
-               class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors {{ $tab === $key ? 'border-brand-primary text-brand-primary' : 'border-transparent text-brand-muted hover:text-brand-text' }}">
+               class="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors {{ $tab === $key ? 'border-[#d00e15] text-[#d00e15]' : 'border-transparent text-brand-muted hover:text-[#a00b10]' }}">
                 {{ $label }}
             </a>
         @endforeach
@@ -79,7 +80,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
-                                                            <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#006ce4] text-base font-medium text-white hover:bg-[#0057b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#006ce4] sm:ml-3 sm:w-auto sm:text-sm">
+                                                            <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#d00e15] text-base font-medium text-white hover:bg-[#a00b10] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#d00e15] sm:ml-3 sm:w-auto sm:text-sm">
                                                                 Submit Review
                                                             </button>
                                                             <button type="button" @click="open = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
@@ -109,4 +110,4 @@
         @endforelse
     </div>
 </div>
-</x-app-layout>
+</x-customer-layout>

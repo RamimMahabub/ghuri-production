@@ -46,6 +46,20 @@ class BookingService
             $data['property_id']
         );
 
+        // Calculate commission
+        $property = Property::find($data['property_id']);
+        $commissionRate = 15.0; // Global fallback
+        if ($property) {
+            $activeCommission = $property->commissions()
+                ->where('effective_from', '<=', now())
+                ->orderBy('effective_from', 'desc')
+                ->first();
+            if ($activeCommission) {
+                $commissionRate = (float) $activeCommission->rate_percent;
+            }
+        }
+        $commissionAmount = round($pricing['total'] * ($commissionRate / 100), 2);
+
         // Create the booking
         $booking = HotelBooking::create([
             'booking_ref' => HotelBooking::generateBookingRef(),
@@ -65,6 +79,7 @@ class BookingService
             'fees' => $pricing['fees'],
             'discount_amount' => $pricing['discount'],
             'total' => $pricing['total'],
+            'commission_amount' => $commissionAmount,
             'status' => $data['status'] ?? 'pending',
             'payment_status' => $data['payment_status'] ?? 'unpaid',
             'source' => $data['source'] ?? 'direct',

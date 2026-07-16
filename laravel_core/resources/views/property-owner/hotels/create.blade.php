@@ -414,7 +414,7 @@
                                 <h4 class="text-sm font-bold text-gray-700 mb-3 border-b pb-2"><i class="fas fa-dollar-sign mr-2 text-brand-primary"></i>Pricing & Inventory</h4>
                                 <div class="grid grid-cols-2 gap-5 mb-4">
                                     <div class="form-group">
-                                        <label class="form-label">Base Price per Night ($) *</label>
+                                        <label class="form-label">Base Price per Night ({{ session('currency', 'BDT') }}) *</label>
                                         <input type="number" :name="'rooms['+index+'][base_price_per_night]'" x-model="room.base_price_per_night" class="form-input-styled" step="0.01" min="0" required>
                                     </div>
                                     <div class="form-group">
@@ -431,7 +431,7 @@
                                             <input type="checkbox" :name="'rooms['+index+'][rate_plans][{{ $code }}][enabled]'" value="1" class="rounded border-gray-300 text-brand-primary focus:ring-brand-primary w-4 h-4">
                                             <span class="text-sm font-medium text-gray-800 flex-1">{{ $name }}</span>
                                             <div class="flex items-center gap-1.5 bg-white px-2 py-1 rounded border border-gray-200">
-                                                <span class="text-xs font-medium text-gray-500">+ $</span>
+                                                <span class="text-xs font-medium text-gray-500">+ {{ session('currency', 'BDT') === 'USD' ? '$' : '৳' }}</span>
                                                 <input type="number" :name="'rooms['+index+'][rate_plans][{{ $code }}][supplement]'" class="border-0 focus:ring-0 text-sm w-16 p-0 font-medium" step="0.01" placeholder="0">
                                                 <span class="text-xs text-gray-500">/adult</span>
                                             </div>

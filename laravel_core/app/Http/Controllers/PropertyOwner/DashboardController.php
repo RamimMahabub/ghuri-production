@@ -62,7 +62,12 @@ class DashboardController extends Controller
             ->get();
 
         $properties = Property::where('owner_id', $user->id)
-            ->withCount('hotelBookings')
+            ->withCount(['hotelBookings as active_bookings_count' => function ($query) {
+                $query->whereIn('status', ['confirmed', 'checked_in', 'checked_out']);
+            }])
+            ->withSum(['hotelBookings as total_revenue' => function ($query) {
+                $query->whereIn('status', ['confirmed', 'checked_in', 'checked_out']);
+            }], 'total')
             ->get();
 
         // Chart Data: Last 7 days revenue and bookings

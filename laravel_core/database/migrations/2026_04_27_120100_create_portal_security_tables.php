@@ -102,18 +102,7 @@ return new class extends Migration
             });
         }
 
-        if (! Schema::hasTable('support_tickets')) {
-            Schema::create('support_tickets', function (Blueprint $table): void {
-                $table->id();
-                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-                $table->foreignId('booking_id')->nullable()->constrained('bookings')->nullOnDelete();
-                $table->string('subject');
-                $table->text('message')->nullable();
-                $table->string('status')->default('open');
-                $table->string('priority')->default('normal');
-                $table->timestamps();
-            });
-        }
+        // Support is created by its dedicated conversation-system migration.
 
         if (! Schema::hasTable('coupons')) {
             Schema::create('coupons', function (Blueprint $table): void {

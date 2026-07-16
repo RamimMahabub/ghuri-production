@@ -61,6 +61,38 @@
                         @enderror
                     </div>
 
+                    <hr class="my-8 border-gray-200">
+
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Promotional Banner</h3>
+                    
+                    <div class="mb-6">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="promo_banner_enabled" class="rounded border-gray-300 text-[#1a2b49] shadow-sm focus:border-[#1a2b49] focus:ring focus:ring-[#1a2b49] focus:ring-opacity-50" value="1" {{ old('promo_banner_enabled', $promoBannerEnabled) == '1' ? 'checked' : '' }}>
+                            <span class="ml-2 text-sm text-gray-600">Enable Promotional Banner on Homepage</span>
+                        </label>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="promo_banner_title" class="block text-sm font-medium text-gray-700 mb-1">Banner Title</label>
+                        <input type="text" name="promo_banner_title" id="promo_banner_title" class="focus:ring-[#1a2b49] focus:border-[#1a2b49] block w-full sm:text-sm border-gray-300 rounded-md" value="{{ old('promo_banner_title', $promoBannerTitle) }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="promo_banner_subtitle" class="block text-sm font-medium text-gray-700 mb-1">Banner Subtitle</label>
+                        <textarea name="promo_banner_subtitle" id="promo_banner_subtitle" rows="2" class="focus:ring-[#1a2b49] focus:border-[#1a2b49] block w-full sm:text-sm border-gray-300 rounded-md">{{ old('promo_banner_subtitle', $promoBannerSubtitle) }}</textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <label for="promo_banner_button_text" class="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                            <input type="text" name="promo_banner_button_text" id="promo_banner_button_text" class="focus:ring-[#1a2b49] focus:border-[#1a2b49] block w-full sm:text-sm border-gray-300 rounded-md" value="{{ old('promo_banner_button_text', $promoBannerButtonText) }}">
+                        </div>
+                        <div>
+                            <label for="promo_banner_button_url" class="block text-sm font-medium text-gray-700 mb-1">Button URL</label>
+                            <input type="text" name="promo_banner_button_url" id="promo_banner_button_url" class="focus:ring-[#1a2b49] focus:border-[#1a2b49] block w-full sm:text-sm border-gray-300 rounded-md" value="{{ old('promo_banner_button_url', $promoBannerButtonUrl) }}" placeholder="https://... or #">
+                        </div>
+                    </div>
+
                     <div class="flex items-center justify-end">
                         <button type="submit" class="bg-[#1a2b49] hover:bg-[#24385d] text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline transition">
                             Save Settings

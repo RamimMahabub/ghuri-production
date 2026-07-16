@@ -5,66 +5,62 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Payout;
 use App\Models\Property;
+use App\Models\HotelBooking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PayoutController extends Controller
 {
     public function index()
     {
-        $properties = Property::approved()->with('owner')->get();
+        $payouts = Payout::with(['property.owner'])->orderBy('created_at', 'desc')->get();
         
-        $payoutData = [];
-        foreach ($properties as $property) {
-            $pendingBookings = \App\Models\HotelBooking::where('property_id', $property->id)
-                ->where('status', 'checked_out')
-                ->whereNull('payout_id')
-                ->get();
-                
-            $pendingAmount = $pendingBookings->sum(function($booking) {
-                return $booking->total - $booking->commission_amount;
-            });
+        $totalPayoutsAmount = $payouts->sum('amount');
+        $totalRequestedAmount = $payouts->where('status', 'requested')->sum('amount');
+        $totalGivenAmount = $payouts->where('status', 'processed')->sum('amount');
 
-            $payoutData[] = (object) [
-                'property' => $property,
-                'pending_amount' => $pendingAmount,
-                'last_payout' => Payout::where('property_id', $property->id)->latest('processed_at')->first()
-            ];
-        }
-
-        return view('admin.payouts.index', compact('payoutData'));
+        return view('admin.payouts.index', compact(
+            'payouts',
+            'totalPayoutsAmount',
+            'totalRequestedAmount',
+            'totalGivenAmount'
+        ));
     }
 
-    public function process(Request $request, Property $property)
+    public function updateStatus(Request $request, Payout $payout)
     {
-        $pendingBookings = \App\Models\HotelBooking::where('property_id', $property->id)
-            ->where('status', 'checked_out')
-            ->whereNull('payout_id')
-            ->get();
-            
-        $pendingAmount = $pendingBookings->sum(function($booking) {
-            return $booking->total - $booking->commission_amount;
-        });
+        $request->validate([
+            'status' => 'required|in:requested,processing,processed,rejected',
+            'payment_proof' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'bank_invoice' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
 
-        if ($pendingAmount <= 0) {
-            return back()->with('error', "No pending payouts available for {$property->name}.");
+        $payout->status = $request->status;
+
+        if ($request->status === 'processed') {
+            $payout->processed_at = now();
         }
 
-        $payout = Payout::create([
-            'property_id' => $property->id,
-            'amount' => $pendingAmount,
-            'status' => 'processed',
-            'period_start' => now()->subMonth()->startOfMonth(),
-            'period_end' => now(),
-            'processed_at' => now(),
-            'reference' => 'PAY-' . strtoupper(\Illuminate\Support\Str::random(6))
-        ]);
-        
-        // Link the bookings to the newly created payout
-        \App\Models\HotelBooking::where('property_id', $property->id)
-            ->where('status', 'checked_out')
-            ->whereNull('payout_id')
-            ->update(['payout_id' => $payout->id]);
+        if ($request->hasFile('payment_proof')) {
+            $path = $request->file('payment_proof')->store('payouts/proofs', 'public');
+            $payout->payment_proof = $path;
+        }
 
-        return back()->with('success', "Payout of $" . number_format($pendingAmount, 2) . " processed for {$property->name}.");
+        if ($request->hasFile('bank_invoice')) {
+            $path = $request->file('bank_invoice')->store('payouts/invoices', 'public');
+            $payout->bank_invoice = $path;
+        }
+
+        $payout->save();
+
+        return back()->with('success', 'Payout status updated successfully.');
+    }
+
+    public function showInvoice(Payout $payout)
+    {
+        $payout->load('property.owner');
+        $bookings = HotelBooking::where('payout_id', $payout->id)->get();
+
+        return view('admin.payouts.invoice', compact('payout', 'bookings'));
     }
 }

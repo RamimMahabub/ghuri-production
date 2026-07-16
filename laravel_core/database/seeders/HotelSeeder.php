@@ -18,7 +18,7 @@ class HotelSeeder extends Seeder
     {
         // Ensure we have a property owner
         $owner = User::firstOrCreate(
-            ['email' => 'owner@ghuri.travel'],
+            ['email' => 'owner@bookdei.com'],
             [
                 'name' => 'John Property Owner',
                 'password' => bcrypt('password'),

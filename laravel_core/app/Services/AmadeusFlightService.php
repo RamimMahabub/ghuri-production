@@ -32,7 +32,7 @@ class AmadeusFlightService implements FlightServiceInterface
             ]);
 
             if ($response->failed()) {
-                throw new \Exception('Failed to authenticate with GHURI flight engine: ' . $response->body());
+                throw new \Exception('Failed to authenticate with Bookdei flight engine: ' . $response->body());
             }
 
             return $response->json('access_token');
@@ -199,7 +199,7 @@ class AmadeusFlightService implements FlightServiceInterface
                 ],
                 'gender' => 'MALE', // Dummy
                 'contact' => [
-                    'emailAddress' => 'test@ghuri.travel',
+                    'emailAddress' => 'test@bookdei.com',
                     'phones' => [[
                         'deviceType' => 'MOBILE',
                         'countryCallingCode' => '880',

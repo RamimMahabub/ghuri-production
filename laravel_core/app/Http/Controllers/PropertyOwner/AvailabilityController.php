@@ -39,8 +39,10 @@ class AvailabilityController extends Controller
             $current->addDay();
         }
 
+        $properties = Property::where('owner_id', Auth::id())->get();
+
         return view('property-owner.availability.index', compact(
-            'hotel', 'roomTypes', 'calendarData', 'dates', 'month', 'startDate', 'endDate'
+            'hotel', 'roomTypes', 'calendarData', 'dates', 'month', 'startDate', 'endDate', 'properties'
         ));
     }
 
@@ -53,7 +55,7 @@ class AvailabilityController extends Controller
             'room_type_ids.*' => 'exists:room_types,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'action' => 'required|in:set_price,block,unblock,set_min_stay,close,open',
+            'action' => 'required|in:set_price,set_total_rooms,block,unblock,set_min_stay,close,open',
             'value' => 'nullable|numeric',
         ]);
 
@@ -62,6 +64,7 @@ class AvailabilityController extends Controller
 
         $data = match ($validated['action']) {
             'set_price' => ['price_override' => $validated['value']],
+            'set_total_rooms' => ['available_rooms' => max(0, (int)$validated['value'])],
             'block' => ['blocked_rooms' => $validated['value'] ?? 999],
             'unblock' => ['blocked_rooms' => 0],
             'set_min_stay' => ['min_stay' => (int)($validated['value'] ?? 1)],

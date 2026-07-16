@@ -79,7 +79,7 @@ class TrawexFlightService implements FlightServiceInterface
         $response = Http::withoutVerifying()->connectTimeout(10)->timeout(25)->post($this->baseUrl . '/aeroVE5/availability', $payload);
 
         if ($response->failed()) {
-            throw new \Exception('GHURI flight engine HTTP error: ' . $response->status() . ' - ' . $response->body());
+            throw new \Exception('Bookdei flight engine HTTP error: ' . $response->status() . ' - ' . $response->body());
         }
 
         $data = $response->json();
@@ -93,7 +93,7 @@ class TrawexFlightService implements FlightServiceInterface
             } elseif (isset($data['Errors'])) {
                  $errorMsg = json_encode($data['Errors']);
             }
-            throw new \Exception('GHURI flight engine returned no flights. Error: ' . $errorMsg);
+            throw new \Exception('Bookdei flight engine returned no flights. Error: ' . $errorMsg);
         }
 
         $sessionId = $searchResponse['session_id'] ?? null;
@@ -114,7 +114,7 @@ class TrawexFlightService implements FlightServiceInterface
             $flightId = md5($sessionId . $fareSourceCode . $index);
             
             // Cache the session_id along with the itinerary data
-            Cache::put('ghuri_offer_' . $flightId, [
+            Cache::put('bookdei_offer_' . $flightId, [
                 'session_id' => $sessionId,
                 'FareItinerary' => $fareItin
             ], now()->addHours(2));
@@ -327,7 +327,7 @@ class TrawexFlightService implements FlightServiceInterface
      */
     public function price(string $flightId): array
     {
-        $cachedData = Cache::get('ghuri_offer_' . $flightId);
+        $cachedData = Cache::get('bookdei_offer_' . $flightId);
         
         if (!$cachedData || !isset($cachedData['session_id']) || !isset($cachedData['FareItinerary'])) {
             return [
@@ -348,7 +348,7 @@ class TrawexFlightService implements FlightServiceInterface
         $response = Http::withoutVerifying()->connectTimeout(10)->timeout(25)->post($this->baseUrl . '/aeroVE5/revalidate', $payload);
 
         if ($response->failed()) {
-            Log::error('GHURI fare validation failed: ' . $response->body());
+            Log::error('Bookdei fare validation failed: ' . $response->body());
             return [
                 'total_price' => 0,
                 'currency' => 'USD',
@@ -377,7 +377,7 @@ class TrawexFlightService implements FlightServiceInterface
         // Re-cache the validated result and any new FareSourceCode if updated
         if (isset($validatedItin['AirItineraryFareInfo']['FareSourceCode'])) {
             $cachedData['FareItinerary'] = $validatedItin;
-            Cache::put('ghuri_offer_' . $flightId, $cachedData, now()->addHours(2));
+            Cache::put('bookdei_offer_' . $flightId, $cachedData, now()->addHours(2));
         }
 
         return [
@@ -392,7 +392,7 @@ class TrawexFlightService implements FlightServiceInterface
      */
     public function book(string $flightId, array $passengerDetails): array
     {
-        $cachedData = Cache::get('ghuri_offer_' . $flightId);
+        $cachedData = Cache::get('bookdei_offer_' . $flightId);
         
         if (!$cachedData || !isset($cachedData['session_id']) || !isset($cachedData['FareItinerary'])) {
             throw new \Exception("Flight offer has expired.");
@@ -419,7 +419,7 @@ class TrawexFlightService implements FlightServiceInterface
 
         $paxInfo = [
             'clientRef' => 'SYS_GEN_' . strtoupper(Str::random(6)),
-            'customerEmail' => $passengerDetails[0]['email'] ?? 'test@ghuri.travel',
+            'customerEmail' => $passengerDetails[0]['email'] ?? 'test@bookdei.com',
             'customerPhone' => $passengerDetails[0]['phone'] ?? '1234567890',
             'paxDetails' => [
                 [
@@ -449,8 +449,8 @@ class TrawexFlightService implements FlightServiceInterface
         $response = Http::withoutVerifying()->connectTimeout(10)->timeout(25)->post($this->baseUrl . '/aeroVE5/booking', $payload);
 
         if ($response->failed()) {
-            Log::error('GHURI booking failed: ' . $response->body());
-            throw new \Exception('Failed to process booking in GHURI engine.');
+            Log::error('Bookdei booking failed: ' . $response->body());
+            throw new \Exception('Failed to process booking in Bookdei engine.');
         }
 
         $data = $response->json();

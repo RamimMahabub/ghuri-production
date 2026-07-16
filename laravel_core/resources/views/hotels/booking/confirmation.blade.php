@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Booking Confirmed — {{ $booking->property->name }}</title>
+    <meta name="robots" content="noindex, nofollow">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -299,7 +300,7 @@
     <header class="conf-header">
         <a href="/" class="conf-logo">
             <i class="fas fa-plane-departure"></i>
-            GhuriTravel
+            Bookdei
         </a>
         <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6b7280;">
             <i class="fas fa-lock" style="color:#008009;"></i>
@@ -398,7 +399,7 @@
                     <div class="total-label">Total amount</div>
                     <div style="font-size:12px;opacity:0.7;">Includes taxes &amp; fees — pay at hotel</div>
                 </div>
-                <div class="total-amount">${{ number_format($booking->total, 2) }}</div>
+                <div class="total-amount">{{ \App\Helpers\Currency::format($booking->total) }}</div>
             </div>
         </div>
 
@@ -407,9 +408,12 @@
             <i class="fas {{ $booking->payment_status === 'paid' ? 'fa-check-circle' : 'fa-exclamation-triangle' }}" style="{{ $booking->payment_status === 'paid' ? 'color:#48bb78;' : '' }}"></i>
             <div>
                 @if($booking->payment_status === 'paid')
-                    <strong>Payment successful:</strong> You have securely paid ${{ number_format($booking->total, 2) }} online. Your room is fully guaranteed.
-                @else
-                    <strong>Payment at hotel:</strong> You will pay ${{ number_format($booking->total, 2) }} directly at the property during check-in. No charges have been made today.
+                    <strong>Payment successful:</strong> You have securely paid {{ \App\Helpers\Currency::format($booking->total) }} online. Your room is fully guaranteed.
+                </div>
+            @else
+                <div class="next-step-card">
+                    <i class="fas fa-info-circle text-brand-primary text-xl"></i>
+                    <strong>Payment at hotel:</strong> You will pay {{ \App\Helpers\Currency::format($booking->total) }} directly at the property during check-in. No charges have been made today.
                 @endif
             </div>
         </div>
@@ -447,10 +451,12 @@
                     <div>
                         @if($booking->payment_status === 'paid')
                             <div class="next-step-title">All paid up!</div>
-                            <div class="next-step-desc">Your payment of ${{ number_format($booking->total, 2) }} has been securely received. Just bring your ID for check-in.</div>
-                        @else
-                            <div class="next-step-title">Pay at hotel</div>
-                            <div class="next-step-desc">Payment of ${{ number_format($booking->total, 2) }} will be collected at check-in. Please have your ID and payment method ready.</div>
+                            <div class="next-step-desc">Your payment of {{ \App\Helpers\Currency::format($booking->total) }} has been securely received. Just bring your ID for check-in.</div>
+                        </div>
+                    @else
+                        <div class="next-step-item">
+                            <div class="next-step-title"><i class="fas fa-credit-card text-brand-primary"></i> Payment at Check-in</div>
+                            <div class="next-step-desc">Payment of {{ \App\Helpers\Currency::format($booking->total) }} will be collected at check-in. Please have your ID and payment method ready.</div>
                         @endif
                     </div>
                 </div>
@@ -466,25 +472,25 @@
             <div class="card-body">
                 <div class="detail-row">
                     <span class="detail-label">Room rate × {{ $booking->nights }} nights</span>
-                    <span class="detail-value">${{ number_format($booking->subtotal, 2) }}</span>
+                    <span class="detail-value">{{ \App\Helpers\Currency::format($booking->subtotal) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Tax (10%)</span>
-                    <span class="detail-value">${{ number_format($booking->taxes, 2) }}</span>
+                    <span class="detail-label">Taxes (10%)</span>
+                    <span class="detail-value">{{ \App\Helpers\Currency::format($booking->taxes) }}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">Service fee</span>
-                    <span class="detail-value">${{ number_format($booking->fees, 2) }}</span>
+                    <span class="detail-label">Service Fee (3%)</span>
+                    <span class="detail-value">{{ \App\Helpers\Currency::format($booking->fees) }}</span>
                 </div>
                 @if($booking->discount_amount > 0)
                 <div class="detail-row">
                     <span class="detail-label" style="color:#008009;">Discount applied</span>
-                    <span class="detail-value" style="color:#008009;">-${{ number_format($booking->discount_amount, 2) }}</span>
+                    <span class="detail-value" style="color:#008009;">-{{ \App\Helpers\Currency::format($booking->discount_amount) }}</span>
                 </div>
                 @endif
-                <div class="detail-row" style="font-size:16px;padding-top:14px;">
-                    <span style="font-weight:700;color:#1a1a1a;">Total</span>
-                    <span style="font-weight:800;color:#1a1a1a;font-family:'Outfit',sans-serif;font-size:20px;">${{ number_format($booking->total, 2) }}</span>
+                <div class="detail-row" style="border-top:1px solid #e5e7eb; padding-top:20px; margin-top:10px;">
+                    <span style="font-weight:800;color:#1a1a1a;font-family:'Outfit',sans-serif;font-size:20px;">Total Amount</span>
+                    <span style="font-weight:800;color:#1a1a1a;font-family:'Outfit',sans-serif;font-size:20px;">{{ \App\Helpers\Currency::format($booking->total) }}</span>
                 </div>
             </div>
         </div>

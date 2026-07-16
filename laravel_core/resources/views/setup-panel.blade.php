@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHURI — Setup Panel</title>
+    <title>Bookdei — Setup Panel</title>
+    <meta name="robots" content="noindex, nofollow">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -167,7 +168,7 @@
 
     {{-- ── Header ── --}}
     <div class="header">
-        <div class="logo">GHURI<span>.</span></div>
+        <div class="logo"><img src="{{ asset('images/logo.png') }}" alt="bookdei" style="height:80px; margin-top: 10px; transform: scale(1.6); transform-origin: left center;"></div>
         <div class="badge">Setup Panel</div>
         <div class="env-tag">
             ENV: <strong>{{ config('app.env', 'unknown') }}</strong>
@@ -281,14 +282,14 @@
             <div class="step-num">1</div>
             <div class="step-body">
                 In your Vercel project → <strong>Settings → Environment Variables</strong>, add:<br>
-                <code>SETUP_TOKEN</code> = any secret string, e.g. <code>ghuri-setup-2024</code>
+                <code>SETUP_TOKEN</code> = any secret string, e.g. <code>bookdei-setup-2024</code>
             </div>
         </div>
         <div class="step">
             <div class="step-num">2</div>
             <div class="step-body">
                 After every deploy, open your browser and go to:<br>
-                <code>https://your-app.vercel.app/setup?token=ghuri-setup-2024</code>
+                <code>https://your-app.vercel.app/setup?token=bookdei-setup-2024</code>
             </div>
         </div>
         <div class="step">

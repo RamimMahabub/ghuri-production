@@ -3,8 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'OTA Admin' }} — {{ config('app.name', 'GhuriTravel') }}</title>
+    <title>{{ $title ?? 'OTA Admin' }} — {{ config('app.name', 'Bookdei') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,7 +41,7 @@
                     <i class="fas fa-globe text-white text-lg"></i>
                 </div>
                 <div x-show="sidebarOpen" x-transition.opacity.duration.300ms class="truncate">
-                    <span class="font-heading font-bold text-lg tracking-tight text-white block leading-tight">GhuriTravel</span>
+                    <span class="font-heading font-bold text-lg tracking-tight text-white block leading-tight">Bookdei</span>
                     <span class="text-[10px] text-white/80 uppercase tracking-widest font-bold">OTA Admin</span>
                 </div>
             </div>
@@ -69,6 +70,15 @@
                     <span x-show="sidebarOpen" class="font-medium text-sm flex-1">Global Bookings</span>
                 </a>
 
+                <div x-show="sidebarOpen" class="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2 mt-6">Customer Care</div>
+                <a href="{{ route('admin.support.index') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('admin.support.*') ? 'bg-red-50 text-[#d00e15] font-semibold border-l-3 border-[#d00e15]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
+                    <i class="fas fa-headset w-5 text-center {{ request()->routeIs('admin.support.*') ? 'text-[#d00e15]' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
+                    <span x-show="sidebarOpen" class="font-medium text-sm flex-1">Support Center</span>
+                    @php($staffSupportUnread = \App\Models\SupportTicket::where(fn($q) => $q->whereNull('staff_last_read_at')->orWhereColumn('last_message_at', '>', 'staff_last_read_at'))->count())
+                    @if($staffSupportUnread)<span x-show="sidebarOpen" class="bg-[#d00e15] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $staffSupportUnread }}</span>@endif
+                </a>
+
                 <div x-show="sidebarOpen" class="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2 mt-6">Financials</div>
 
                 <a href="{{ route('admin.commissions.index') }}"
@@ -95,6 +105,14 @@
                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group {{ request()->routeIs('admin.settings.*') ? 'bg-red-50 text-[#d00e15] font-semibold border-l-3 border-[#d00e15]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}">
                     <i class="fas fa-cog w-5 text-center {{ request()->routeIs('admin.settings.*') ? 'text-[#d00e15]' : 'text-gray-400 group-hover:text-gray-600' }}"></i>
                     <span x-show="sidebarOpen" class="font-medium text-sm">Global Settings</span>
+                </a>
+
+                <div x-show="sidebarOpen" class="px-3 text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2 mt-6">Quick Links</div>
+
+                <a href="{{ url('/') }}"
+                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                    <i class="fas fa-home w-5 text-center text-gray-400 group-hover:text-gray-600"></i>
+                    <span x-show="sidebarOpen" class="font-medium text-sm">Back to Home</span>
                 </a>
             </nav>
 
@@ -141,6 +159,10 @@
                             {{ $headerActions }}
                         </div>
                     @endisset
+
+                    <a href="{{ url('/') }}" class="text-sm font-semibold text-gray-600 hover:text-[#d00e15] transition-colors px-3">
+                        Back to Home
+                    </a>
 
                     <div x-data="{ currencyOpen: false }" class="relative">
                         <button type="button" @click="currencyOpen = !currencyOpen" class="flex items-center gap-1 text-sm font-semibold text-gray-700 hover:text-[#d00e15] transition-colors p-2 rounded-lg hover:bg-gray-50" aria-label="Select currency">

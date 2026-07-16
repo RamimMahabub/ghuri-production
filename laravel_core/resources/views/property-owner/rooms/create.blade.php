@@ -61,7 +61,7 @@
             <h2 class="section-heading text-base"><i class="fas fa-dollar-sign text-brand-primary mr-2"></i>Pricing & Inventory</h2>
             <div class="grid grid-cols-2 gap-5">
                 <div class="form-group">
-                    <label class="form-label">Base Price per Night ($) *</label>
+                    <label class="form-label">Base Price per Night ({{ session('currency', 'BDT') }}) *</label>
                     <input type="number" name="base_price_per_night" class="form-input-styled" step="0.01" min="0" required>
                 </div>
                 <div class="form-group">
@@ -78,7 +78,7 @@
                         <input type="checkbox" name="rate_plans[{{ $code }}][enabled]" value="1" x-model="enabled" class="rounded border-brand-border text-brand-primary">
                         <span class="text-sm font-medium text-brand-black flex-1">{{ $name }}</span>
                         <div x-show="enabled" class="flex items-center gap-1">
-                            <span class="text-xs text-brand-muted">+ $</span>
+                            <span class="text-xs text-brand-muted">+ {{ session('currency', 'BDT') === 'USD' ? '$' : '৳' }}</span>
                             <input type="number" name="rate_plans[{{ $code }}][supplement]" class="form-input-styled text-sm w-20 py-1" step="0.01" value="0" placeholder="0">
                             <span class="text-xs text-brand-muted">/adult</span>
                         </div>

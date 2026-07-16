@@ -76,6 +76,11 @@ class HotelBooking extends Model
         return $this->hasOne(Review::class);
     }
 
+    public function payout(): BelongsTo
+    {
+        return $this->belongsTo(Payout::class);
+    }
+
     /* ── Accessors ───────────────────────────── */
 
     public function getNightsAttribute(): int

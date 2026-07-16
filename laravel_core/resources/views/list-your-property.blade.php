@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en-BD">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>List Your Property on GHURI – Reach Thousands of Travelers</title>
-    <meta name="description" content="Partner with GHURI and list your hotel, resort, or homestay. Reach thousands of travelers across Bangladesh and beyond. Get your first booking fast.">
+    <title>List Your Property on Bookdei – Reach Thousands of Travelers</title>
+    <meta name="description" content="Partner with Bookdei and list your hotel, resort, or homestay. Reach thousands of travelers across Bangladesh and beyond. Get your first booking fast.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ route('list-your-property') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Bookdei">
+    <meta property="og:title" content="List Your Property on Bookdei">
+    <meta property="og:description" content="Reach travelers across Bangladesh by listing your hotel, resort, apartment, or guesthouse on Bookdei.">
+    <meta property="og:url" content="{{ route('list-your-property') }}">
+    <meta property="og:image" content="{{ asset('hero-pc.webp') }}">
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -213,7 +221,7 @@
 ============================================================ --}}
 <nav class="lyp-nav">
     <div class="lyp-nav-inner">
-        <a href="{{ url('/') }}" class="lyp-logo">GHURI<span>.</span></a>
+        <a href="{{ url('/') }}" class="lyp-logo"><img src="{{ asset('images/logo.png') }}" alt="bookdei" style="height:60px; width: auto; transform: scale(1.6); transform-origin: left center;"></a>
 
         <div style="display:flex; align-items:center; gap:12px;">
             @auth
@@ -269,7 +277,7 @@
                 <h1 style="font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(2.4rem,5vw,3.8rem);line-height:1.08;color:white;margin:0 0 20px;">
                     List your<br>
                     <span style="background:linear-gradient(90deg,#ffb3b7,#ffd6d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">property</span><br>
-                    on <span style="color:white;">GHURI</span><span style="color:#ff4b55;">.</span>
+                    on <img src="{{ asset('images/logo.png') }}" alt="bookdei" style="height:48px; vertical-align: middle;">
                 </h1>
 
                 <p style="color:rgba(255,255,255,0.82);font-size:1.05rem;line-height:1.7;margin:0 0 20px;max-width:440px;">
@@ -343,10 +351,10 @@
                         </div>
                         <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:26px;height:38px;background:rgba(255,255,255,0.25);border-radius:2px 2px 0 0;"></div>
                     </div>
-                    {{-- B3 tall GHURI hotel --}}
+                    {{-- B3 tall Bookdei hotel --}}
                     <div class="building" style="width:98px;height:238px;background:linear-gradient(180deg,#c40c13,#7a0007);position:relative;border-radius:5px 5px 0 0;animation-delay:-0.6s;">
                         <div style="position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:8px;height:14px;background:#ff4b55;border-radius:2px 2px 0 0;"></div>
-                        <div style="position:absolute;top:10px;left:0;right:0;text-align:center;font-family:'Outfit',sans-serif;font-weight:900;color:rgba(255,255,255,0.88);font-size:10px;letter-spacing:2px;">GHURI</div>
+                        <div style="position:absolute;top:10px;left:0;right:0;text-align:center;font-family:'Outfit',sans-serif;font-weight:900;color:rgba(255,255,255,0.88);font-size:10px;letter-spacing:2px;">Bookdei</div>
                         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;padding:28px 7px 0;">
                             @for($w=0;$w<18;$w++)
                             <div style="height:11px;background:rgba(255,255,255,{{ $w%3==1 ? '0.65' : '0.22' }});border-radius:1px;"></div>
@@ -415,10 +423,10 @@
             <div style="display:none;" class="lg-connector"></div>
 
             @php $steps = [
-                ['n'=>'1','title'=>'Create Account','desc'=>'Sign up for a free GHURI account. Select "Property Owner" role during registration. Your PMS dashboard is created instantly.','icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
+                ['n'=>'1','title'=>'Create Account','desc'=>'Sign up for a free Bookdei account. Select "Property Owner" role during registration. Your PMS dashboard is created instantly.','icon'=>'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
                 ['n'=>'2','title'=>'Add Your Property','desc'=>'Fill in your property details — name, location, description, amenities, and photos. Set up room types, pricing, and availability.','icon'=>'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4'],
-                ['n'=>'3','title'=>'Get Approved','desc'=>'Submit your property for GHURI review. Our team verifies your listing quality. Approval typically takes 24–48 hours — you\'ll get an email.','icon'=>'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
-                ['n'=>'4','title'=>'Go Live & Earn','desc'=>'Your property is published to thousands of travelers on GHURI. Manage bookings, respond to reviews, and grow your revenue.','icon'=>'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'],
+                ['n'=>'3','title'=>'Get Approved','desc'=>'Submit your property for Bookdei review. Our team verifies your listing quality. Approval typically takes 24–48 hours — you\'ll get an email.','icon'=>'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'],
+                ['n'=>'4','title'=>'Go Live & Earn','desc'=>'Your property is published to thousands of travelers on Bookdei. Manage bookings, respond to reviews, and grow your revenue.','icon'=>'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'],
             ]; @endphp
 
             @foreach($steps as $step)
@@ -464,14 +472,14 @@
 </section>
 
 {{-- ============================================================
-     WHY GHURI — BENEFITS
+     WHY Bookdei — BENEFITS
 ============================================================ --}}
 <section style="padding:80px 24px;background:white;">
     <div style="max-width:1152px;margin:0 auto;">
         <div style="text-align:center;margin-bottom:52px;">
-            <div style="display:inline-block;background:#fff5f5;color:#d00e15;font-size:0.72rem;font-weight:700;padding:6px 16px;border-radius:50px;margin-bottom:14px;letter-spacing:0.08em;text-transform:uppercase;">Why GHURI?</div>
+            <div style="display:inline-block;background:#fff5f5;color:#d00e15;font-size:0.72rem;font-weight:700;padding:6px 16px;border-radius:50px;margin-bottom:14px;letter-spacing:0.08em;text-transform:uppercase;">Why Bookdei?</div>
             <h2 style="font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(1.8rem,4vw,2.4rem);color:#19100F;margin:0 0 10px;">Everything you need to grow</h2>
-            <p style="color:#6b7280;font-size:1rem;margin:0 auto;max-width:440px;">GHURI gives property owners powerful tools to manage, market, and maximize revenue — all in one place.</p>
+            <p style="color:#6b7280;font-size:1rem;margin:0 auto;max-width:440px;">Bookdei gives property owners powerful tools to manage, market, and maximize revenue — all in one place.</p>
         </div>
 
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
@@ -479,9 +487,9 @@
                 ['icon'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z','title'=>'Data-Rich Analytics','desc'=>'Access detailed performance insights — occupancy rates, revenue trends, and guest reviews — to refine your strategy and stay competitive.'],
                 ['icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z','title'=>'Availability Calendar','desc'=>'Manage room availability with a bulk-update calendar. Block dates, set seasonal pricing, and sync across room types instantly.'],
                 ['icon'=>'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z','title'=>'Flexible Pricing Rules','desc'=>'Set custom rate rules per room type — minimum stay, advance purchase, seasonal rates, and more. You\'re always in control.'],
-                ['icon'=>'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z','title'=>'Guest Reviews & Reputation','desc'=>'Respond to guest reviews directly from your dashboard. Build trust and improve your property\'s ranking on GHURI.'],
+                ['icon'=>'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z','title'=>'Guest Reviews & Reputation','desc'=>'Respond to guest reviews directly from your dashboard. Build trust and improve your property\'s ranking on Bookdei.'],
                 ['icon'=>'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z','title'=>'Promotions & Deals','desc'=>'Create special promotions and discount offers to attract more travelers during low season or for direct bookings.'],
-                ['icon'=>'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z','title'=>'Dedicated Partner Support','desc'=>'Our GHURI partner team is here to help you onboard, optimize listings, and resolve any issues — quickly and professionally.'],
+                ['icon'=>'M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z','title'=>'Dedicated Partner Support','desc'=>'Our Bookdei partner team is here to help you onboard, optimize listings, and resolve any issues — quickly and professionally.'],
             ]; @endphp
             @foreach($benefits as $b)
             <div class="benefit-card">
@@ -505,7 +513,7 @@
     <div style="max-width:1152px;margin:0 auto;">
         <div style="text-align:center;margin-bottom:36px;">
             <h2 style="font-family:'Outfit',sans-serif;font-weight:900;font-size:clamp(1.6rem,3.5vw,2rem);color:#19100F;margin:0 0 8px;">What can you list?</h2>
-            <p style="color:#6b7280;font-size:0.9rem;margin:0;">GHURI welcomes all types of accommodation.</p>
+            <p style="color:#6b7280;font-size:0.9rem;margin:0;">Bookdei welcomes all types of accommodation.</p>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;">
             @php $ptypes = [
@@ -542,12 +550,12 @@
 
         <div style="border:1.5px solid #f1f5f9;border-radius:20px;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.04);">
             @php $faqs = [
-                ['q'=>'Is it free to list my property on GHURI?',     'a'=>'Yes! Listing your property on GHURI is completely free. We operate on a commission-only model, meaning we only earn when you earn. There are no upfront fees or monthly charges.'],
+                ['q'=>'Is it free to list my property on Bookdei?',     'a'=>'Yes! Listing your property on Bookdei is completely free. We operate on a commission-only model, meaning we only earn when you earn. There are no upfront fees or monthly charges.'],
                 ['q'=>'How long does approval take?',                  'a'=>'Our team reviews submissions within 24–48 business hours. We check property details, photos, and room information to ensure quality for our travelers. You\'ll receive an email notification once approved.'],
-                ['q'=>'What commission does GHURI charge?',            'a'=>'Our standard commission rate is competitive with industry norms. The exact percentage is shared during your onboarding process. You keep the majority of each booking revenue.'],
-                ['q'=>'Can I manage multiple properties?',             'a'=>'Absolutely! Your GHURI Property Dashboard supports managing multiple properties under one account. Each property has its own rooms, availability, and pricing settings.'],
-                ['q'=>'How do I receive payment for bookings?',        'a'=>'GHURI processes guest payments and transfers your earnings (minus commission) directly to your registered bank account. Payout schedules and methods are configured in your dashboard settings.'],
-                ['q'=>'What if I need help setting up my listing?',   'a'=>'Our dedicated partner support team is available to assist you. You can reach us via email or the support section in your dashboard. We\'re committed to helping you succeed on GHURI.'],
+                ['q'=>'What commission does Bookdei charge?',            'a'=>'Our standard commission rate is competitive with industry norms. The exact percentage is shared during your onboarding process. You keep the majority of each booking revenue.'],
+                ['q'=>'Can I manage multiple properties?',             'a'=>'Absolutely! Your Bookdei Property Dashboard supports managing multiple properties under one account. Each property has its own rooms, availability, and pricing settings.'],
+                ['q'=>'How do I receive payment for bookings?',        'a'=>'Bookdei processes guest payments and transfers your earnings (minus commission) directly to your registered bank account. Payout schedules and methods are configured in your dashboard settings.'],
+                ['q'=>'What if I need help setting up my listing?',   'a'=>'Our dedicated partner support team is available to assist you. You can reach us via email or the support section in your dashboard. We\'re committed to helping you succeed on Bookdei.'],
             ]; @endphp
 
             @foreach($faqs as $fi => $faq)
@@ -581,7 +589,7 @@
             Ready to grow<br>your business?
         </h2>
         <p style="color:rgba(255,255,255,0.72);font-size:1rem;margin:0 auto 40px;max-width:420px;line-height:1.65;">
-            Join GHURI's growing network of property partners. It takes less than 10 minutes to set up your first listing.
+            Join Bookdei's growing network of property partners. It takes less than 10 minutes to set up your first listing.
         </p>
         <div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;">
             @auth
@@ -621,10 +629,10 @@
 <footer style="background:#0e0102;padding:28px 24px;">
     <div style="max-width:1152px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;">
         <div style="font-family:'Outfit',sans-serif;font-weight:900;font-size:1.4rem;color:white;">
-            GHURI<span style="color:#ff4b55;">.</span>
+            <img src="{{ asset('images/logo.png') }}" alt="bookdei" style="height:80px; width: auto; transform: scale(1.6); transform-origin: left center;">
         </div>
         <div style="color:rgba(255,255,255,0.4);font-size:0.8rem;">
-            &copy; {{ date('Y') }} GHURI. All rights reserved.
+            &copy; {{ date('Y') }} Bookdei. All rights reserved.
         </div>
         <div style="display:flex;gap:20px;">
             <a href="{{ url('/') }}"              style="color:rgba(255,255,255,0.45);font-size:0.8rem;text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">Home</a>

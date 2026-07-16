@@ -1,4 +1,6 @@
-<x-app-layout>
+<x-customer-layout>
+    <x-slot name="pageTitle">Search Flights</x-slot>
+    <x-slot name="pageSubtitle">Coming Soon</x-slot>
     <div class="max-w-4xl mx-auto py-16 px-4 text-center">
         <div class="relative inline-block mb-8">
             <div class="w-32 h-32 bg-red-50 rounded-full flex items-center justify-center animate-pulse-slow">
@@ -15,7 +17,7 @@
         </h1>
         
         <p class="text-lg md:text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            We are working hard behind the scenes to bring you the best flight deals and a seamless booking experience. Get ready to explore the skies with GhuriTravel.
+            We are working hard behind the scenes to bring you the best flight deals and a seamless booking experience. Get ready to explore the skies with Bookdei.
         </p>
 
         <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-xl mx-auto">
@@ -47,4 +49,4 @@
             50% { opacity: .8; transform: scale(1.05); }
         }
     </style>
-</x-app-layout>
+</x-customer-layout>

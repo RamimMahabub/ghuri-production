@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en-BD">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Search Hotels — {{ config('app.name', 'GhuriTravel') }}</title>
+    <title>Hotels in Bangladesh | Compare Stays on Bookdei</title>
+    <meta name="description" content="Search hotels, resorts, apartments, and guesthouses across Bangladesh. Compare available stays and book securely with Bookdei.">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ route('hotels.search') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Bookdei">
+    <meta property="og:title" content="Hotels in Bangladesh | Compare Stays on Bookdei">
+    <meta property="og:description" content="Find and compare hotels, resorts, apartments, and guesthouses across Bangladesh.">
+    <meta property="og:url" content="{{ route('hotels.search') }}">
+    <meta property="og:image" content="{{ asset('hero-pc.webp') }}">
     <meta name="description" content="Find and book the perfect hotel. Compare prices, read reviews, and reserve rooms at the best rates.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +22,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        /* Custom responsive classes for hPanel (no npm run build required) */
+        @media (min-width: 768px) {
+            .pc-card { padding: 0.75rem !important; }
+            .pc-img-wrap { width: 260px !important; height: auto !important; border-radius: 0.5rem !important; }
+            .pc-details { min-width: 250px !important; padding: 1rem !important; padding-left: 1.5rem !important; }
+            .pc-pricing { width: 240px !important; padding: 1rem !important; border-top-width: 0 !important; border-left-width: 1px !important; }
+        }
+        @media (min-width: 1024px) {
+            .pc-sidebar { width: 280px !important; }
+        }
+    </style>
 </head>
 <body class="font-sans antialiased bg-slate-50 text-slate-900">
     <div class="min-h-screen">
@@ -26,7 +48,7 @@
                         <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg">
                             <i class="fas fa-plane-departure text-white text-lg"></i>
                         </div>
-                        <span class="font-heading font-extrabold text-slate-900 text-xl tracking-tight">GhuriTravel</span>
+                        <span class="font-heading font-extrabold text-slate-900 text-xl tracking-tight">Bookdei</span>
                     </a>
 
                     {{-- Compact Search --}}
@@ -65,17 +87,17 @@
         </header>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+            <div class="flex flex-wrap gap-8">
                 
                 {{-- Left Sidebar Filters --}}
-                <aside style="width: 100%; max-width: 280px; flex-shrink: 0;">
+                <aside class="w-full shrink-0 pc-sidebar">
                     <form action="{{ route('hotels.search') }}" method="GET" class="sticky top-28 space-y-6">
                         <input type="hidden" name="destination" value="{{ request('destination') }}">
                         <input type="hidden" name="check_in" value="{{ request('check_in') }}">
                         <input type="hidden" name="check_out" value="{{ request('check_out') }}">
 
                         {{-- Main Filter Block --}}
-                        <div class="rounded-3xl border border-white/70 bg-white/80 shadow-xl backdrop-blur-xl p-6">
+                        <div class="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="font-bold text-[#1a2b49] text-lg">Filters</h3>
                                 <a href="{{ route('hotels.search', ['destination' => request('destination')]) }}" class="text-xs font-semibold text-[#1882FF] hover:text-blue-800 transition">Reset</a>
@@ -137,7 +159,7 @@
                 </aside>
 
                 {{-- Main Results Area --}}
-                <div style="flex: 1; min-width: 300px;">
+                <div class="flex-1 min-w-0">
                     
                     {{-- Top Bar --}}
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 bg-white/60 backdrop-blur-md border border-white/70 p-4 rounded-2xl shadow-sm">
@@ -188,16 +210,16 @@
                             @endif
 
                             {{-- Horizontal Property Card --}}
-                            <div class="rounded-3xl border border-white/70 bg-white/80 shadow-xl backdrop-blur-xl overflow-hidden transition-transform hover:-translate-y-1 duration-300" style="display: flex; flex-wrap: wrap; align-items: stretch;">
+                            <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-wrap items-stretch hover:shadow-md transition-shadow pc-card">
                                 
                                 {{-- Image Section --}}
-                                <div style="flex-shrink: 0; width: 280px; position: relative;">
+                                <div class="relative w-full h-[200px] shrink-0 overflow-hidden pc-img-wrap">
                                     @php
                                         $coverUrl = $property->cover_photo_url;
                                         $isPlaceholder = str_contains($coverUrl, 'placeholder-hotel.jpg');
                                     @endphp
                                     @if(!$isPlaceholder)
-                                        <img src="{{ $coverUrl }}" alt="{{ $property->name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        <img src="{{ $coverUrl }}" alt="{{ $property->name }}" class="w-full h-full object-cover">
                                     @else
                                         <div class="w-full h-full bg-slate-100 flex items-center justify-center">
                                             <i class="fas fa-hotel text-4xl text-slate-300"></i>
@@ -205,76 +227,54 @@
                                     @endif
 
                                     {{-- Badges --}}
-                                    <div class="absolute top-3 left-3 flex flex-col gap-2">
+                                    <div class="absolute top-2 left-2 flex flex-col gap-2">
                                         @if($property->lowest_price && $property->lowest_price < 5000)
-                                            <div class="bg-white text-[#1882FF] text-[10px] font-bold px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1.5">
-                                                <i class="fas fa-fire text-[#FF9900]"></i> Top Selling
+                                            <div class="bg-white/90 backdrop-blur text-[#000080] text-[10px] font-bold px-2 py-1 rounded shadow-sm flex items-center gap-1.5 border border-slate-100">
+                                                <i class="fas fa-award"></i> Top Selling
                                             </div>
                                         @endif
                                     </div>
                                     
                                     {{-- Favorite Button --}}
-                                    <button class="absolute bottom-3 left-3 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 shadow-md transition">
-                                        <i class="fas fa-heart"></i>
+                                    <button class="absolute bottom-2 left-2 w-7 h-7 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 shadow-sm transition">
+                                        <i class="fas fa-heart text-xs"></i>
                                     </button>
                                 </div>
 
                                 {{-- Details Section --}}
-                                <div style="flex: 1; min-width: 250px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
-                                    <div>
-                                        <div class="flex justify-between items-start gap-4">
-                                            <div>
-                                                <h2 class="text-xl font-bold text-[#1a2b49] leading-tight mb-1">
-                                                    <a href="{{ route('hotels.show', ['property' => $property, 'check_in' => request('check_in'), 'check_out' => request('check_out')]) }}" class="hover:text-[#1882FF] transition">{{ $property->name }}</a>
-                                                </h2>
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <div class="flex text-[#FF9900] text-[10px]">
-                                                        @for($i = 1; $i <= $property->stars; $i++)
-                                                            <i class="fas fa-star"></i>
-                                                        @endfor
-                                                    </div>
-                                                    <span class="text-xs text-slate-500 font-medium capitalize">{{ $property->type }}</span>
-                                                    <span class="text-slate-300">•</span>
-                                                    <span class="text-xs text-slate-500 font-medium"><i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>{{ $property->city }}</span>
-                                                </div>
-                                            </div>
-                                            
-                                            {{-- Rating Box --}}
-                                            @if($property->average_rating)
-                                                <div class="flex flex-col items-end shrink-0">
-                                                    <div class="flex items-center gap-2">
-                                                        <div class="text-right">
-                                                            <p class="text-sm font-bold text-[#1a2b49]">{{ $property->average_rating >= 8 ? 'Excellent' : ($property->average_rating >= 6 ? 'Good' : 'Review') }}</p>
-                                                            <p class="text-[10px] text-slate-500 font-medium">{{ $property->review_count }} Reviews</p>
-                                                        </div>
-                                                        <div class="w-10 h-10 bg-[#1a2b49] rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-md">
-                                                            {{ number_format($property->average_rating, 1) }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
+                                <div class="flex-1 min-w-0 p-4 flex flex-col justify-start pc-details">
+                                    {{-- Hotel Name --}}
+                                    <h2 class="text-xl font-bold text-[#1a2b49] leading-tight mb-2">
+                                        <a href="{{ route('hotels.show', ['property' => $property, 'check_in' => request('check_in'), 'check_out' => request('check_out')]) }}" class="hover:text-[#1882FF] transition">{{ $property->name }}</a>
+                                    </h2>
+                                    
+                                    {{-- Stars & Location --}}
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="flex items-center gap-1 border border-yellow-200 bg-yellow-50 px-1.5 py-0.5 rounded text-[10px] font-semibold text-yellow-700">
+                                            <i class="fas fa-star text-yellow-400"></i> {{ number_format($property->stars, 1) }} Star
                                         </div>
+                                        <span class="text-[11px] text-slate-500 font-medium"><i class="fas fa-map-marker-alt text-slate-400 mr-1"></i>{{ $property->city }}</span>
+                                    </div>
 
-                                        {{-- Highlights --}}
-                                        <div class="flex flex-wrap gap-2 mt-3">
-                                            <span class="bg-[#FFE5F4] text-[#D81B60] border border-[#FFBCE1] text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
-                                                <i class="fas fa-user-friends"></i> Couple Friendly
+                                    {{-- Badges --}}
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        <span class="border border-pink-300 text-pink-600 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                            <i class="fas fa-user-friends"></i> Couple Friendly
+                                        </span>
+                                        @if($property->cancellation_policy && ($property->cancellation_policy['type'] ?? '') === 'free')
+                                            <span class="border border-green-300 text-green-600 text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                                <i class="fas fa-check"></i> Free Cancellation
                                             </span>
-                                            @if($property->cancellation_policy && ($property->cancellation_policy['type'] ?? '') === 'free')
-                                                <span class="bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
-                                                    <i class="fas fa-check"></i> Free Cancellation
-                                                </span>
-                                            @endif
-                                        </div>
+                                        @endif
                                     </div>
 
                                     {{-- Amenities Grid --}}
                                     @if($property->amenities)
-                                        <div class="mt-4 pt-4 border-t border-slate-100">
+                                        <div class="mt-auto pt-2">
                                             <div class="flex flex-wrap gap-x-4 gap-y-2">
                                                 @php $flatAmenities = collect($property->amenities)->flatten()->take(4); @endphp
                                                 @foreach($flatAmenities as $amenity)
-                                                    <div class="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                                                    <div class="flex items-center gap-1 text-[11px] font-medium text-slate-600">
                                                         @php
                                                             $icon = match(strtolower($amenity)) {
                                                                 'wifi', 'internet' => 'fa-wifi',
@@ -292,7 +292,7 @@
                                                     </div>
                                                 @endforeach
                                                 @if(count(collect($property->amenities)->flatten()) > 4)
-                                                    <div class="text-xs font-semibold text-[#1882FF]">+ {{ count(collect($property->amenities)->flatten()) - 4 }} more</div>
+                                                    <div class="text-[11px] font-semibold text-[#1882FF]">+ {{ count(collect($property->amenities)->flatten()) - 4 }} more</div>
                                                 @endif
                                             </div>
                                         </div>
@@ -300,32 +300,66 @@
                                 </div>
 
                                 {{-- Pricing & Action Section --}}
-                                <div style="width: 220px; flex-shrink: 0; background-color: rgba(248, 250, 252, 0.5); padding: 1.25rem; display: flex; flex-direction: column; justify-content: flex-end; border-left: 1px solid #f1f5f9;">
-                                    <div class="text-right mb-4">
+                                <div class="w-full shrink-0 p-4 flex flex-col justify-between border-t border-slate-100 pc-pricing">
+                                    {{-- Rating Box --}}
+                                    @if($property->average_rating)
+                                        <div class="flex justify-end items-center gap-2 mb-4">
+                                            <div class="text-right">
+                                                <p class="text-sm font-bold text-slate-700 leading-tight">{{ $property->average_rating >= 8 ? 'Excellent' : ($property->average_rating >= 6 ? 'Good' : 'Review') }}</p>
+                                                <p class="text-[11px] text-slate-500 font-medium">{{ $property->review_count }} Reviews</p>
+                                            </div>
+                                            <div class="w-10 h-10 bg-[#000080] rounded flex flex-col items-center justify-center text-white shadow-sm">
+                                                <span class="font-bold text-sm leading-none">{{ number_format($property->average_rating, 1) }}</span>
+                                                <span class="text-[8px] leading-none mt-0.5">out of 5</span>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    <div class="text-right mt-auto">
                                         @if($property->lowest_price && $property->lowest_price > 0)
                                             @php
-                                                // Fake discount logic for UI wow-factor
-                                                $discount = rand(10, 40);
-                                                $originalPrice = $property->lowest_price * (1 + ($discount/100));
+                                                $activePromotion = $property->promotions->filter(fn($promo) => $promo->isValid())->first();
+                                                $originalPrice = $property->lowest_price;
+                                                $finalPrice = $originalPrice;
+                                                $discountDisplay = null;
+                                                
+                                                if ($activePromotion) {
+                                                    if ($activePromotion->discount_type === 'percent') {
+                                                        $discountDisplay = round($activePromotion->discount_value) . '% off';
+                                                        $finalPrice = $originalPrice * (1 - ($activePromotion->discount_value / 100));
+                                                    } else {
+                                                        $discountDisplay = \App\Helpers\Currency::format($activePromotion->discount_value) . ' off';
+                                                        $finalPrice = $originalPrice - $activePromotion->discount_value;
+                                                        if ($finalPrice < 0) $finalPrice = 0;
+                                                    }
+                                                }
                                             @endphp
-                                            <div class="flex justify-end mb-1">
-                                                <span class="bg-[#FF9900] text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">{{ $discount }}% off</span>
-                                            </div>
-                                            <p class="text-[10px] font-bold text-slate-400 line-through mb-0.5">{{ \App\Helpers\Currency::format($originalPrice) }}</p>
                                             
-                                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wide">Starts from</p>
-                                            <p class="text-2xl font-black text-[#1a2b49] leading-none my-1">
-                                                {{ \App\Helpers\Currency::format($property->lowest_price) }}
-                                            </p>
-                                            <p class="text-[10px] font-semibold text-slate-500">for 1 Night, per room</p>
+                                            @if($activePromotion)
+                                                <div class="flex justify-end mb-2">
+                                                    <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full shadow-sm" style="background-color: #f27420; color: white;">{{ $discountDisplay }}</span>
+                                                </div>
+                                                <p class="text-[10px] font-bold mb-1 leading-tight text-right truncate" style="color: #00a651;">{{ $activePromotion->title ?? 'Special Offer' }}</p>
+                                            @endif
+                                            
+                                            <div class="mt-3">
+                                                <p class="text-[10px] text-slate-500 font-medium">Starts from</p>
+                                                @if($activePromotion)
+                                                    <p class="text-[11px] font-bold text-red-400 line-through mb-0.5">{{ \App\Helpers\Currency::format($originalPrice) }}</p>
+                                                @endif
+                                                <p class="text-xl font-bold text-[#1a2b49] leading-none mb-1">
+                                                    {{ \App\Helpers\Currency::format($finalPrice) }}
+                                                </p>
+                                                <p class="text-[10px] text-slate-500 font-medium mb-3">for 1 Night , per room</p>
+                                            </div>
                                         @else
-                                            <p class="text-sm font-bold text-slate-500">Price unavailable</p>
+                                            <p class="text-sm font-bold text-slate-500 mb-3">Price unavailable</p>
                                         @endif
+                                        
+                                        <a href="{{ route('hotels.show', ['property' => $property, 'check_in' => request('check_in'), 'check_out' => request('check_out')]) }}" class="block w-full font-bold py-2 rounded text-center shadow hover:shadow-md transition-all text-sm" style="background-color: #0066ff; color: white;">
+                                            Select
+                                        </a>
                                     </div>
-                                    
-                                    <a href="{{ route('hotels.show', ['property' => $property, 'check_in' => request('check_in'), 'check_out' => request('check_out')]) }}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl text-center shadow-lg hover:shadow-xl transition-all">
-                                        Select Details
-                                    </a>
                                 </div>
                             </div>
                         @empty

@@ -21,7 +21,7 @@ class DemoSeeder extends Seeder
     {
         // ── 1. ADMIN ────────────────────────────────────────────────
         User::firstOrCreate(
-            ['email' => 'admin@ghuri.travel'],
+            ['email' => 'admin@bookdei.com'],
             [
                 'name'              => 'Admin User',
                 'phone'             => '+8801700000001',
@@ -33,7 +33,7 @@ class DemoSeeder extends Seeder
 
         // ── 2. MANAGER ──────────────────────────────────────────────
         User::firstOrCreate(
-            ['email' => 'manager@ghuri.travel'],
+            ['email' => 'manager@bookdei.com'],
             [
                 'name'              => 'Manager User',
                 'phone'             => '+8801700000002',
@@ -45,7 +45,7 @@ class DemoSeeder extends Seeder
 
         // ── 3. SUPPORT AGENT ────────────────────────────────────────
         User::firstOrCreate(
-            ['email' => 'support@ghuri.travel'],
+            ['email' => 'support@bookdei.com'],
             [
                 'name'              => 'Support Agent',
                 'phone'             => '+8801700000003',
@@ -57,7 +57,7 @@ class DemoSeeder extends Seeder
 
         // ── 4. TICKETING OFFICER ─────────────────────────────────────
         User::firstOrCreate(
-            ['email' => 'ticketing@ghuri.travel'],
+            ['email' => 'ticketing@bookdei.com'],
             [
                 'name'              => 'Ticketing Officer',
                 'phone'             => '+8801700000004',
@@ -69,7 +69,7 @@ class DemoSeeder extends Seeder
 
         // ── 5. ACCOUNTS OFFICER ──────────────────────────────────────
         User::firstOrCreate(
-            ['email' => 'accounts@ghuri.travel'],
+            ['email' => 'accounts@bookdei.com'],
             [
                 'name'              => 'Accounts Officer',
                 'phone'             => '+8801700000005',
@@ -81,7 +81,7 @@ class DemoSeeder extends Seeder
 
         // ── 6. PROPERTY OWNER (with 2 demo hotels) ──────────────────
         $owner = User::firstOrCreate(
-            ['email' => 'owner@ghuri.travel'],
+            ['email' => 'owner@bookdei.com'],
             [
                 'name'              => 'Property Owner',
                 'phone'             => '+8801700000006',
@@ -95,7 +95,7 @@ class DemoSeeder extends Seeder
 
         // ── 7. CUSTOMER ──────────────────────────────────────────────
         User::firstOrCreate(
-            ['email' => 'customer@ghuri.travel'],
+            ['email' => 'customer@bookdei.com'],
             [
                 'name'              => 'Demo Customer',
                 'phone'             => '+8801700000007',
@@ -107,18 +107,18 @@ class DemoSeeder extends Seeder
 
         // ── Output table ─────────────────────────────────────────────
         $this->command->newLine();
-        $this->command->info('✅  GHURI Demo accounts seeded successfully!');
+        $this->command->info('✅  Bookdei Demo accounts seeded successfully!');
         $this->command->newLine();
         $this->command->table(
             ['Role', 'Email', 'Password'],
             [
-                ['Admin',             'admin@ghuri.travel',      'Admin@1234'],
-                ['Manager',           'manager@ghuri.travel',    'Manager@1234'],
-                ['Support Agent',     'support@ghuri.travel',    'Support@1234'],
-                ['Ticketing Officer', 'ticketing@ghuri.travel',  'Ticket@1234'],
-                ['Accounts Officer',  'accounts@ghuri.travel',   'Accounts@1234'],
-                ['Property Owner',    'owner@ghuri.travel',      'Owner@1234'],
-                ['Customer',          'customer@ghuri.travel',   'Customer@1234'],
+                ['Admin',             'admin@bookdei.com',      'Admin@1234'],
+                ['Manager',           'manager@bookdei.com',    'Manager@1234'],
+                ['Support Agent',     'support@bookdei.com',    'Support@1234'],
+                ['Ticketing Officer', 'ticketing@bookdei.com',  'Ticket@1234'],
+                ['Accounts Officer',  'accounts@bookdei.com',   'Accounts@1234'],
+                ['Property Owner',    'owner@bookdei.com',      'Owner@1234'],
+                ['Customer',          'customer@bookdei.com',   'Customer@1234'],
             ]
         );
         $this->command->newLine();
@@ -138,11 +138,11 @@ class DemoSeeder extends Seeder
 
         $properties = [
             [
-                'name'              => 'GHURI Grand Hotel Dhaka',
+                'name'              => 'Bookdei Grand Hotel Dhaka',
                 'type'              => 'hotel',
                 'stars'             => 5,
                 'short_description' => 'A premium 5-star hotel in the heart of Dhaka.',
-                'full_description'  => 'GHURI Grand Hotel Dhaka offers world-class hospitality in the heart of Bangladesh\'s capital. Enjoy luxurious rooms, fine dining, rooftop pool, and state-of-the-art business facilities. Steps away from major attractions.',
+                'full_description'  => 'Bookdei Grand Hotel Dhaka offers world-class hospitality in the heart of Bangladesh\'s capital. Enjoy luxurious rooms, fine dining, rooftop pool, and state-of-the-art business facilities. Steps away from major attractions.',
                 'check_in_time'     => '14:00',
                 'check_out_time'    => '12:00',
                 'address_line_1'    => '1 Gulshan Avenue',
@@ -158,11 +158,11 @@ class DemoSeeder extends Seeder
                 ],
             ],
             [
-                'name'              => 'GHURI Cox\'s Bazar Beach Resort',
+                'name'              => 'Bookdei Cox\'s Bazar Beach Resort',
                 'type'              => 'resort',
                 'stars'             => 4,
                 'short_description' => 'Beachfront resort on the world\'s longest natural sea beach.',
-                'full_description'  => 'Wake up to the sound of waves at GHURI Cox\'s Bazar Beach Resort. Our resort sits directly on the pristine shore of Cox\'s Bazar, the world\'s longest natural sea beach. Enjoy sunset views, seafood dining, and total relaxation.',
+                'full_description'  => 'Wake up to the sound of waves at Bookdei Cox\'s Bazar Beach Resort. Our resort sits directly on the pristine shore of Cox\'s Bazar, the world\'s longest natural sea beach. Enjoy sunset views, seafood dining, and total relaxation.',
                 'check_in_time'     => '15:00',
                 'check_out_time'    => '11:00',
                 'address_line_1'    => 'Beach Road, Kolatoli',

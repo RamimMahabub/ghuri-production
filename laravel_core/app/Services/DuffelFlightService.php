@@ -81,7 +81,7 @@ class DuffelFlightService implements FlightServiceInterface
         $response = $this->client()->post($this->baseUrl . '/air/offer_requests', $payload);
 
         if ($response->failed()) {
-            \Log::error("GHURI flight engine search error: " . $response->body());
+            \Log::error("Bookdei flight engine search error: " . $response->body());
             return [];
         }
 
@@ -98,7 +98,7 @@ class DuffelFlightService implements FlightServiceInterface
         ]);
 
         if ($offersResponse->failed()) {
-            \Log::error("GHURI flight engine offers error: " . $offersResponse->body());
+            \Log::error("Bookdei flight engine offers error: " . $offersResponse->body());
             return [];
         }
 
@@ -209,7 +209,7 @@ class DuffelFlightService implements FlightServiceInterface
             $travelers[] = [
                 'id' => $duffelPassengerIds[$index], // Match provider-generated passenger ID
                 'phone_number' => '+447781432431', // Sandbox requires valid phone
-                'email' => 'test@ghuri.travel',
+                'email' => 'test@bookdei.com',
                 'title' => 'mr',
                 'gender' => 'm',
                 'family_name' => $p['last_name'],
@@ -239,7 +239,7 @@ class DuffelFlightService implements FlightServiceInterface
             return [
                 'api_reference_id' => 'PNR' . strtoupper(Str::random(6)),
                 'status' => 'mock_confirmed',
-                'error' => "GHURI flight engine request failed: " . $response->body()
+                'error' => "Bookdei flight engine request failed: " . $response->body()
             ];
         }
 

@@ -9,12 +9,14 @@ class Currency
     /**
      * Format a base USD amount to the user's selected session currency.
      *
-     * @param float $amount The amount in base USD (or BDT if specified).
+     * @param float|null $amount The amount in base USD (or BDT if specified).
      * @param string $baseCurrency The base currency of the amount.
      * @return string The formatted amount with currency symbol.
      */
-    public static function format(float $amount, string $baseCurrency = 'USD'): string
+    public static function format(?float $amount, string $baseCurrency = 'BDT'): string
     {
+        $amount = (float) $amount; // Default to 0.0 if null
+        
         $userCurrency = session('currency', 'BDT'); // Default is BDT
         
         $currencyConverter = app(CurrencyConverterService::class);
@@ -35,7 +37,7 @@ class Currency
             $convertedAmount = round($amount * $rate, 2);
         }
 
-        $symbol = $userCurrency === 'USD' ? '$' : '৳';
+        $symbol = $userCurrency === 'USD' ? '$' : '৳ ';
         
         // Determine precision
         // If it's a clean integer, we might format with 0 decimals, else 2.

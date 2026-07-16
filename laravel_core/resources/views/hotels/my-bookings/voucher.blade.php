@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Voucher #{{ $booking->booking_ref }}</title>
+    <meta name="robots" content="noindex, nofollow">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -28,7 +29,7 @@
                     <p class="text-gray-400">Ref: {{ $booking->booking_ref }}</p>
                 </div>
                 <div class="text-right">
-                    <p class="font-bold text-xl">{{ config('app.name', 'GhuriTravel') }}</p>
+                    <p class="font-bold text-xl">{{ config('app.name', 'Bookdei') }}</p>
                     <p class="text-sm text-gray-400">Your trusted travel partner</p>
                 </div>
             </div>

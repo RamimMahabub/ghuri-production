@@ -115,7 +115,7 @@
                     yaxis: {
                         labels: { 
                             style: { colors: '#9ca3af' },
-                            formatter: function(val) { return "৳" + val; }
+                            formatter: function(val) { return "৳ " + val; }
                         }
                     },
                     grid: {
@@ -126,7 +126,7 @@
                     theme: { mode: 'light' },
                     tooltip: {
                         theme: 'dark',
-                        y: { formatter: function (val) { return "৳" + val } }
+                        y: { formatter: function (val) { return "৳ " + val } }
                     }
                 };
                 new ApexCharts(document.querySelector("#revenueChart"), revOptions).render();

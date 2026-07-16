@@ -1,5 +1,7 @@
-<x-app-layout>
-<div class="max-w-4xl mx-auto py-8 px-4">
+<x-customer-layout>
+    <x-slot name="pageTitle">Booking Details</x-slot>
+    <x-slot name="pageSubtitle">Ref: {{ $booking->booking_ref }}</x-slot>
+<div class="max-w-4xl mx-auto py-2">
     
     <div class="mb-6 flex items-center justify-between">
         <a href="{{ route('dashboard') }}" class="text-brand-text hover:text-brand-primary text-sm font-semibold flex items-center gap-2">
@@ -129,11 +131,11 @@
                         {{ ucfirst($booking->payment_status) }}
                     </span>
                     @if($booking->refund_amount > 0)
-                        <p class="text-xs text-status-confirmed mt-2">Refunded: ${{ number_format($booking->refund_amount, 2) }}</p>
+                        <p class="text-xs text-status-confirmed mt-2">Refunded: {{ \App\Helpers\Currency::format($booking->refund_amount) }}</p>
                     @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
-</x-app-layout>
+</x-customer-layout>

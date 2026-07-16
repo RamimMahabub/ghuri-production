@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /ajax/
+Disallow: /booking/
+Disallow: /dashboard
+Disallow: /integration-tester
+Disallow: /my-bookings
+Disallow: /property-owner/
+Disallow: /setup
+Disallow: /support
+
+Sitemap: https://bookdei.com/sitemap.xml

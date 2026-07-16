@@ -41,12 +41,88 @@ Route::get('/', function () {
         ->take(4)
         ->get();
 
-    return view('welcome', compact('offers', 'recentSearches', 'topProperties'));
-});
+    $promotedProperties = \App\Models\Property::approved()
+        ->whereHas('promotions', function($query) {
+            $query->where('is_active', true)
+                  ->where(function ($q) {
+                      $q->whereNull('valid_to')
+                        ->orWhere('valid_to', '>=', now());
+                  });
+        })
+        ->with(['activeRoomTypes', 'photos', 'promotions' => function($query) {
+            $query->where('is_active', true)
+                  ->where(function ($q) {
+                      $q->whereNull('valid_to')
+                        ->orWhere('valid_to', '>=', now());
+                  });
+        }])
+        ->withCount(['reviews as reviews_count' => function ($query) {
+            $query->where('status', 'published');
+        }])
+        ->withAvg(['reviews as average_rating' => function ($query) {
+            $query->where('status', 'published');
+        }], 'overall_score')
+        ->latest()
+        ->take(4)
+        ->get();
+
+    // Stays for every travel style (Dynamic Grouping)
+    $travelStyles = [
+        'Beach' => \App\Models\Property::approved()
+            ->where(function($q) {
+                $q->where('city', 'like', "%Cox's Bazar%")
+                  ->orWhere('city', 'like', '%Kuakata%');
+            })->with('photos')->take(4)->get(),
+            
+        'Nature' => \App\Models\Property::approved()
+            ->where(function($q) {
+                $q->where('city', 'like', '%Sylhet%')
+                  ->orWhere('city', 'like', '%Bandarban%')
+                  ->orWhere('city', 'like', '%Sreemangal%');
+            })->with('photos')->take(4)->get(),
+            
+        'Heritage' => \App\Models\Property::approved()
+            ->where(function($q) {
+                $q->where('city', 'like', '%Rajshahi%')
+                  ->orWhere('city', 'like', '%Bagerhat%')
+                  ->orWhere('city', 'like', '%Bogura%');
+            })->with('photos')->take(4)->get(),
+            
+        'City Vibes' => \App\Models\Property::approved()
+            ->where(function($q) {
+                $q->where('city', 'like', '%Dhaka%')
+                  ->orWhere('city', 'like', '%Chittagong%');
+            })->with('photos')->take(4)->get(),
+    ];
+
+    // Filter out empty categories to only show tabs that have properties
+    $travelStyles = array_filter($travelStyles, function($properties) {
+        return $properties->count() > 0;
+    });
+
+    return view('welcome', compact('offers', 'recentSearches', 'topProperties', 'promotedProperties', 'travelStyles'));
+})->name('home');
 
 Route::get('/list-your-property', function () {
     return view('list-your-property');
 })->name('list-your-property');
+
+Route::get('/sitemap.xml', function () {
+    $staticUrls = [
+        ['url' => route('home'), 'changefreq' => 'daily', 'priority' => '1.0'],
+        ['url' => route('hotels.search'), 'changefreq' => 'daily', 'priority' => '0.9'],
+        ['url' => route('list-your-property'), 'changefreq' => 'monthly', 'priority' => '0.7'],
+    ];
+
+    $properties = \App\Models\Property::approved()
+        ->select(['id', 'updated_at'])
+        ->latest('updated_at')
+        ->get();
+
+    return response()
+        ->view('sitemap', compact('staticUrls', 'properties'))
+        ->header('Content-Type', 'application/xml; charset=UTF-8');
+})->name('sitemap');
 
 Route::get('/dashboard', function () {
     $user = auth()->user();
@@ -86,11 +162,36 @@ Route::get('/admin', [\App\Http\Controllers\Admin\DashboardController::class, 'i
     ])
     ->name('admin.dashboard');
 
+Route::get('/support-center', function (\Illuminate\Http\Request $request) {
+    $user = $request->user();
+
+    if ($user->isPropertyOwner()) {
+        return redirect()->route('property-owner.support.index');
+    }
+
+    if ($user->isCustomer()) {
+        return redirect()->route('support.index');
+    }
+
+    if ($user->isInternalUser()) {
+        return redirect()->route('admin.support.index');
+    }
+
+    return redirect()->route('pages.help');
+})->middleware('auth')->name('navbar.support');
+
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/support', [\App\Http\Controllers\SupportTicketController::class, 'index'])->name('support.index');
+    Route::get('/support/create', [\App\Http\Controllers\SupportTicketController::class, 'create'])->name('support.create');
+    Route::post('/support', [\App\Http\Controllers\SupportTicketController::class, 'store'])->name('support.store');
+    Route::get('/support/{ticket}', [\App\Http\Controllers\SupportTicketController::class, 'show'])->name('support.show');
+    Route::post('/support/{ticket}/reply', [\App\Http\Controllers\SupportTicketController::class, 'reply'])->name('support.reply');
+    Route::post('/support/{ticket}/rate', [\App\Http\Controllers\SupportTicketController::class, 'rate'])->name('support.rate');
 
     Route::get('/booking/checkout/{flightId}', [\App\Http\Controllers\BookingController::class, 'checkout'])->name('booking.checkout');
     Route::post('/booking/store', [\App\Http\Controllers\BookingController::class, 'store'])->name('booking.store');
@@ -145,7 +246,7 @@ Route::get('/ajax/integration-test-execute', function (\App\Services\FlightServi
             'last_name' => 'Richard',
             'dob' => '1990-01-01',
             'title' => 'Mr',
-            'email' => 'test@ghuri.travel',
+            'email' => 'test@bookdei.com',
             'phone' => '1234567890',
             'nationality' => 'IN'
         ]];
@@ -211,6 +312,53 @@ Route::get('/setup', function (\Illuminate\Http\Request $request) {
                     $logs[] = '✅ Cache cleared successfully (Config, Route, View).';
                     break;
 
+                case 'wipe-payouts':
+                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+                    \App\Models\Payout::truncate();
+                    \App\Models\HotelBooking::whereNotNull('id')->delete(); // clears all test bookings
+                    return response()->json(['message' => '✅ Wiped all Payouts and HotelBookings successfully for a fresh start.']);
+                
+                case 'debug-payouts':
+                    $props = \App\Models\Property::all();
+                    $output = [];
+                    foreach($props as $p) {
+                        $unlinked = \App\Models\HotelBooking::where('property_id', $p->id)
+                            ->where('status', 'checked_out')
+                            ->whereNull('payout_id')
+                            ->get()->sum(function($b) { return $b->total - $b->commission_amount; });
+                        $manual = \App\Models\Payout::where('property_id', $p->id)
+                            ->where('status', '!=', 'rejected')
+                            ->whereNull('period_start')->sum('amount');
+                        $output[] = [
+                            'owner_id' => $p->owner_id,
+                            'property_id' => $p->id,
+                            'unlinkedEarned' => $unlinked,
+                            'manualPayouts' => $manual,
+                            'withdrawable' => $unlinked - $manual
+                        ];
+                    }
+                    return response()->json($output);
+
+                case 'debug-room-prices':
+                    $rooms = \App\Models\RoomType::where('property_id', 47)->get(['id', 'name', 'base_price_per_night', 'status']);
+                    return response()->json($rooms);
+
+                case 'backfill-commission':
+                    $updated = 0;
+                    foreach(\App\Models\HotelBooking::where('commission_amount', 0)->get() as $b) { 
+                        $rate = 15.0; 
+                        $prop = $b->property; 
+                        if ($prop) { 
+                            $comm = $prop->commissions()->where('effective_from', '<=', now())->orderBy('effective_from', 'desc')->first(); 
+                            if ($comm) {
+                                $rate = (float) $comm->rate_percent; 
+                            }
+                        } 
+                        $b->update(['commission_amount' => round($b->total * ($rate / 100), 2)]); 
+                        $updated++;
+                    }
+                    return response()->json(['message' => "Successfully backfilled commission for {$updated} bookings!"]);
+
                 case 'seed-demo':
                     \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'Database\\Seeders\\DemoSeeder', '--force' => true]);
                     $logs[] = '✅ DemoSeeder — demo accounts seeded.';
@@ -238,13 +386,13 @@ Route::get('/setup', function (\Illuminate\Http\Request $request) {
 
     // ── Demo accounts table ───────────────────────────────────────
     $accounts = [
-        ['Admin',             'admin@ghuri.travel',      'Admin@1234',     '/admin'],
-        ['Manager',           'manager@ghuri.travel',    'Manager@1234',   '/admin'],
-        ['Support Agent',     'support@ghuri.travel',    'Support@1234',   '/admin'],
-        ['Ticketing Officer', 'ticketing@ghuri.travel',  'Ticket@1234',    '/admin'],
-        ['Accounts Officer',  'accounts@ghuri.travel',   'Accounts@1234',  '/admin'],
-        ['Property Owner',    'owner@ghuri.travel',      'Owner@1234',     '/property-owner/dashboard'],
-        ['Customer',          'customer@ghuri.travel',   'Customer@1234',  '/'],
+        ['Admin',             'admin@bookdei.com',      'Admin@1234',     '/admin'],
+        ['Manager',           'manager@bookdei.com',    'Manager@1234',   '/admin'],
+        ['Support Agent',     'support@bookdei.com',    'Support@1234',   '/admin'],
+        ['Ticketing Officer', 'ticketing@bookdei.com',  'Ticket@1234',    '/admin'],
+        ['Accounts Officer',  'accounts@bookdei.com',   'Accounts@1234',  '/admin'],
+        ['Property Owner',    'owner@bookdei.com',      'Owner@1234',     '/property-owner/dashboard'],
+        ['Customer',          'customer@bookdei.com',   'Customer@1234',  '/'],
     ];
 
     $t = $request->query('token');
@@ -261,6 +409,13 @@ Route::middleware(['auth', 'role:property_owner'])->prefix('property-owner')->na
 
     // Dashboard
     Route::get('/dashboard', [\App\Http\Controllers\PropertyOwner\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/support', [\App\Http\Controllers\SupportTicketController::class, 'index'])->name('support.index');
+    Route::get('/support/create', [\App\Http\Controllers\SupportTicketController::class, 'create'])->name('support.create');
+    Route::post('/support', [\App\Http\Controllers\SupportTicketController::class, 'store'])->name('support.store');
+    Route::get('/support/{ticket}', [\App\Http\Controllers\SupportTicketController::class, 'show'])->name('support.show');
+    Route::post('/support/{ticket}/reply', [\App\Http\Controllers\SupportTicketController::class, 'reply'])->name('support.reply');
+    Route::post('/support/{ticket}/rate', [\App\Http\Controllers\SupportTicketController::class, 'rate'])->name('support.rate');
 
     // Properties (Hotels)
     Route::resource('hotels', \App\Http\Controllers\PropertyOwner\HotelController::class);
@@ -306,6 +461,9 @@ Route::middleware(['auth', 'role:property_owner'])->prefix('property-owner')->na
 
     // Payouts
     Route::get('payouts', [\App\Http\Controllers\PropertyOwner\PayoutController::class, 'index'])->name('payouts.index');
+    Route::post('payouts/payment-method', [\App\Http\Controllers\PropertyOwner\PayoutController::class, 'updatePaymentMethod'])->name('payouts.payment-method');
+    Route::post('payouts/request', [\App\Http\Controllers\PropertyOwner\PayoutController::class, 'requestWithdrawal'])->name('payouts.request');
+    Route::get('payouts/{payout}/invoice', [\App\Http\Controllers\PropertyOwner\PayoutController::class, 'showInvoice'])->name('payouts.invoice');
 });
 
 /* ================================================================
@@ -382,7 +540,8 @@ Route::middleware(['auth', 'role:admin,manager'])->prefix('admin')->name('admin.
     Route::post('/commissions/property/{property}', [\App\Http\Controllers\Admin\CommissionController::class, 'updateProperty'])->name('commissions.update-property');
     
     Route::get('/payouts', [\App\Http\Controllers\Admin\PayoutController::class, 'index'])->name('payouts.index');
-    Route::post('/payouts/{property}', [\App\Http\Controllers\Admin\PayoutController::class, 'process'])->name('payouts.process');
+    Route::post('/payouts/{payout}/status', [\App\Http\Controllers\Admin\PayoutController::class, 'updateStatus'])->name('payouts.update-status');
+    Route::get('/payouts/{payout}/invoice', [\App\Http\Controllers\Admin\PayoutController::class, 'showInvoice'])->name('payouts.invoice');
 
     // Global Bookings
     Route::get('/bookings', [\App\Http\Controllers\Admin\BookingController::class, 'index'])->name('bookings.index');
@@ -398,3 +557,13 @@ Route::middleware(['auth', 'role:admin,manager'])->prefix('admin')->name('admin.
     Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'store'])->name('settings.store');
 });
+
+Route::middleware(['auth', 'role:admin,manager,support_agent,ticketing_officer,accounts_officer'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('support.index');
+    Route::get('/support/{ticket}', [\App\Http\Controllers\Admin\SupportController::class, 'show'])->name('support.show');
+    Route::post('/support/{ticket}/reply', [\App\Http\Controllers\Admin\SupportController::class, 'reply'])->name('support.reply');
+    Route::patch('/support/{ticket}', [\App\Http\Controllers\Admin\SupportController::class, 'update'])->name('support.update');
+});
+
+Route::get('/support-attachments/{attachment}', \App\Http\Controllers\SupportAttachmentController::class)
+    ->middleware('auth')->name('support.attachments.download');

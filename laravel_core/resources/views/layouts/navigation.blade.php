@@ -6,11 +6,10 @@
 
 <nav x-data="{ open: false }" class="sticky top-0 z-50 border-b border-white/70 bg-white/92 backdrop-blur-xl shadow-[0_10px_30px_rgba(15,23,42,0.08)]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex h-20 items-center justify-between">
+        <div class="flex items-center justify-between" style="height: 48px;">
             <div class="flex items-center gap-10">
                 <a href="{{ url('/') }}" class="flex items-center gap-2">
-                    <svg class="h-8 w-8 text-[#1a2b49]" fill="currentColor" viewBox="0 0 24 24"><path d="M22 16.5l-2-2v-4a9 9 0 00-11.45-8.66l2.12 2.12c.98-.3 2.05-.46 3.19-.46 3.5 0 6.64 1.35 8.99 3.55a12.51 12.51 0 011.15 1.35v6l-2 2zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
-                    <div class="font-poppins font-extrabold text-2xl tracking-tight text-[#1a2b49]">GHURI<span class="text-[#1882FF]">.</span></div>
+                    <img src="{{ asset('images/logo-dark.png') }}" alt="bookdei" class="w-auto object-contain drop-shadow-sm transition-transform duration-300 hover:scale-105" style="height: 40px; margin-left: -10px;">
                 </a>
 
                 <div class="hidden sm:flex items-center gap-8">

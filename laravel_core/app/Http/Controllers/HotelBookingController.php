@@ -224,7 +224,9 @@ class HotelBookingController extends Controller
                 'success' => true,
                 'message' => 'Promo code applied successfully!',
                 'discount' => $pricing['discount'],
-                'total' => $pricing['total']
+                'discount_formatted' => \App\Helpers\Currency::format($pricing['discount']),
+                'total' => $pricing['total'],
+                'total_formatted' => \App\Helpers\Currency::format($pricing['total'])
             ]);
         }
 

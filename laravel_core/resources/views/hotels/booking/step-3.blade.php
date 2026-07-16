@@ -89,17 +89,17 @@
                     </div>
                     <div class="flex justify-between">
                         <span class="text-brand-muted">Room rate</span>
-                        <span class="text-brand-black">${{ number_format($pricing['subtotal'], 2) }}</span>
+                        <span class="text-brand-black">{{ \App\Helpers\Currency::format($pricing['subtotal']) }}</span>
                     </div>
-                    <div class="flex justify-between">
-                        <span class="text-brand-muted">Taxes & fees</span>
-                        <span class="text-brand-black">${{ number_format($pricing['taxes'] + $pricing['fees'], 2) }}</span>
+                    <div class="flex justify-between text-sm mb-4">
+                        <span class="text-gray-500">Taxes & Fees</span>
+                        <span class="text-brand-black">{{ \App\Helpers\Currency::format($pricing['taxes'] + $pricing['fees']) }}</span>
                     </div>
                 </div>
 
                 <div class="flex justify-between mt-4 pt-4 border-t-2 border-brand-black">
                     <span class="font-heading font-bold text-lg text-brand-black">Total</span>
-                    <span class="font-heading font-bold text-2xl text-brand-black">${{ number_format($pricing['total'], 2) }}</span>
+                    <span class="font-heading font-bold text-2xl text-brand-black">{{ \App\Helpers\Currency::format($pricing['total']) }}</span>
                 </div>
             </div>
         </div>

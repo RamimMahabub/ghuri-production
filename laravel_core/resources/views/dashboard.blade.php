@@ -225,7 +225,7 @@
                     <div class="w-12 h-8 bg-gradient-to-br from-[#E2B75A] to-[#C99C3D] rounded-lg shadow-sm flex items-center justify-center">
                         <div class="w-8 h-4 border border-white/20 rounded"></div>
                     </div>
-                    <div class="text-white/80 font-bold tracking-tight text-sm">Ghuri Wallet</div>
+                    <div class="text-white/80 font-bold tracking-tight text-sm">Bookdei Wallet</div>
                 </div>
 
                 <div class="relative z-10">

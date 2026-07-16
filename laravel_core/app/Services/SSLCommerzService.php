@@ -44,7 +44,7 @@ class SSLCommerzService
             
             // Customer Information
             'cus_name' => trim(($guestData['first_name'] ?? '') . ' ' . ($guestData['last_name'] ?? 'Guest')),
-            'cus_email' => $guestData['email'] ?? 'guest@ghuri.org',
+            'cus_email' => $guestData['email'] ?? 'guest@bookdei.com',
             'cus_phone' => $guestData['phone'] ?? '01700000000',
             'cus_city' => 'Dhaka',
             'cus_country' => 'Bangladesh',

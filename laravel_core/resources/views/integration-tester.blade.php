@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHURI Integration Tester</title>
+    <title>Bookdei Integration Tester</title>
+    <meta name="robots" content="noindex, nofollow">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-900 text-white font-sans antialiased p-8">
     <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold mb-2">GHURI Integration Tester</h1>
+        <h1 class="text-3xl font-bold mb-2">Bookdei Integration Tester</h1>
         <p class="text-gray-400 mb-8">Click the button below to run an end-to-end sandbox test of the Flight Search, Fare Validation, and Booking pipeline.</p>
 
         <button id="run-btn" onclick="runTest()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-colors mb-6">
