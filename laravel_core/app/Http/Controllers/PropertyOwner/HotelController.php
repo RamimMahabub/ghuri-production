@@ -8,6 +8,7 @@ use App\Models\PropertyPhoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class HotelController extends Controller
 {
@@ -30,7 +31,7 @@ class HotelController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:hotel,resort,villa,hostel,apartment,guesthouse',
+            'type' => ['required', Rule::in(Property::getTypes())],
             'stars' => 'required|integer|min:1|max:5',
             'short_description' => 'nullable|string|max:255',
             'full_description' => 'nullable|string',
@@ -187,7 +188,7 @@ class HotelController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:hotel,resort,villa,hostel,apartment,guesthouse',
+            'type' => ['required', Rule::in(Property::getTypes())],
             'stars' => 'required|integer|min:1|max:5',
             'short_description' => 'nullable|string|max:255',
             'full_description' => 'nullable|string',

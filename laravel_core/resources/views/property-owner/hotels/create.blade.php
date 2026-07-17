@@ -2,6 +2,17 @@
 
 <div x-data="propertyWizard()" class="max-w-4xl mx-auto">
 
+    @if ($errors->any())
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
+            <p class="font-semibold">Please correct the following before saving:</p>
+            <ul class="mt-2 list-disc space-y-1 pl-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- Wizard Progress --}}
     <div class="card card-body mb-6">
         <div class="flex items-center justify-between">
